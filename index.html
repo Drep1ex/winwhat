@@ -94,19 +94,21 @@ body {
 .inner { position: relative; width: min(100%, 480px); height: 100%; }
 .moisey {
   position: absolute; left: 50%; top: 12%; width: 76%; aspect-ratio: 600 / 727;
-  background: url("moisey.png") center / contain no-repeat;
   transform-origin: 50% 90%; opacity: 0;
 }
+.face {
+  position: absolute; inset: 0; background: url("moisey.png") center / contain no-repeat;
+  transform-origin: 50% 85%; transition: transform .09s ease-out;
+}
 .moisey.in { animation: jump .9s cubic-bezier(.2,1.3,.4,1) forwards; }
-.moisey.grumpy { opacity: 1; animation: huff 1.2s ease-in-out infinite; }
-.moisey.soft { opacity: 1; animation: sway 3s ease-in-out infinite; }
+.moisey.grumpy { opacity: 1; animation: breathe 1.1s ease-in-out infinite; }
+.moisey.soft { opacity: 1; animation: breathe 2.8s ease-in-out infinite; }
 @keyframes jump {
   0% { opacity: 1; transform: translate(var(--fx), var(--fy)) scale(.16); }
   60% { opacity: 1; transform: translate(-50%, -6%) scale(1.04); }
   100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
-@keyframes huff { 0%, 100% { transform: translate(-50%, 0) rotate(0); } 20% { transform: translate(-51%, 0) rotate(-2deg); } 40% { transform: translate(-49%, 0) rotate(2deg); } 60% { transform: translate(-50%, 0); } }
-@keyframes sway { 0%, 100% { transform: translate(-50%, 0) rotate(-1.5deg); } 50% { transform: translate(-50%, -1.5%) rotate(1.5deg); } }
+@keyframes breathe { 0%, 100% { transform: translate(-50%, 0) scale(1, 1); } 50% { transform: translate(-50%, 0) scale(1.012, .985); } }
 .steam { position: absolute; left: 76%; top: 14%; font-size: 26px; opacity: 0; transition: opacity .3s; }
 .steam.on { opacity: 1; animation: puff 1.2s ease-in-out infinite; }
 @keyframes puff { 50% { transform: scale(1.2) translateY(-4px); } }
@@ -135,6 +137,7 @@ body {
 .stub button { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; text-decoration: underline; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   .glow.twinkle, .glow.flicker, .moisey.grumpy, .moisey.soft, .steam.on, .swipe span { animation: none; }
+  .face { transition: none; }
 }
 </style>
 </head>
@@ -152,7 +155,7 @@ body {
 <div class="stage" id="stage">
   <div class="veil"></div>
   <div class="inner" id="inner">
-    <div class="moisey" id="moisey" role="img" aria-label="Моисей"></div>
+    <div class="moisey" id="moisey" role="img" aria-label="Моисей"><div class="face" id="face"></div></div>
     <div class="steam" id="steam" aria-hidden="true">💢</div>
     <canvas id="hearts"></canvas>
     <div class="dialog" id="dialog" role="dialog" aria-live="polite">
@@ -327,6 +330,21 @@ function findCat() {
 }
 
 let li = 0, typing = false, typeTimer;
+const face = document.getElementById("face");
+const FRAMES = { closed: "moisey.png", half: "moisey_half.png", open: "moisey_open.png" };
+Object.values(FRAMES).forEach(src => { const im = new Image(); im.src = src; });   // заранее, чтобы не мигало
+const VOWELS = "аеёиоуыэюяaeiouy";
+let wordTilt = 1;
+function mouth(ch) {
+  const c = (ch || "").toLowerCase();
+  let f = "closed";
+  if (VOWELS.includes(c)) f = "open";
+  else if (/[a-zа-я]/i.test(c)) f = "half";
+  if (c === " ") wordTilt = -wordTilt;
+  face.style.backgroundImage = `url("${FRAMES[f]}")`;
+  const lift = f === "open" ? -1.6 : f === "half" ? -0.6 : 0;
+  face.style.transform = reduce ? "" : `translateY(${lift}%) rotate(${f === "closed" ? 0 : wordTilt * 1.2}deg)`;
+}
 function setMood(mood) {
   moisey.classList.remove("in", "grumpy", "soft"); moisey.classList.add(mood);
   steam.classList.toggle("on", mood === "grumpy"); hearts.on = mood === "soft";
@@ -337,10 +355,15 @@ function showLine() {
   lineEl.textContent = ""; typing = true;
   document.getElementById("next").style.visibility = "hidden";
   let k = 0; clearInterval(typeTimer);
-  typeTimer = setInterval(() => { lineEl.textContent = L.text.slice(0, ++k); if (k >= L.text.length) endType(); }, reduce ? 1 : 32);
+  typeTimer = setInterval(() => {
+    lineEl.textContent = L.text.slice(0, ++k);
+    mouth(L.text[k - 1]);
+    if (k >= L.text.length) endType();
+  }, reduce ? 1 : 42);
 }
 function endType() {
   clearInterval(typeTimer); typing = false; lineEl.textContent = LINES[li].text;
+  mouth("");
   const last = li === LINES.length - 1;
   document.getElementById("next").style.visibility = last ? "hidden" : "visible";
   document.getElementById("goBtn").style.display = last ? "block" : "none";
