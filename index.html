@@ -634,6 +634,24 @@ const LIGHTS = [{"x": 30, "y": 87.5, "c": "#fad07a", "s": 0.6}, {"x": 37, "y": 8
 const GRID = [380, 200];
 // бот, которому приложение сообщает, что Моисей найден (откроется команда /moisey)
 const WORKER_URL = "https://winwhat-bot.dreplex.workers.dev";
+// сообщаем боту, кто зашёл и сколько пройдено (видит только Даня через /stats)
+function progressPct() {
+  if (!found) return 0;
+  if (typeof inHub === "undefined" || !inHub) return 10;
+  return Math.min(100, 20 + (lit - 1) * 15);
+}
+function progressStage() {
+  if (!found) return "ищет Моисея";
+  if (typeof inHub === "undefined" || !inHub) return "знакомится с Моисеем";
+  return `главный экран, игрушек ${lit} из 5`;
+}
+function report(ev) {
+  try {
+    if (!tg || !tg.initData) return;
+    const q = `?ev=${encodeURIComponent(ev)}&p=${progressPct()}&s=${encodeURIComponent(progressStage())}`;
+    fetch(WORKER_URL + "/seen" + q, { method: "POST", body: tg.initData, keepalive: true }).catch(() => {});
+  } catch (e) {}
+}
 // где Моисей сидит во время разговора: x — центр, y — где лапы касаются пола (клетки картинки), h — рост в долях высоты
 const SIT = { x: 224, y: 144, h: 0.34 };
 const WINDOW_GLASS = [25, 27, 85, 95];
@@ -964,6 +982,7 @@ function findCat() {
   found = true; clearTimeout(idleTimer); haptic("heavy"); Sound.found();
   // сообщаем боту (только внутри Telegram: там есть подписанные данные пользователя)
   try { if (tg && tg.initData) fetch(WORKER_URL + "/found", { method: "POST", body: tg.initData, keepalive: true }).catch(() => {}); } catch (e) {}
+  setTimeout(() => report("found"), 400);
   document.getElementById("task").style.opacity = 0;
   document.getElementById("swipe").style.opacity = 0;
   peek.classList.add("wiggle");
@@ -1444,7 +1463,7 @@ document.getElementById("goBtn").addEventListener("click", () => {
   const fade = document.getElementById("fade");
   fade.classList.add("on");
   setTimeout(() => {
-    openHub(); hub.classList.add("enter"); lightUp();
+    openHub(); hub.classList.add("enter"); lightUp(); report("hub");
     requestAnimationFrame(() => fade.classList.remove("on"));
     setTimeout(() => hub.classList.remove("enter"), 1400);
   }, 750);
@@ -1483,6 +1502,7 @@ Progress.load((p) => {
   }
   else if (p && p.found && !/[?&]reset=1/.test(location.search)) requestAnimationFrame(() => requestAnimationFrame(() => resume(p)));
   else resetIdle();
+  setTimeout(() => report("open"), 300);
 });
 </script>
 </body>
