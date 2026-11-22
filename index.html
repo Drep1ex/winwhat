@@ -76,6 +76,8 @@ body {
 }
 .sound[aria-expanded="true"] { box-shadow: 0 0 0 2px var(--gold); }
 .sound:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.soundbox { transition: opacity .3s; }
+@media (pointer: coarse) { body.talking .soundbox { opacity: 0; pointer-events: none; } }
 .vpanel {
   position: absolute; right: 0; bottom: 58px; width: min(250px, calc(100vw - 24px));
   display: flex; flex-direction: column; gap: 14px; padding: 16px;
@@ -94,11 +96,10 @@ body {
   padding: 10px; background: rgba(251, 243, 234, .1); color: var(--paper);
 }
 .mute:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-.credit {
-  position: fixed; left: 10px; bottom: max(8px, env(safe-area-inset-bottom)); z-index: 70;
-  font-size: 10px; line-height: 1.3; color: rgba(251, 243, 234, .45); max-width: 46vw; pointer-events: none;
-}
+.credit { font-size: 11px; line-height: 1.4; color: rgba(251, 243, 234, .5); }
 .sound:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.soundbox { transition: opacity .3s; }
+@media (pointer: coarse) { body.talking .soundbox { opacity: 0; pointer-events: none; } }
 .swipe {
   position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 20;
   font-family: var(--font-pixel); font-size: 14px; font-weight: 700; color: var(--paper); white-space: nowrap;
@@ -220,7 +221,6 @@ body {
 </div>
 
 <div class="task" id="task">Кажется, в этой комнате <b>кто-то прячется</b>. Найди его 👀</div>
-<div class="credit" id="credit">♪ «We Wish You a Merry Christmas» — Kevin MacLeod (incompetech.com) · CC BY 4.0</div>
 <div class="soundbox" id="soundbox">
   <div class="vpanel" id="vpanel" hidden>
     <div class="vrow"><label class="vhead" for="vol"><span>Общая громкость</span><span id="volOut">70</span></label>
@@ -228,6 +228,7 @@ body {
     <div class="vrow"><label class="vhead" for="mvol"><span>Музыка</span><span id="mvolOut">70</span></label>
       <input type="range" class="vol" id="mvol" min="0" max="100" step="1" value="70"></div>
     <button type="button" class="mute" id="muteBtn">Выключить звук</button>
+    <div class="credit">Музыка: «We Wish You a Merry Christmas» — Kevin MacLeod (incompetech.com), CC BY 4.0</div>
   </div>
   <button type="button" class="sound" id="soundBtn" aria-label="Настройки звука" aria-expanded="false" aria-controls="vpanel">🔊</button>
 </div>
@@ -599,6 +600,7 @@ function findCat() {
     moisey.style.setProperty("--fx", (px0 - left - mw / 2) + "px");   // прыжок начинается из-за ёлки
     moisey.style.setProperty("--fy", (py0 - top - mh) + "px");
     document.getElementById("dim").classList.add("on");
+    document.body.classList.add("talking"); togglePanel(false);
     stage.classList.add("on");
     moisey.classList.add("in");
     setTimeout(() => { dialog.classList.add("on"); showLine(); }, reduce ? 0 : 900);
