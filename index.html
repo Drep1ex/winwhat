@@ -259,18 +259,16 @@ const Sound = (() => {
   }
 
   const MUSIC_FILE = "music.mp3";
+  // файл начинает грузиться сразу при открытии, а играть начинает с первого касания
+  const musicEl = new Audio(MUSIC_FILE);
+  musicEl.loop = true; musicEl.preload = "auto";
+  try { musicEl.load(); } catch (e) {}
   function playFile() {
-    return fetch(MUSIC_FILE)
-      .then(r => { if (!r.ok) throw new Error("нет файла"); return r.arrayBuffer(); })
-      .then(buf => new Promise((ok, fail) => ctx.decodeAudioData(buf, ok, fail)))
-      .then(buffer => {
-        const src = ctx.createBufferSource(), g = ctx.createGain();
-        src.buffer = buffer; src.loop = true;
-        g.gain.setValueAtTime(0.0001, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.32, ctx.currentTime + 2.5);   // плавное появление, тише голоса
-        src.connect(g); g.connect(master);
-        src.start();
-      });
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.32, ctx.currentTime + 2.5);   // плавное появление, тише голоса
+    try { ctx.createMediaElementSource(musicEl).connect(g); g.connect(master); } catch (e) {}
+    return musicEl.play();
   }
   function start() {
     init();
@@ -278,7 +276,8 @@ const Sound = (() => {
     if (ctx.state === "suspended") ctx.resume();
     if (!started) {
       started = true;
-      playFile().catch(() => {});
+      const p = playFile();
+      if (p && p.catch) p.catch(() => { started = false; });   // не вышло — попробуем при следующем касании
     }
   }
 
@@ -337,7 +336,8 @@ const Sound = (() => {
   }
   document.addEventListener("visibilitychange", () => {
     if (!ctx) return;
-    if (document.hidden) ctx.suspend(); else if (started) ctx.resume();
+    if (document.hidden) { ctx.suspend(); if (musicEl) musicEl.pause(); }
+    else if (started) { ctx.resume(); if (musicEl) musicEl.play().catch(() => {}); }
   });
   return { start, syllable, boop, found, setMuted, setVolume, get muted() { return muted; }, get volume() { return volume; } };
 })();
@@ -356,7 +356,7 @@ vol.addEventListener("input", () => {
 });
 ["pointerdown", "keydown"].forEach(ev => vol.addEventListener(ev, (e) => e.stopPropagation()));
 // браузеры разрешают звук только после первого касания
-["pointerdown", "touchstart", "keydown"].forEach(ev => addEventListener(ev, () => Sound.start(), { once: true, passive: true }));
+["pointerdown", "touchstart", "keydown"].forEach(ev => addEventListener(ev, () => Sound.start(), { passive: true }));
 
 /* ========================================================== */
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
