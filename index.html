@@ -7,7 +7,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&family=Marck+Script&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   /* Мир аватарки: вечерняя комната, бордовые обои, огоньки ёлки и камина */
@@ -162,6 +162,16 @@ body {
 @keyframes blinkn { 50% { opacity: 0; } }
 .choices { display: flex; flex-direction: column; gap: 8px; }
 .choices[hidden] { display: none; }
+.choices:not([hidden]), .go { animation: softIn .3s ease-out; }
+@keyframes softIn { from { opacity: 0; transform: translateY(6px); } }
+#fade { position: fixed; inset: 0; z-index: 9999; background: #120806; opacity: 0; pointer-events: none; transition: opacity .7s ease; }
+#fade.on { opacity: 1; pointer-events: auto; }
+.hub-page:not([hidden]) { animation: softIn .32s ease-out; }
+.hub.enter .hub-page > * { animation: riseIn .6s ease-out both; }
+.hub.enter .hub-page > *:nth-child(2) { animation-delay: .12s; } .hub.enter .hub-page > *:nth-child(3) { animation-delay: .24s; }
+.hub.enter .hub-page > *:nth-child(4) { animation-delay: .36s; } .hub.enter .hub-page > *:nth-child(n+5) { animation-delay: .48s; }
+.hub.enter .hub-nav { animation: riseIn .6s ease-out .55s both; }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } }
 .choice {
   font: inherit; font-size: 16px; font-weight: 700; text-align: left; cursor: pointer;
   border: 2px solid var(--ink); border-radius: 12px; padding: 11px 14px;
@@ -203,6 +213,171 @@ body {
 .stub h2 { font-family: var(--font-pixel); font-size: 20px; font-weight: 800; line-height: 1.4; color: var(--gold); margin: 0; }
 .stub p { margin: 0; font-size: 15px; line-height: 1.5; color: #e6d6cc; max-width: 30ch; }
 .stub button { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; text-decoration: underline; cursor: pointer; }
+
+/* ===== главный экран (после знакомства с Моисеем) ===== */
+.hub {
+  position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; overflow: hidden;
+  font-family: Lora, Georgia, serif; color: var(--paper);
+  background: linear-gradient(rgba(24,10,8,.72), rgba(24,10,8,.88)), url("room.png?v=8") 62% 0 / auto 100% no-repeat, #26120f;
+  image-rendering: pixelated; animation: hubIn .6s ease-out;
+}
+.hub[hidden] { display: none; }
+@keyframes hubIn { from { opacity: 0; } }
+.hub img { image-rendering: auto; }
+.hub-scroll { position: relative; z-index: 1; flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+.hub-page { max-width: 480px; margin: 0 auto; padding: max(50px, calc(env(safe-area-inset-top) + 40px)) 20px 26px; display: flex; flex-direction: column; gap: 14px; }
+.hub-page[hidden] { display: none; }
+.script { font-family: "Marck Script", cursive; font-weight: 400; }
+.h-sub { font-family: "Marck Script", cursive; font-size: 22px; color: #e6c3b0; }
+.h-title { margin: 0; font-family: "Marck Script", cursive; font-weight: 400; font-size: 42px; line-height: 1.05; color: var(--gold); }
+.head-row .h-title { font-size: clamp(34px, 10.5vw, 42px); }
+.head-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+.hub-moisey { display: flex; align-items: flex-end; gap: 10px; }
+.hub-moisey img { width: 104px; height: 128px; object-fit: contain; flex: none; }
+.hub-moisey.small img { width: 84px; height: 104px; }
+.bubble { background: var(--paper); color: var(--ink); border-radius: 16px 16px 16px 4px; padding: 12px 14px;
+  font-size: 15px; font-weight: 600; line-height: 1.45; margin-bottom: 16px; box-shadow: 0 0 0 3px var(--ink), 0 0 0 5px var(--gold); }
+.glass { background: rgba(30, 14, 12, .78); border-radius: 18px; padding: 12px 10px 14px; box-shadow: 0 0 0 1px rgba(243,199,110,.35); display: flex; flex-direction: column; gap: 2px; }
+.glass.pad { padding: 14px; gap: 12px; }
+.glass-head { display: flex; justify-content: space-between; align-items: baseline; padding: 0 6px; }
+.glass.pad .glass-head { padding: 0; }
+.glass-head .script { font-size: 24px; }
+.glass-head .count { font-size: 13px; font-weight: 700; color: var(--gold); }
+.garland { width: 100%; height: auto; display: block; }
+.bauble-on { animation: glowB 2.4s ease-in-out infinite; }
+@keyframes glowB { 50% { opacity: .55; } }
+.paper-card { background: var(--paper); color: var(--ink); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 9px; }
+.paper-card .kicker { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #9a6e60; letter-spacing: .03em; padding-right: 54px; }
+.pill { font-size: 12px; font-weight: 700; color: #7a5410; background: #fbe8bf; border-radius: 99px; padding: 3px 10px; letter-spacing: 0; }
+.paper-card .title { font-size: 30px; line-height: 1.1; }
+.paper-card p { margin: 0; font-size: 14px; font-weight: 500; color: #5b4640; line-height: 1.45; }
+.gold-btn { font-family: inherit; font-size: 16px; font-weight: 700; border: 0; border-radius: 12px; padding: 13px; background: var(--gold); color: #3a2508; cursor: pointer; }
+.gold-btn:focus-visible, .tab:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tile { border-radius: 14px; padding: 10px; background: rgba(30, 14, 12, .55); display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: rgba(251,243,234,.62); }
+.tile b { font-size: 12px; font-weight: 700; }
+.tile.done { background: rgba(30, 14, 12, .7); color: #b7e2c4; }
+.chunks { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.chunk { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: rgba(251,243,234,.6); }
+.chunk div { width: 100%; height: 52px; box-sizing: border-box; border-radius: 10px; border: 2px dashed rgba(251,243,234,.35); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: rgba(251,243,234,.55); }
+.chunk.on { color: var(--gold); }
+.chunk.on div { border: 0; background: var(--gold); color: #3a2508; font-size: 15px; box-shadow: 0 0 14px rgba(243,199,110,.45); }
+.chunk.next div { border-color: rgba(243,199,110,.6); color: rgba(243,199,110,.75); }
+.bar { height: 6px; border-radius: 99px; background: rgba(251,243,234,.12); overflow: hidden; }
+.bar > div { height: 100%; border-radius: 99px; transition: width .6s ease; }
+.bar.dark { height: 8px; background: #3a2118; }
+.wood { position: relative; background: #4b2b1f; border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: inset 0 0 0 4px #3a2118, 0 0 0 1px #8a6447, 0 8px 20px rgba(0,0,0,.3); }
+.wood > svg { position: absolute; pointer-events: none; }
+.wood-h { font-size: 26px; color: var(--gold); }
+.wood .row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.wood .row span:first-child { color: #ecd6c8; } .wood .row span:last-child { color: var(--gold); }
+.wood .row.cnt { align-items: center; margin: 0; padding-top: 8px; border-top: 1px dashed #6b4636; }
+.wood .row.cnt span { display: flex; align-items: center; gap: 8px; }
+.wood .row.cnt b { font-size: 24px; line-height: 1; color: var(--gold); display: inline-block; transition: transform .2s; }
+.wood .row.cnt b.bump { transform: scale(1.3); }
+.dark-btn { font-family: inherit; font-size: 16px; font-weight: 700; border: 0; border-radius: 12px; padding: 13px; background: #3a2118; color: #c9ad9e;
+  box-shadow: inset 0 0 0 1px #6b4636; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.word { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #c9ad9e; }
+.word input { font-family: inherit; font-size: 15px; border: 2px solid #6b4636; border-radius: 12px; padding: 11px 12px; background: #3a2118; color: var(--paper); user-select: text; -webkit-user-select: text; }
+.chip-btn { font-family: inherit; font-size: 13px; font-weight: 700; border: 0; border-radius: 99px; padding: 8px 12px; margin-bottom: 6px; background: rgba(30,14,12,.82);
+  color: var(--gold); box-shadow: 0 0 0 1px rgba(243,199,110,.5); display: flex; align-items: center; gap: 6px; cursor: pointer; flex: none; }
+/* Моисей */
+.m-scene { position: relative; display: flex; flex-direction: column; align-items: center; touch-action: none; }
+.m-bubble { position: relative; z-index: 3; align-self: stretch; background: var(--paper); color: var(--ink); border-radius: 16px; padding: 11px 14px; font-size: 15px; font-weight: 700;
+  line-height: 1.4; text-align: center; min-height: 48px; box-shadow: 0 0 0 3px var(--ink), 0 0 0 5px var(--gold); transition: transform .15s; }
+.m-bubble.bpop { transform: scale(1.04); }
+.m-tail { position: relative; z-index: 3; margin-top: 2px; }
+.m-cat { position: relative; z-index: 1; width: 150px; height: 185px; margin-bottom: -30px; transform-origin: 50% 100%; cursor: pointer; }
+.m-cat img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
+.m-cat.squish { animation: mSquish .45s ease-in-out 2; } @keyframes mSquish { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.05,.93); } }
+.m-cat.tilt { animation: mTilt .9s ease-in-out; } @keyframes mTilt { 0%,100% { transform: rotate(0); } 30% { transform: rotate(-6deg) scale(1.02,.97); } 70% { transform: rotate(-4deg) scale(1.02,.97); } }
+.m-cat.bounce { animation: mBounce .6s ease-out; } @keyframes mBounce { 0%,100% { transform: translateY(0); } 20% { transform: scale(1.06,.9); } 50% { transform: translateY(-16px) scale(.97,1.04); } 80% { transform: scale(1.03,.97); } }
+.m-cat.melt { animation: mMelt 1.2s ease-in-out; } @keyframes mMelt { 0%,100% { transform: scale(1,1); } 35%,70% { transform: scale(1.09,.86); } }
+.m-cat.wiggle { animation: mWig .8s ease-in-out; } @keyframes mWig { 0%,100% { transform: rotate(0); } 20% { transform: rotate(3deg); } 40% { transform: rotate(-3deg); } 60% { transform: rotate(3deg); } 80% { transform: rotate(-2deg); } }
+.m-cat.shake { animation: mShake .4s ease-in-out; } @keyframes mShake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+.m-cat.chomp { animation: mChomp .3s ease-in-out 3; } @keyframes mChomp { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.03,.97); } }
+.m-hand { position: absolute; z-index: 2; left: 50%; top: 0; width: 76px; margin-left: -38px; opacity: 0; pointer-events: none; transform-origin: 50% 0; }
+.m-hand.stroke { animation: mStroke .9s ease-in-out; }
+@keyframes mStroke { 0% { opacity: 0; transform: translate(-30px,-24px) rotate(-12deg); } 15% { opacity: 1; transform: translate(-26px,0) rotate(-10deg); } 40% { transform: translate(24px,8px) rotate(8deg); }
+  60% { transform: translate(-22px,2px) rotate(-8deg); } 85% { opacity: 1; transform: translate(22px,8px) rotate(8deg); } 100% { opacity: 0; transform: translate(30px,-20px) rotate(10deg); } }
+.m-hand.fix { animation: mFix 1.1s ease-in-out; }
+@keyframes mFix { 0% { opacity: 0; transform: translate(0,-40px); } 20% { opacity: 1; transform: translate(0,-34px); } 40% { transform: translate(-6px,-40px) rotate(-6deg); }
+  60% { transform: translate(6px,-38px) rotate(6deg); } 80% { opacity: 1; transform: translate(0,-34px); } 100% { opacity: 0; transform: translate(0,-50px); } }
+.m-fx { position: absolute; z-index: 5; pointer-events: none; font-weight: 700; animation: mFloat 1.3s ease-out forwards; }
+.m-fx.mur { font-family: "Marck Script", cursive; font-size: 24px; color: var(--gold); text-shadow: 0 2px 0 var(--ink); }
+@keyframes mFloat { 0% { opacity: 0; transform: translateY(0) scale(.6); } 20% { opacity: 1; transform: translateY(-10px) scale(1); } 100% { opacity: 0; transform: translateY(-70px); } }
+.m-treat { position: absolute; z-index: 6; width: 34px; height: 34px; margin: -17px 0 0 -17px; pointer-events: none; }
+.m-crumb { position: absolute; z-index: 6; width: 5px; height: 5px; border-radius: 2px; background: #d9a35a; pointer-events: none; }
+.m-btns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.m-btns button { position: relative; font-family: inherit; font-size: 14px; font-weight: 700; border: 0; border-radius: 14px; padding: 12px 6px; background: var(--paper); color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; transition: transform .1s; }
+.m-btns button:active { transform: scale(.96); }
+.m-btns button.gold { background: var(--gold); color: #3a2508; }
+.dot { position: absolute; top: 8px; right: 12px; width: 10px; height: 10px; border-radius: 50%; background: #d8574a; box-shadow: 0 0 0 2px var(--paper); animation: dotP 1.2s ease-in-out infinite; }
+.dot.off { display: none; } @keyframes dotP { 50% { transform: scale(1.35); } }
+/* досье */
+.dossier { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.dossier.open { pointer-events: auto; }
+.d-veil { position: absolute; inset: 0; background: rgba(10,4,3,.62); opacity: 0; transition: opacity .3s; }
+.dossier.open .d-veil { opacity: 1; }
+.d-sheet { position: absolute; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto; background: var(--paper); color: var(--ink); border-radius: 24px 24px 0 0;
+  padding: 10px 20px max(30px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 16px; box-shadow: 0 -10px 30px rgba(0,0,0,.45);
+  transform: translateY(105%); transition: transform .38s cubic-bezier(.2,.8,.2,1); max-height: 92%; overflow-y: auto; }
+.dossier.open .d-sheet { transform: none; }
+.d-handle { align-self: center; width: 44px; height: 5px; border-radius: 99px; background: #d9c8b6; }
+.d-close { width: 44px; height: 44px; border: 0; border-radius: 50%; background: #efe3d4; color: #5b4640; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.d-top { display: flex; gap: 16px; align-items: center; }
+.d-photo { background: #fff; padding: 6px 6px 18px; border-radius: 4px; transform: rotate(-3deg); box-shadow: 0 6px 14px rgba(43,26,23,.25); flex: none; }
+.d-photo img { width: 120px; height: 120px; object-fit: cover; image-rendering: pixelated; border-radius: 2px; display: block; }
+.facts { border-radius: 16px; background: #f4e9dc; }
+.fact { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-bottom: 1px dashed #dcc9b5; font-size: 15px; font-weight: 600; }
+.fact:last-child { border-bottom: 0; } .fact svg { flex: none; }
+.fact div span { display: block; font-size: 12px; font-weight: 700; color: #6d5a52; }
+/* настройки */
+.tg-card { background: rgba(30,14,12,.82); border-radius: 18px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 0 0 1px rgba(243,199,110,.45); }
+.tg-ava { position: relative; flex: none; }
+.tg-ava > div { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: #d98b8b; box-shadow: 0 0 0 3px var(--ink), 0 0 0 5px var(--gold);
+  display: flex; align-items: center; justify-content: center; font-family: "Marck Script", cursive; font-size: 28px; color: var(--paper); }
+.tg-ava > div img { width: 100%; height: 100%; object-fit: cover; }
+.tg-ava > span { position: absolute; right: -4px; bottom: -4px; width: 22px; height: 22px; border-radius: 50%; background: #2aabee; box-shadow: 0 0 0 2px var(--ink); display: flex; align-items: center; justify-content: center; }
+.tg-txt { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.tg-txt b { font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .tg-txt span { font-size: 13px; font-weight: 600; color: #e6c3b0; }
+.tg-on { font-size: 11px; font-weight: 700; color: #b7e2c4; background: rgba(183,226,196,.12); border-radius: 99px; padding: 4px 9px; flex: none; }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.st { border-radius: 16px; padding: 10px 14px; display: flex; flex-direction: column; background: rgba(30,14,12,.78); box-shadow: 0 0 0 1px rgba(243,199,110,.35); }
+.st span { font-size: 12px; font-weight: 700; color: #e6c3b0; } .st b { font-size: 28px; line-height: 1.05; color: var(--gold); }
+.st.light { background: var(--paper); box-shadow: none; } .st.light span { color: #6d5a52; } .st.light b { color: #7a5410; }
+.sep { border-top: 1px dashed #6b4636; }
+.sw-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.sw-row > span { display: flex; flex-direction: column; gap: 1px; font-size: 13px; font-weight: 700; color: #ecd6c8; }
+.sw-row small { font-size: 12px; font-weight: 600; color: #c9ad9e; }
+.sw { flex: none; width: 48px; height: 28px; border: 0; padding: 0; border-radius: 99px; background: rgba(251,243,234,.18); position: relative; cursor: pointer; transition: background .2s; }
+.sw i { position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: #ecd6c8; transition: transform .2s, background .2s; }
+.sw[aria-checked="true"] { background: var(--gold); } .sw[aria-checked="true"] i { transform: translateX(20px); background: #3a2118; }
+.hub .vrow, .hub .mute { width: 100%; }
+.hub .vhead { font-size: 13px; color: #ecd6c8; }
+/* нижняя панель */
+.hub-nav { position: relative; z-index: 3; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 8px max(14px, env(safe-area-inset-bottom));
+  background: rgba(20, 9, 7, .94); box-shadow: 0 -1px 0 rgba(243,199,110,.25); }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: none; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 600; color: rgba(251,243,234,.6); padding: 6px 0; transition: color .25s; }
+.tab[aria-selected="true"] { color: var(--gold); font-weight: 700; }
+body.in-hub .soundbox { display: none; }
+/* новогодний декор */
+.fx-snow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.fx-snow i { position: absolute; top: -10px; border-radius: 50%; background: var(--paper); animation: hFall linear infinite; }
+@keyframes hFall { 0% { transform: translate(0,-10px); } 50% { transform: translate(14px,52vh); } 100% { transform: translate(-6px,105vh); } }
+.hb-tw { position: absolute; animation: hTw 3s ease-in-out infinite; }
+@keyframes hTw { 0%,100% { opacity: .15; transform: scale(.7); } 50% { opacity: .9; transform: scale(1); } }
+.hb-garl { position: absolute; top: env(safe-area-inset-top); left: 0; width: 100%; height: 40px; z-index: 2; pointer-events: none; }
+.hb-bulb { animation: hBulb 1.6s ease-in-out infinite; } @keyframes hBulb { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+.hb-halo { animation: hHalo 1.6s ease-in-out infinite; } @keyframes hHalo { 0%,100% { opacity: .35; } 50% { opacity: .05; } }
+.hb-cap { position: absolute; left: 0; top: -9px; width: 100%; height: 12px; pointer-events: none; }
+body.noanim .fx-snow { display: none; }
+body.noanim .hub *, body.noanim .hub *::before { animation-play-state: paused !important; }
+body.noanim .m-cat, body.noanim .m-hand, body.noanim .m-fx, body.noanim .dot { animation-play-state: running !important; }
+
 @media (prefers-reduced-motion: reduce) {
   .glow.twinkle, .glow.flicker, .moisey.grumpy, .moisey.soft, .steam.on, .swipe span { animation: none; }
   .face { transition: none; }
@@ -253,6 +428,157 @@ body {
   </div>
 </div>
 
+
+<div id="fade" aria-hidden="true"></div>
+<section class="hub" id="hub" hidden aria-label="Главный экран">
+  <div class="fx-snow" aria-hidden="true"><i style="left:9%;width:4px;height:4px;animation-duration:14.2s;animation-delay:-7.1s;opacity:0.79"></i><i style="left:7%;width:3px;height:3px;animation-duration:14.0s;animation-delay:-2.4s;opacity:0.54"></i><i style="left:71%;width:5px;height:5px;animation-duration:10.1s;animation-delay:-5.6s;opacity:0.72"></i><i style="left:25%;width:3px;height:3px;animation-duration:9.9s;animation-delay:-10.3s;opacity:0.43"></i><i style="left:14%;width:3px;height:3px;animation-duration:13.9s;animation-delay:-1.1s;opacity:0.38"></i><i style="left:28%;width:6px;height:6px;animation-duration:13.5s;animation-delay:-9.6s;opacity:0.70"></i><i style="left:61%;width:3px;height:3px;animation-duration:14.3s;animation-delay:-8.2s;opacity:0.48"></i><i style="left:25%;width:4px;height:4px;animation-duration:15.3s;animation-delay:-4.4s;opacity:0.61"></i><i style="left:69%;width:6px;height:6px;animation-duration:13.5s;animation-delay:-6.2s;opacity:0.55"></i><i style="left:79%;width:3px;height:3px;animation-duration:17.8s;animation-delay:-2.1s;opacity:0.54"></i><i style="left:98%;width:6px;height:6px;animation-duration:12.1s;animation-delay:-16.8s;opacity:0.54"></i><i style="left:87%;width:3px;height:3px;animation-duration:9.7s;animation-delay:-10.0s;opacity:0.71"></i><i style="left:42%;width:3px;height:3px;animation-duration:12.1s;animation-delay:-6.3s;opacity:0.57"></i><i style="left:60%;width:3px;height:3px;animation-duration:9.6s;animation-delay:-1.7s;opacity:0.47"></i><i style="left:91%;width:5px;height:5px;animation-duration:15.0s;animation-delay:-1.1s;opacity:0.67"></i><i style="left:84%;width:5px;height:5px;animation-duration:14.2s;animation-delay:-12.3s;opacity:0.55"></i><i style="left:93%;width:3px;height:3px;animation-duration:12.5s;animation-delay:-12.0s;opacity:0.36"></i><i style="left:61%;width:3px;height:3px;animation-duration:12.2s;animation-delay:-11.0s;opacity:0.57"></i><i style="left:29%;width:3px;height:3px;animation-duration:15.9s;animation-delay:-2.3s;opacity:0.46"></i><i style="left:52%;width:6px;height:6px;animation-duration:17.3s;animation-delay:-8.9s;opacity:0.42"></i><i style="left:53%;width:5px;height:5px;animation-duration:13.9s;animation-delay:-15.9s;opacity:0.72"></i><i style="left:72%;width:3px;height:3px;animation-duration:11.5s;animation-delay:-7.5s;opacity:0.51"></i><i style="left:50%;width:6px;height:6px;animation-duration:17.6s;animation-delay:-2.7s;opacity:0.43"></i><i style="left:31%;width:3px;height:3px;animation-duration:14.9s;animation-delay:-0.2s;opacity:0.72"></i><i style="left:25%;width:3px;height:3px;animation-duration:11.4s;animation-delay:-0.1s;opacity:0.54"></i><i style="left:49%;width:6px;height:6px;animation-duration:14.5s;animation-delay:-5.7s;opacity:0.41"></i><svg class="hb-tw" width="10" height="10" viewBox="0 0 24 24" style="left:64%;top:88%;animation-delay:-1.8s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg><svg class="hb-tw" width="12" height="12" viewBox="0 0 24 24" style="left:27%;top:20%;animation-delay:-1.3s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg><svg class="hb-tw" width="10" height="10" viewBox="0 0 24 24" style="left:22%;top:19%;animation-delay:-1.6s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg><svg class="hb-tw" width="10" height="10" viewBox="0 0 24 24" style="left:92%;top:13%;animation-delay:-1.8s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg><svg class="hb-tw" width="12" height="12" viewBox="0 0 24 24" style="left:54%;top:65%;animation-delay:-2.0s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg><svg class="hb-tw" width="12" height="12" viewBox="0 0 24 24" style="left:82%;top:28%;animation-delay:-1.9s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg><svg class="hb-tw" width="8" height="8" viewBox="0 0 24 24" style="left:71%;top:16%;animation-delay:-0.2s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg><svg class="hb-tw" width="8" height="8" viewBox="0 0 24 24" style="left:28%;top:38%;animation-delay:-1.8s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg><svg class="hb-tw" width="12" height="12" viewBox="0 0 24 24" style="left:63%;top:49%;animation-delay:-1.3s"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="#f3c76e"/></svg></div>
+  <svg class="hb-garl" viewBox="0 0 390 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4 L18 8 L53 14 L89 12 L124 4 L160 12 L195 14 L230 8 L266 9 L301 14 L337 12 L372 4 L390 4" fill="none" stroke="#2a1610" stroke-width="2.5" stroke-linejoin="round"/><line x1="18" y1="8" x2="18" y2="14" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.0s" cx="18" cy="21" r="11" fill="#d8574a"/><rect x="15" y="13" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.0s" cx="18" cy="22" rx="4.5" ry="6.5" fill="#d8574a"/><line x1="53" y1="14" x2="53" y2="20" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.4s" cx="53" cy="27" r="11" fill="#f3c76e"/><rect x="50" y="19" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.4s" cx="53" cy="28" rx="4.5" ry="6.5" fill="#f3c76e"/><line x1="89" y1="12" x2="89" y2="18" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.8s" cx="89" cy="25" r="11" fill="#6fae7c"/><rect x="86" y="17" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.8s" cx="89" cy="26" rx="4.5" ry="6.5" fill="#6fae7c"/><line x1="124" y1="4" x2="124" y2="10" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-1.2s" cx="124" cy="17" r="11" fill="#7fb0e0"/><rect x="121" y="9" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-1.2s" cx="124" cy="18" rx="4.5" ry="6.5" fill="#7fb0e0"/><line x1="160" y1="12" x2="160" y2="18" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.0s" cx="160" cy="25" r="11" fill="#d8574a"/><rect x="157" y="17" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.0s" cx="160" cy="26" rx="4.5" ry="6.5" fill="#d8574a"/><line x1="195" y1="14" x2="195" y2="20" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.4s" cx="195" cy="27" r="11" fill="#f3c76e"/><rect x="192" y="19" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.4s" cx="195" cy="28" rx="4.5" ry="6.5" fill="#f3c76e"/><line x1="230" y1="8" x2="230" y2="14" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.8s" cx="230" cy="21" r="11" fill="#6fae7c"/><rect x="227" y="13" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.8s" cx="230" cy="22" rx="4.5" ry="6.5" fill="#6fae7c"/><line x1="266" y1="9" x2="266" y2="15" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-1.2s" cx="266" cy="22" r="11" fill="#7fb0e0"/><rect x="263" y="14" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-1.2s" cx="266" cy="23" rx="4.5" ry="6.5" fill="#7fb0e0"/><line x1="301" y1="14" x2="301" y2="20" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.0s" cx="301" cy="27" r="11" fill="#d8574a"/><rect x="298" y="19" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.0s" cx="301" cy="28" rx="4.5" ry="6.5" fill="#d8574a"/><line x1="337" y1="12" x2="337" y2="18" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.4s" cx="337" cy="25" r="11" fill="#f3c76e"/><rect x="334" y="17" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.4s" cx="337" cy="26" rx="4.5" ry="6.5" fill="#f3c76e"/><line x1="372" y1="4" x2="372" y2="10" stroke="#2a1610" stroke-width="2"/><circle class="hb-halo" style="animation-delay:-0.8s" cx="372" cy="17" r="11" fill="#6fae7c"/><rect x="369" y="9" width="6" height="4" rx="1" fill="#c9a24e"/><ellipse class="hb-bulb" style="animation-delay:-0.8s" cx="372" cy="18" rx="4.5" ry="6.5" fill="#6fae7c"/></svg>
+  <div class="hub-scroll" id="hubScroll">
+    <div class="hub-page" id="page-game">
+      <div><div class="h-sub">С наступающим!</div><h1 class="h-title">Вечер с Моисеем</h1></div>
+      <div class="hub-moisey"><img src="moisey_smile.png?v=8" alt="Моисей"><div class="bubble">Каждое задание зажигает игрушку на гирлянде. Зажжём все пять?</div></div>
+      <div class="glass">
+        <div class="glass-head"><span class="script">Ссылка</span><span class="count" id="litCount">Зажжено 1 из 5</span></div>
+        <svg class="garland" id="garland" viewBox="0 0 350 104" role="img" aria-label="Гирлянда из пяти игрушек"></svg>
+      </div>
+      <div class="paper-card" style="position:relative">
+        <svg width="54" height="40" viewBox="0 0 54 40" aria-hidden="true" style="position: absolute; top: -12px; right: 10px; pointer-events: none"><path d="M26 22 C 18 10 6 12 2 6 C 4 14 0 18 4 22 C 8 20 12 26 26 22 Z" fill="#4f7d5c" stroke="#2c4a35" stroke-width="1.5"/><path d="M28 22 C 36 10 48 12 52 6 C 50 14 54 18 50 22 C 46 20 42 26 28 22 Z" fill="#5f9169" stroke="#2c4a35" stroke-width="1.5"/><circle cx="23" cy="25" r="4.5" fill="#d8574a" stroke="#8c2620" stroke-width="1"/><circle cx="31" cy="25" r="4.5" fill="#d8574a" stroke="#8c2620" stroke-width="1"/><circle cx="27" cy="31" r="4.5" fill="#b5452f" stroke="#8c2620" stroke-width="1"/><circle cx="22" cy="23.5" r="1.3" fill="#fbf3ea"/></svg>
+        <div class="kicker">СЛЕДУЮЩАЯ ИГРУШКА<span class="pill">~5 минут</span></div>
+        <span class="script title">Поймай снежинки</span>
+        <p>Собери 20 снежинок, и вторая игрушка на гирлянде загорится.</p>
+        <button type="button" class="gold-btn" id="playNext">Зажечь</button>
+      </div>
+      <div class="tiles">
+        <div class="tile done">Найти Моисея<b>Готово</b></div>
+        <div class="tile">Украсить ёлку<b>Закрыто</b></div>
+        <div class="tile">Вопросы о нас<b>Закрыто</b></div>
+      </div>
+    </div>
+
+    <div class="hub-page" id="page-link" hidden>
+      <div><div class="h-sub">Кусочек за кусочком</div><h1 class="h-title">Тайная ссылка</h1></div>
+      <div class="hub-moisey small"><img src="moisey.png?v=8" alt="Моисей"><div class="bubble">Даня разорвал ссылку на пять частей. Каждая игрушка на гирлянде прячет одну!</div></div>
+      <div class="glass pad">
+        <div class="glass-head"><span class="script">Собрано</span><span class="count" id="linkCount">1 из 5</span></div>
+        <div class="chunks" id="chunks"></div>
+        <div class="bar"><div id="linkBar" style="width:20%;background:var(--gold)"></div></div>
+      </div>
+      <div class="wood" style="padding-top:40px">
+        <svg width="230" height="44" viewBox="0 0 230 44" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+        <path d="M4 4 Q 60 34 116 14 T 226 6" fill="none" stroke="#2a1610" stroke-width="2.5"/>
+        <rect x="22" y="15" width="6" height="5" rx="1" fill="#c9a24e"/><ellipse cx="25" cy="25" rx="5.5" ry="7.5" fill="#d8574a"/><ellipse cx="25" cy="25" rx="11" ry="12" fill="#d8574a" opacity=".22"/>
+        <rect x="52" y="23" width="6" height="5" rx="1" fill="#c9a24e"/><ellipse cx="55" cy="33" rx="5.5" ry="7.5" fill="#f3c76e"/><ellipse cx="55" cy="33" rx="11" ry="12" fill="#f3c76e" opacity=".22"/>
+        <rect x="84" y="21" width="6" height="5" rx="1" fill="#c9a24e"/><ellipse cx="87" cy="31" rx="5.5" ry="7.5" fill="#6fae7c"/><ellipse cx="87" cy="31" rx="11" ry="12" fill="#6fae7c" opacity=".22"/>
+        <rect x="116" y="13" width="6" height="5" rx="1" fill="#c9a24e"/><ellipse cx="119" cy="23" rx="5.5" ry="7.5" fill="#7fb0e0"/><ellipse cx="119" cy="23" rx="11" ry="12" fill="#7fb0e0" opacity=".22"/>
+        <rect x="150" y="7" width="6" height="5" rx="1" fill="#c9a24e"/><ellipse cx="153" cy="17" rx="5.5" ry="7.5" fill="#d8574a"/><ellipse cx="153" cy="17" rx="11" ry="12" fill="#d8574a" opacity=".22"/>
+        <rect x="184" y="5" width="6" height="5" rx="1" fill="#c9a24e"/><ellipse cx="187" cy="15" rx="5.5" ry="7.5" fill="#f3c76e"/><ellipse cx="187" cy="15" rx="11" ry="12" fill="#f3c76e" opacity=".22"/>
+      </svg>
+      <svg width="44" height="84" viewBox="0 0 44 84" aria-hidden="true" style="position: absolute; right: 18px; top: 0">
+        <path d="M22 0 V 36" stroke="#c9a24e" stroke-width="1.5"/>
+        <rect x="17" y="34" width="10" height="8" rx="2" fill="#c9a24e"/>
+        <circle cx="22" cy="59" r="19" fill="#b5452f"/>
+        <path d="M4 56 Q 22 64 40 56" fill="none" stroke="#f3c76e" stroke-width="3"/>
+        <path d="M5 63 Q 22 71 39 63" fill="none" stroke="#f3c76e" stroke-width="1.5" stroke-dasharray="2 3"/>
+        <circle cx="15" cy="50" r="4.5" fill="#fbf3ea" opacity=".55"/>
+      </svg>
+        <span class="script" style="font-size:28px;line-height:1.1;color:var(--gold)">Когда соберёшь всё</span>
+        <span style="font-size:14px;font-weight:600;color:#ecd6c8;padding-right:40px">Ссылка откроет сайт с загадками. Там спрятано тайное слово — его нужно вписать сюда.</span>
+        <button type="button" class="dark-btn" id="goSite" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Перейти на сайт</button>
+        <label class="word">ТАЙНОЕ СЛОВО<input id="secretWord" disabled placeholder="Откроется после сайта" autocomplete="off"></label>
+      </div>
+    </div>
+
+    <div class="hub-page" id="page-moisey" hidden>
+      <div class="head-row">
+        <div><div class="h-sub">Тёплое место у ёлки</div><h1 class="h-title">Уголок Моисея</h1></div>
+        <button type="button" class="chip-btn" id="openDossier"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6"/></svg>Досье</button>
+      </div>
+      <div class="m-scene" id="mScene">
+        <div class="m-bubble" id="mBubble">Мур.</div>
+        <svg class="m-tail" width="22" height="14" viewBox="0 0 22 14" aria-hidden="true"><path d="M2 0 L11 12 L20 0" fill="#fbf3ea" stroke="#f3c76e" stroke-width="2"/></svg>
+        <div class="m-cat" id="mCat" role="button" tabindex="0" aria-label="Погладить Моисея"><img id="mImg" src="moisey_smile.png?v=8" alt=""></div>
+        <div class="m-hand" id="mHand"><svg viewBox="0 0 90 128" width="76" height="108" aria-hidden="true">
+    <g fill="#f8dfd0" stroke="#7a4a3e" stroke-width="1.8" stroke-linejoin="round">
+  <rect x="13" y="56" width="10.5" height="30" rx="5.25"/>
+  <rect x="23" y="56" width="11.5" height="46" rx="5.75" transform="rotate(3 28.75 56)"/>
+  <rect x="57.5" y="56" width="10.5" height="40" rx="5.25" transform="rotate(-4 62.75 56)"/>
+  <rect x="46" y="56" width="11.5" height="49" rx="5.75" transform="rotate(-1.5 51.75 56)"/>
+  <rect x="34.5" y="56" width="12" height="53" rx="6"/>
+</g>
+<path d="M10 2 H 80 Q 84 30 82 50 L 8 50 Q 6 30 10 2 Z" fill="#d98b8b" stroke="#7a3e3e" stroke-width="1.8"/>
+<path d="M6 46 Q 45 52 84 46 L 85 66 Q 45 74 5 66 Z" fill="#c77373" stroke="#7a3e3e" stroke-width="1.8" stroke-linejoin="round"/>
+<g stroke="#a85c5c" stroke-width="1.5" stroke-linecap="round"><path d="M14 50 V66 M22 51 V68 M30 51 V69 M38 52 V70 M46 52 V70 M54 52 V70 M62 51 V69 M70 51 V68 M78 50 V66"/></g>
+<g fill="none" stroke="#efb0b0" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity=".85"><path d="M20 12 l3 4 l3 -4 M31 12 l3 4 l3 -4 M42 12 l3 4 l3 -4 M53 12 l3 4 l3 -4 M64 12 l3 4 l3 -4 M20 24 l3 4 l3 -4 M31 24 l3 4 l3 -4 M42 24 l3 4 l3 -4 M53 24 l3 4 l3 -4 M64 24 l3 4 l3 -4 M20 36 l3 4 l3 -4 M31 36 l3 4 l3 -4 M42 36 l3 4 l3 -4 M53 36 l3 4 l3 -4 M64 36 l3 4 l3 -4 "/></g>
+</svg></div>
+        <svg width="260" height="76" viewBox="0 0 260 76" aria-hidden="true">
+    <path d="M14 24 Q 8 10 24 9 Q 130 0 236 9 Q 252 10 246 24 Q 254 42 246 58 Q 252 68 236 68 Q 130 78 24 68 Q 8 68 14 58 Q 6 42 14 24 Z" fill="#8c2620"/>
+    <path d="M26 15 Q 130 6 234 15 Q 240 26 234 34 Q 130 26 26 34 Q 20 26 26 15 Z" fill="#a8322a"/>
+    <path d="M14 24 Q 8 10 24 9 Q 130 0 236 9 Q 252 10 246 24 Q 254 42 246 58 Q 252 68 236 68 Q 130 78 24 68 Q 8 68 14 58 Q 6 42 14 24 Z" fill="none" stroke="#c9a24e" stroke-width="3"/>
+    <path d="M30 22 Q 130 13 230 22 Q 238 40 230 58 Q 130 66 30 58 Q 22 40 30 22 Z" fill="none" stroke="#e0b65c" stroke-width="1.5" stroke-dasharray="4 4" opacity=".7"/>
+    <g fill="#f3c76e"><circle cx="16" cy="11" r="4"/><circle cx="244" cy="11" r="4"/><circle cx="16" cy="66" r="4"/><circle cx="244" cy="66" r="4"/></g>
+    <g stroke="#f3c76e" stroke-width="2" stroke-linecap="round"><path d="M14 12 L7 4 M16 11 L12 2 M246 12 L253 4 M244 11 L248 2 M14 66 L7 74 M16 67 L12 75 M246 66 L253 74 M244 67 L248 75"/></g>
+  </svg>
+      </div>
+      <div class="wood">
+        <svg width="54" height="40" viewBox="0 0 54 40" aria-hidden="true" style="position: absolute; top: -12px; right: 10px; pointer-events: none"><path d="M26 22 C 18 10 6 12 2 6 C 4 14 0 18 4 22 C 8 20 12 26 26 22 Z" fill="#4f7d5c" stroke="#2c4a35" stroke-width="1.5"/><path d="M28 22 C 36 10 48 12 52 6 C 50 14 54 18 50 22 C 46 20 42 26 28 22 Z" fill="#5f9169" stroke="#2c4a35" stroke-width="1.5"/><circle cx="23" cy="25" r="4.5" fill="#d8574a" stroke="#8c2620" stroke-width="1"/><circle cx="31" cy="25" r="4.5" fill="#d8574a" stroke="#8c2620" stroke-width="1"/><circle cx="27" cy="31" r="4.5" fill="#b5452f" stroke="#8c2620" stroke-width="1"/><circle cx="22" cy="23.5" r="1.3" fill="#fbf3ea"/></svg>
+        <div><div class="row"><span>Настроение</span><span id="moodT">хорошее</span></div><div class="bar dark"><div id="moodBar" style="background:#f3c76e"></div></div></div>
+        <div><div class="row"><span>Тепло</span><span id="warmT">прохладно</span></div><div class="bar dark"><div id="warmBar" style="background:#e08a5a"></div></div></div>
+        <div class="row cnt"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="#d8574a" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Поглажен</span><b class="script" id="petCnt">0 раз</b></div>
+      </div>
+      <div class="m-btns">
+        <button type="button" class="gold" id="petBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M7 12V6a1.5 1.5 0 0 1 3 0v5M10 11V4.5a1.5 1.5 0 0 1 3 0V11M13 11V5.5a1.5 1.5 0 0 1 3 0V12M16 12V8.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-1a6 6 0 0 1-5-3l-2.5-4.5a1.5 1.5 0 0 1 2.6-1.5L7 14"/></svg>Погладить</button>
+        <button type="button" id="hatBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 17h16l-3-9-5-4-5 4z"/><circle cx="12" cy="3" r="1.5"/></svg>Шапка<span class="dot" id="hatDot"></span></button>
+        <button type="button" id="foodBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 12c3-5 9-5 13 0-4 5-10 5-13 0z"/><path d="M16 12l5-4v8z"/></svg>Угостить</button>
+      </div>
+    </div>
+
+    <div class="hub-page" id="page-settings" hidden>
+      <h1 class="h-title">Настройки</h1>
+      <div class="tg-card">
+        <div class="tg-ava"><div id="tgAva">?</div><span><svg width="12" height="12" viewBox="0 0 24 24" fill="#ffffff" aria-hidden="true"><path d="M21.5 3.5 2.8 10.7c-1.3.5-1.3 1.2-.2 1.5l4.8 1.5 1.8 5.6c.2.6.4.8.8.8s.6-.2.9-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.3-1.5zM9.6 14.1l9-5.7-7.1 6.6-.3 3.1z"/></svg></span></div>
+        <div class="tg-txt"><b id="tgName">Гостья</b><span id="tgUser">Telegram</span></div>
+        <span class="tg-on">в игре</span>
+      </div>
+      <div class="stats">
+        <div class="st light"><span>ИГРУШЕК ЗАЖЖЕНО</span><b class="script" id="stLit">1 из 5</b></div>
+        <div class="st light"><span>ВРЕМЯ В ИГРЕ</span><b class="script" id="stTime">0 минут</b></div>
+        <div class="st"><span>МОИСЕЙ ПОГЛАЖЕН</span><b class="script" id="stPets">0 раз</b></div>
+        <div class="st"><span>УГОЩЕНИЙ</span><b class="script" id="stTreats">0</b></div>
+      </div>
+      <div class="wood" id="setSound">
+        <svg width="30" height="44" viewBox="0 0 30 44" aria-hidden="true" style="position: absolute; right: 22px; top: 0; pointer-events: none"><path d="M15 0 V 10" stroke="#c9a24e" stroke-width="1.5"/><rect x="11.5" y="8" width="7" height="5" rx="1.5" fill="#c9a24e"/><circle cx="15" cy="27" r="12" fill="#5f86b8"/><path d="M4 25 Q 15 31 26 25" fill="none" stroke="#f3c76e" stroke-width="2.2"/><path d="M5 31 Q 15 36 25 31" fill="none" stroke="#fbf3ea" stroke-width="1.2" stroke-dasharray="2 3"/><circle cx="10" cy="22" r="3" fill="#fbf3ea" opacity=".55"/></svg>
+        <span class="script wood-h">Звук</span>
+        <div id="setSliders" style="display:flex;flex-direction:column;gap:12px"></div>
+        <div class="sw-row"><span>Вибрация</span><button type="button" class="sw" role="switch" id="swVib" aria-checked="true" aria-label="Вибрация"><i></i></button></div>
+        <div class="sep"></div>
+        <span class="script wood-h">Игра</span>
+        <div class="sw-row"><span>Подсказки к заданиям<small>Моисей подскажет, если застрянешь</small></span><button type="button" class="sw" role="switch" id="swHints" aria-checked="false" aria-label="Подсказки к заданиям"><i></i></button></div>
+        <div class="sw-row"><span>Снег и анимации<small>Выключи, если телефон тормозит</small></span><button type="button" class="sw" role="switch" id="swAnim" aria-checked="true" aria-label="Снег и анимации"><i></i></button></div>
+      </div>
+    </div>
+  </div>
+  <nav class="hub-nav" role="tablist">
+    <svg class="hb-cap" viewBox="0 0 390 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 12 V7 Q 12 0 26 6 Q 40 11 54 5 Q 70 -1 86 6 Q 100 11 116 4 Q 132 -1 146 6 Q 160 11 176 5 Q 192 0 206 6 Q 222 11 238 4 Q 254 -1 268 6 Q 282 11 298 5 Q 314 0 328 6 Q 344 11 360 5 Q 376 0 390 6 V12 Z" fill="#eef2f6"/></svg>
+    <button type="button" class="tab" role="tab" aria-selected="true" data-page="page-game"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg>Игра</button>
+    <button type="button" class="tab" role="tab" aria-selected="false" data-page="page-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg>Ссылка</button>
+    <button type="button" class="tab" role="tab" aria-selected="false" data-page="page-moisey"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="16" rx="5" ry="4"/><circle cx="5.5" cy="10" r="2"/><circle cx="9.5" cy="6" r="2"/><circle cx="14.5" cy="6" r="2"/><circle cx="18.5" cy="10" r="2"/></svg>Моисей</button>
+    <button type="button" class="tab" role="tab" aria-selected="false" data-page="page-settings"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Настройки</button>
+  </nav>
+  <div class="dossier" id="dossier">
+    <div class="d-veil" id="dVeil"></div>
+    <div class="d-sheet" role="dialog" aria-label="Досье Моисея">
+      <div class="d-handle"></div>
+      <div class="head-row" style="align-items:center"><h2 class="script" style="margin:0;font-size:36px;font-weight:400;color:#7a5410">Досье</h2>
+        <button type="button" class="d-close" id="closeDossier" aria-label="Закрыть досье"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="d-top">
+        <div class="d-photo"><img src="moisey_card.png?v=8" alt="Моисей у ёлки"></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span class="script" style="font-size:32px;line-height:1">Моисей</span>
+          <span style="font-size:14px;font-weight:600;color:#5b4640">Хороший друг Дани</span><span class="pill" style="align-self:flex-start">Сейчас за главного</span></div>
+      </div>
+      <div class="facts"><div class="fact"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b5452f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><div><span>ЛЮБЛЮ</span>Тёплые шапки, когда гладят по голове</div></div><div class="fact"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6d5a52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 16c2-2 6-2 8 0M9 9.5h.01M15 9.5h.01"/></svg><div><span>НЕ ЛЮБЛЮ</span>Застревать за ёлками</div></div><div class="fact"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9952e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg><div><span>ОСОБЫЙ НАВЫК</span>Умный кот, иногда даже слишком…</div></div><div class="fact"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4f7d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l5 7h-3l4 6h-3l4 6H5l4-6H6l4-6H7z"/></svg><div><span>ГДЕ НАЙДЕН</span>За ёлкой, у высокого подарка</div></div></div>
+    </div>
+  </div>
+</section>
 <div class="stub" id="stub">
   <h2>ЗАДАНИЕ 2</h2>
   <p>Здесь будет следующее задание. Сделаем его на следующем шаге.</p>
@@ -281,7 +607,8 @@ const DIALOG = {
                { label: "Ты не поцарапался, пока там сидел?", next: "scratch", once: true, kind: "extra" },
              ] },
   where1:  { mood: "soft",   text: "Он ушёл куда-то и сказал, что скоро будет…", next: "where2" },
-  where2:  { mood: "proud",  text: "…и оставил меня за главного!", end: true },
+  where2:  { mood: "proud",  text: "…и оставил меня за главного!", next: "lead" },
+  lead:    { mood: "happy",  text: "Пойдём, покажу, что Даня приготовил!", end: true },
   scratch: { mood: "happy",  text: "Не-а, ни царапинки! Только шапка вся в иголках. Я крепкий кот, мне ёлка нипочём.", choicesFrom: "who" },
   what1:   { mood: "soft",   text: "Ну… Даня попросил меня спрятаться, чтобы ты меня поискала.", next: "what2" },
   what2:   { mood: "grumpy", text: "Только кто ж знал, что за ёлкой так тесно! Хвост застрял, шапка зацепилась… Позор.", choicesFrom: "glad" },
@@ -435,7 +762,7 @@ const Sound = (() => {
     if (document.hidden) { ctx.suspend(); if (musicEl) musicEl.pause(); }
     else if (started) { ctx.resume(); if (musicEl) musicEl.play().catch(() => {}); }
   });
-  return { start, syllable, boop, found, setMuted, setVolume, setMusicVolume, get musicVolume() { return musicVol; }, get muted() { return muted; }, get volume() { return volume; } };
+  return { get ctx() { return ctx; }, get sfx() { return sfxBus; }, start, syllable, boop, found, setMuted, setVolume, setMusicVolume, get musicVolume() { return musicVol; }, get muted() { return muted; }, get volume() { return volume; } };
 })();
 
 const soundBtn = document.getElementById("soundBtn"), vpanel = document.getElementById("vpanel");
@@ -477,7 +804,8 @@ if (tg) {
   try { tg.ready(); tg.expand(); tg.setHeaderColor("#26120f"); tg.setBackgroundColor("#26120f"); } catch (e) {}
   try { tg.disableVerticalSwipes(); } catch (e) {}
 }
-const haptic = (k) => { try { tg && tg.HapticFeedback.impactOccurred(k); } catch (e) {} };
+let VIB = true;
+const haptic = (k) => { if (!VIB) return; try { tg && tg.HapticFeedback.impactOccurred(k); } catch (e) {} };
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const vp = document.getElementById("vp"), pano = document.getElementById("pano");
 const pct = (v, i) => (v / GRID[i] * 100) + "%";
@@ -610,7 +938,7 @@ const Progress = (() => {
   return { load, save, clear };
 })();
 function saveProgress() {
-  Progress.save({ found, node: node && node.id, used: [...usedChoices], tip: tipShown });
+  Progress.save({ found, node: node && node.id, used: [...usedChoices], tip: tipShown, hub: typeof inHub !== "undefined" && inHub, h: typeof H !== "undefined" ? H : null });
 }
 
 // уже находила Моисея раньше — сразу продолжаем разговор с того же места
@@ -749,7 +1077,378 @@ dialog.addEventListener("click", (e) => {
   if (typing) { endType(); return; }
   if (node.next && !node.choices && !node.choicesFrom) { node = DIALOG[node.next]; showLine(); }
 });
-document.getElementById("goBtn").addEventListener("click", () => { haptic("medium"); document.getElementById("stub").classList.add("on"); });
+
+/* ---------- главный экран ---------- */
+const hub = document.getElementById("hub");
+let inHub = false, lit = 1;                     // lit — сколько игрушек горит (задание «Найти Моисея» = 1)
+// кусочки ссылки по порядку заданий; впиши сюда настоящие части, когда будет сайт
+const LINK_PARTS = ["✦", "✦", "✦", "✦", "✦"];
+const TASK_NAMES = ["Моисей", "Снежинки", "Ёлка", "Вопросы", "Финал"];
+// всё, что происходит в уголке Моисея и в настройках, сохраняется вместе с прогрессом
+const H = { pets: 0, treats: 0, mood: 60, warm: 45, hatOk: false, said: [], vib: true, hints: false, anim: true, ms: 0 };
+function loadH(o) { if (o && typeof o === "object") Object.keys(H).forEach(k => { if (k in o) H[k] = o[k]; }); }
+let saveT; function saveSoon() { clearTimeout(saveT); saveT = setTimeout(saveProgress, 800); }
+const $ = (id) => document.getElementById(id);
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const plural = (n, one, few, many) => { const a = n % 10, b = n % 100; return (a === 1 && b !== 11) ? one : (a >= 2 && a <= 4 && (b < 12 || b > 14)) ? few : many; };
+const restartAnim = (el, c) => { el.classList.remove(c); el.getBoundingClientRect(); void el.offsetWidth; el.classList.add(c); };
+
+function garlandSVG(n) {
+  const pts = [[36, 64], [104, 78], [175, 60], [246, 50], [314, 47]];
+  let g = '<path d="M0 10 Q 87 66 175 26 T 350 10" fill="none" stroke="#8a6447" stroke-width="2.5"/>';
+  pts.forEach(([x, y], i) => {
+    const on = i < n;
+    g += `<line x1="${x}" y1="${y - 33}" x2="${x}" y2="${y - 19}" stroke="#8a6447" stroke-width="2"/>`;
+    g += `<rect x="${x - 5}" y="${y - 21}" width="10" height="6" rx="1" fill="${on ? "#c9a24e" : "#5a4234"}"/>`;
+    g += on
+      ? `<circle class="bauble-on" cx="${x}" cy="${y}" r="28" fill="#f3c76e" opacity=".2"/><circle cx="${x}" cy="${y}" r="16" fill="#f3c76e"/><circle cx="${x - 5}" cy="${y - 6}" r="4" fill="#fff6dc"/>`
+      : `<circle cx="${x}" cy="${y}" r="16" fill="rgba(251,243,234,.06)" stroke="rgba(251,243,234,.4)" stroke-width="2" stroke-dasharray="4 4"/>`;
+  });
+  return g;
+}
+function renderLink() {
+  $("chunks").innerHTML = TASK_NAMES.map((t, i) =>
+    `<div class="chunk${i < lit ? " on" : i === lit ? " next" : ""}"><div>${i < lit ? LINK_PARTS[i] : "•••"}</div>${t}</div>`).join("");
+  $("linkCount").textContent = `${lit} из 5`;
+  $("linkBar").style.width = (lit * 20) + "%";
+}
+function renderStats() {
+  const min = Math.floor(H.ms / 60000);
+  $("stLit").textContent = `${lit} из 5`;
+  $("stTime").textContent = min < 60 ? `${min} ${plural(min, "минута", "минуты", "минут")}` : `${Math.floor(min / 60)} ч ${min % 60} мин`;
+  $("stPets").textContent = `${H.pets} ${plural(H.pets, "раз", "раза", "раз")}`;
+  $("stTreats").textContent = H.treats;
+}
+function renderHub() {
+  $("garland").innerHTML = garlandSVG(lit);
+  $("litCount").textContent = `Зажжено ${lit} из 5`;
+  renderLink(); renderStats(); renderMoisey();
+}
+// время в игре: считаем, пока приложение открыто и на экране
+setInterval(() => {
+  if (document.hidden) return;
+  H.ms += 10000;
+  if (inHub) renderStats();
+  if (H.ms % 60000 === 0) saveSoon();
+}, 10000);
+
+/* --- профиль Telegram --- */
+function renderTG() {
+  const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+  const name = u ? [u.first_name, u.last_name].filter(Boolean).join(" ") : "Гостья";
+  $("tgName").textContent = name;
+  $("tgUser").textContent = u && u.username ? "@" + u.username : (u ? "Telegram" : "не в Telegram");
+  const av = $("tgAva");
+  if (u && u.photo_url) { const im = new Image(); im.alt = ""; im.src = u.photo_url; im.onerror = () => { av.textContent = (name[0] || "?").toUpperCase(); }; av.textContent = ""; av.appendChild(im); }
+  else av.textContent = (name[0] || "?").toUpperCase();
+}
+
+/* --- настройки --- */
+function setSwitch(id, on) { $(id).setAttribute("aria-checked", String(on)); }
+function applySettings() {
+  VIB = H.vib;
+  document.body.classList.toggle("noanim", !H.anim);
+  setSwitch("swVib", H.vib); setSwitch("swHints", H.hints); setSwitch("swAnim", H.anim);
+}
+[["swVib", "vib"], ["swHints", "hints"], ["swAnim", "anim"]].forEach(([id, key]) => {
+  $(id).addEventListener("click", () => {
+    H[key] = !H[key]; applySettings(); haptic("light"); saveSoon();
+  });
+});
+
+/* --- переходы между вкладками --- */
+function showPage(id) {
+  hub.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", String(x.dataset.page === id)));
+  hub.querySelectorAll(".hub-page").forEach(p => p.hidden = p.id !== id);
+  $("hubScroll").scrollTop = 0;
+  if (id === "page-moisey") requestAnimationFrame(() => { placeHand(); idleSay(); });
+  if (id === "page-settings") renderStats();
+}
+hub.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => { haptic("light"); closeDossier(); showPage(t.dataset.page); }));
+function openHub() {
+  inHub = true; saveProgress();
+  renderTG(); renderHub(); applySettings();
+  // ползунки громкости переезжают в «Настройки»
+  const ps = $("setSliders");
+  vpanel.querySelectorAll(".vrow").forEach(r => ps.appendChild(r));
+  document.body.classList.add("in-hub");
+  hub.hidden = false;
+  stage.classList.remove("on"); dialog.classList.remove("on");
+}
+// лампочки гирлянды загораются по очереди, когда открывается главный экран
+function lightUp() {
+  if (!H.anim) return;
+  const b = [...hub.querySelectorAll(".hb-bulb")], h = [...hub.querySelectorAll(".hb-halo")];
+  b.concat(h).forEach(e => { e.style.animation = "none"; e.style.opacity = ".1"; });
+  b.forEach((e, i) => setTimeout(() => {
+    e.style.animation = ""; e.style.opacity = "";
+    if (h[i]) { h[i].style.animation = ""; h[i].style.opacity = ""; }
+  }, 500 + i * 110));
+}
+document.getElementById("playNext").addEventListener("click", () => {
+  haptic("medium"); Sound.boop();
+  const b = document.getElementById("playNext");
+  b.textContent = "Скоро здесь будет задание ✨";
+  setTimeout(() => b.textContent = "Зажечь", 2200);
+});
+
+/* --- досье --- */
+function openDossier() { $("dossier").classList.add("open"); haptic("light"); }
+function closeDossier() { $("dossier").classList.remove("open"); }
+$("openDossier").addEventListener("click", openDossier);
+$("closeDossier").addEventListener("click", closeDossier);
+$("dVeil").addEventListener("click", closeDossier);
+
+/* ==========================================================
+   УГОЛОК МОИСЕЯ: погладить, поправить шапку, угостить
+   ========================================================== */
+const mCat = $("mCat"), mImg = $("mImg"), mHand = $("mHand"), mScene = $("mScene"), mBubble = $("mBubble");
+const M_SMILE = "moisey_smile.png?v=8", M_PROUD = "moisey_proud.png?v=8", M_OPEN = "moisey_smile_open.png?v=8", M_CLOSED = "moisey.png?v=8";
+// фразы при каждом заходе во вкладку — без повторов, пока не прозвучат все
+const IDLE = [
+  ["grumpy", "Мур. Шапку поправь, а то сползает…"], ["grumpy", "Опять ты! …Ладно, я не против."],
+  ["grumpy", "Иголки из шапки до сих пор вытряхиваю. Ёлка — коварное дерево."], ["grumpy", "Кто-то трогал мою подушку? Она лежала на два сантиметра левее."],
+  ["grumpy", "Я не спал. Я охранял гирлянду с закрытыми глазами."], ["grumpy", "Даня обещал вкусняшку за работу. Я напоминаю. Громко."],
+  ["soft", "Ты пришла! А я как раз хотел, чтобы кто-нибудь посидел рядом."], ["soft", "У ёлки тепло, но с тобой — теплее."],
+  ["soft", "Даня про тебя много рассказывал. Только хорошее, честно-честно."], ["soft", "Можно я посижу у тебя на коленках? Ну хоть минутку."],
+  ["soft", "Когда ты заходишь, гирлянда будто ярче горит."], ["soft", "Я тут подумал… хорошо, что меня нашла именно ты."],
+  ["happy", "Мяу! Это «привет» по-кошачьи."], ["happy", "Знаешь, сколько игрушек на этой ёлке? Я считал. Сбился на третьей."],
+  ["happy", "Если найдёшь мишуру — она моя. Я первый увидел."], ["happy", "Снежинки за окном такие медленные. Я бы их всех поймал!"],
+  ["happy", "Шарф — это просто шапка для шеи. Гениально, правда?"], ["happy", "Погладь меня — и я замурчу. Проверено."],
+  ["proud", "Пока Дани нет, тут командую я. Ты — мой заместитель."], ["proud", "Я самый пушистый кот в этой квартире. И единственный, но это неважно."],
+  ["proud", "Гирлянда горит. Это всё благодаря моему руководству."], ["proud", "Я придумал, как ловить снежинки: открыть рот и ждать."],
+  ["happy", "@progress"], ["happy", "Загляни во вкладку «Игра» — там тебя ждёт задание."],
+  ["soft", "Даня скоро вернётся. Наверное. Он так сказал. Я жду."], ["happy", "С наступающим! Под Новый год даже коты загадывают желания."],
+  ["soft", "Моё желание — чтобы ты улыбнулась. Уже? Вот видишь, сбывается."],
+];
+const PROGRESS_LINE = ["", "Одна игрушка горит! Осталось совсем чуть-чуть… ну, четыре.", "Две игрушки горят! Ещё три — и вся гирлянда наша.",
+  "Три из пяти! Я уже вижу конец… ну, почти.", "Четыре! Осталась последняя — я прямо мурчу от нетерпения.", "Все пять горят! Я горжусь тобой. И немножко собой."];
+const MOOD_FRAME = { grumpy: M_CLOSED, soft: M_CLOSED, happy: M_SMILE, proud: M_PROUD };
+let mTyping = null;
+function mSay(text, mood, voice) {
+  clearInterval(mTyping);
+  mBubble.classList.add("bpop"); setTimeout(() => mBubble.classList.remove("bpop"), 160);
+  if (!voice || !H.anim) { mBubble.textContent = text; return; }
+  let k = 0; mBubble.textContent = "";
+  mTyping = setInterval(() => {
+    mBubble.textContent = text.slice(0, ++k);
+    const ch = (text[k - 1] || "").toLowerCase();
+    if ("аяоёуюэеиы".includes(ch)) { const rest = text.slice(k); Sound.syllable(ch, mood === "grumpy" ? "grumpy" : "soft", /[аяоёуюэеиы]/i.test(rest) ? "" : (rest.includes("?") ? "?" : rest.includes("!") ? "!" : rest.includes("…") ? "…" : "")); }
+    if (k >= text.length) clearInterval(mTyping);
+  }, 45);
+}
+function idleSay() {
+  if (H.said.length >= IDLE.length) H.said = [];
+  const free = IDLE.map((_, i) => i).filter(i => !H.said.includes(i));
+  const i = pick(free); H.said.push(i); saveSoon();
+  let [mood, text] = IDLE[i];
+  if (text === "@progress") text = PROGRESS_LINE[lit];
+  if (i === 0) { if (H.hatOk) { mood = "happy"; text = "Шапка сидит ровно, я в тепле. Красота!"; } }
+  mImg.src = MOOD_FRAME[mood] || M_SMILE;
+  mSay(text, mood, true);
+  setTimeout(() => { if (!mBusy) mImg.src = M_SMILE; }, 3500);
+}
+function placeHand() { mHand.style.top = (mCat.offsetTop - 54) + "px"; }
+addEventListener("resize", () => { if (!$("page-moisey").hidden) placeHand(); });
+
+function renderMoisey() {
+  $("moodBar").style.width = H.mood + "%";
+  $("moodT").textContent = H.mood >= 90 ? "отличное" : H.mood >= 70 ? "очень хорошее" : H.mood >= 45 ? "хорошее" : "так себе";
+  $("warmBar").style.width = H.warm + "%";
+  $("warmT").textContent = H.warm >= 85 ? "тепло-тепло" : H.warm >= 60 ? "уютно" : "прохладно";
+  $("petCnt").textContent = `${H.pets} ${plural(H.pets, "раз", "раза", "раз")}`;
+  $("hatDot").classList.toggle("off", H.hatOk);
+}
+const setMoodV = (v) => { H.mood = Math.max(10, Math.min(100, v)); };
+const setWarmV = (v) => { H.warm = Math.max(20, Math.min(100, v)); };
+
+/* звуки уголка (идут через общую громкость) */
+const MS = (() => {
+  const ok = () => { Sound.start(); return Sound.ctx && !Sound.muted ? Sound.ctx : null; };
+  const out = () => Sound.sfx;
+  function noise(c, dur) { const len = Math.floor(c.sampleRate * dur), b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1; const s = c.createBufferSource(); s.buffer = b; return s; }
+  function burst(at, dur, type, f, q, vol, f2) {
+    const c = ok(); if (!c) return;
+    const t = c.currentTime + at, s = noise(c, dur), fl = c.createBiquadFilter(), soft = c.createBiquadFilter(), g = c.createGain();
+    fl.type = type; fl.frequency.setValueAtTime(f, t); if (f2) fl.frequency.exponentialRampToValueAtTime(f2, t + dur); fl.Q.value = q;
+    soft.type = "lowpass"; soft.frequency.value = 4000;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + dur * 0.45); g.gain.linearRampToValueAtTime(0, t + dur);
+    s.connect(fl); fl.connect(soft); soft.connect(g); g.connect(out()); s.start(t); s.stop(t + dur + .02);
+  }
+  function tone(at, f, dur, vol, f2) {
+    const c = ok(); if (!c) return;
+    const t = c.currentTime + at, o = c.createOscillator(), g = c.createGain();
+    o.type = "sine"; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + Math.min(.06, dur * .3)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(out()); o.start(t); o.stop(t + dur + .02);
+  }
+  function purr() {
+    const c = ok(); if (!c) return;
+    const t = c.currentTime, d = 1.0, len = Math.floor(c.sampleRate * d), buf = c.createBuffer(1, len, c.sampleRate), ch = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) { const p = i / c.sampleRate; ch[i] = (Math.random() * 2 - 1) * (0.8 + 0.2 * Math.sin(2 * Math.PI * 13 * p)); }
+    const src = c.createBufferSource(); src.buffer = buf;
+    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 220; lp.Q.value = 0.4;
+    const hp = c.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 60;
+    const env = c.createGain(); env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(.45, t + .3); env.gain.linearRampToValueAtTime(.17, t + .5); env.gain.linearRampToValueAtTime(.4, t + .75); env.gain.linearRampToValueAtTime(0, t + d);
+    src.connect(hp); hp.connect(lp); lp.connect(env); env.connect(out()); src.start(t); src.stop(t + d);
+    [1046.5, 1318.5].forEach((f, i) => tone(.05 + i * .09, f, .7, .1));
+  }
+  // громкость ×2.8 — эти звуки идут через общую шину (она тише прямого вывода)
+  return {
+    purr,
+    rustle() { burst(0, .28, "bandpass", 1700, .7, .12); burst(.27, .26, "bandpass", 1400, .7, .1); },
+    sparkle() { [784, 988, 1175].forEach((f, i) => tone(.5 + i * .1, f, .6, .07)); },
+    hm() { tone(.45, 349, .25, .085, 330); tone(.68, 392, .3, .085, 370); },
+    whoosh() { burst(0, .6, "bandpass", 450, .9, .11, 1900); },
+    crunch() { for (let i = 0; i < 3; i++) burst(i * .3, .09, "bandpass", 1300, .8, .14); },
+    lap() { for (let i = 0; i < 4; i++) tone(i * .22, 620, .13, .085, 450); },
+    yum() { tone(0, 523, .25, .085, 554); tone(.18, 659, .35, .085, 698); },
+    full() { tone(0, 440, .25, .085, 415); tone(.22, 349, .4, .085, 330); },
+  };
+})();
+
+const PH = {
+  squish: ["Мурррр… ещё чуть-чуть левее.", "Вот это я понимаю — сервис!", "Мррр… я таю, как снежинка.", "Ещё! Это приказ главного.", "Так и быть, разрешаю гладить дальше.", "Мур. Самое то после сидения за ёлкой."],
+  tilt: ["Вот тут, за ушком… да-а-а.", "Ты знаешь все мои любимые места. Подозрительно.", "Мур. Шапку только не помни.", "Ммм, правее… нет, левее… идеально."],
+  bounce: ["Мяу! Ещё раз!", "Ой, щекотно!", "Хи. Я не хихикаю, коты не хихикают.", "Это было неожиданно приятно!"],
+  melt: ["Всё. Я растёкся. Я теперь лужица.", "Мрррррр… не останавливайся…", "Кажется, я сейчас усну прямо тут.", "Я больше не кот. Я плед."],
+  wiggle: ["Ты гладишь лучше, чем Даня. Только ему не говори.", "Ну ладно-ладно, ты мне нравишься.", "Я делаю вид, что мне всё равно. Но мне не всё равно.", "Если что, я не просил. Но продолжай."],
+};
+const MILE = { 10: "Десять раз! Это уже традиция.", 25: "Двадцать пять! Я теперь самый поглаженный кот в городе.", 50: "Пятьдесят! Даня столько раз за год не гладит.", 100: "СТО! Я требую медаль. Или вкусняшку.", 200: "Двести… я официально твой кот." };
+const TOO = ["Ну всё, хватит! Шапку помнёшь!", "Я кот, а не антистресс! …Ладно, ещё один раз.", "Перерыв! У меня шерсть дыбом.", "Минутку, дай отдышаться!"];
+const HAT_FIX = ["Вот! Другое дело. Сразу теплее.", "Ровненько? Ровненько. Спасибо!", "Помпон на месте, уши в тепле. Красота.", "Ты лучший стилист шапок в мире.", "Теперь я снова самый нарядный кот."];
+const HAT_OK = ["Она и так сидит идеально. Но спасибо за заботу!", "Шапка в порядке, я проверял. Дважды.", "Не трогай, я её полчаса поправлял!"];
+const HAT_SLIP = ["Ой, шапку сбила! Поправишь?", "Шапка съехала… Погладь аккуратнее. Или поправь.", "Кажется, помпон теперь смотрит на север."];
+const FULL = ["Я наелся. Ещё кусочек — и я лопну.", "Всё, живот круглый, как ёлочный шар.", "Перерыв на переваривание! Приходи чуть позже."];
+const TREATS = [
+  { n: "fish", ph: ["Рыбка! Моя любимая. Ну, одна из любимых.", "Ням! Даня такие никогда не даёт.", "М-м-м, рыбка… Ты меня балуешь."],
+    svg: '<svg viewBox="0 0 34 34" width="34" height="34"><path d="M4 17c5-8 15-8 21 0-6 8-16 8-21 0z" fill="#f3c76e" stroke="#7a5410" stroke-width="1.6"/><path d="M24 17l7-6v12z" fill="#e0b65c" stroke="#7a5410" stroke-width="1.6" stroke-linejoin="round"/><circle cx="10" cy="15.5" r="1.6" fill="#2b1a17"/></svg>' },
+  { n: "cookie", ph: ["Печенька-снежинка! Пахнет праздником.", "Хрум! Это было вкусно и немножко громко.", "Крошки на подушке — не моя вина!"],
+    svg: '<svg viewBox="0 0 34 34" width="34" height="34"><circle cx="17" cy="17" r="12" fill="#d9a35a" stroke="#7a4a2a" stroke-width="1.6"/><path d="M17 9v16M10 13l14 8M24 13l-14 8" stroke="#fbf3ea" stroke-width="2" stroke-linecap="round"/></svg>' },
+  { n: "milk", ph: ["Молочко! Тёплое, как я люблю.", "Ла-ла-лак. Это я лакаю.", "Усы теперь в молоке. Оно того стоило."],
+    svg: '<svg viewBox="0 0 34 34" width="34" height="34"><path d="M6 15h22l-3 11a3 3 0 0 1-3 2H12a3 3 0 0 1-3-2z" fill="#eef4fc" stroke="#5f86b8" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="17" cy="15" rx="11" ry="3" fill="#ffffff" stroke="#5f86b8" stroke-width="1.6"/></svg>' },
+];
+const REACT = [
+  { a: "squish", f: M_PROUD, fx: ["heart", "heart", "heart", "mur"], t: 950 }, { a: "tilt", f: M_PROUD, fx: ["mur", "heart"], t: 950 },
+  { a: "bounce", f: M_SMILE, fx: ["star", "star", "star"], t: 700 }, { a: "melt", f: M_PROUD, fx: ["mur", "mur", "heart"], t: 1250 },
+  { a: "wiggle", f: M_SMILE, fx: ["heart", "star"], t: 850 },
+];
+const ANIMS = ["squish", "tilt", "bounce", "melt", "wiggle", "shake", "chomp"];
+let mBusy = false, lastR = -1, lastPh = [], recent = [], tired = 0, treatsAt = [], full = 0;
+function phrase(list) { const c = list.filter(p => !lastPh.includes(p)); const p = pick(c.length ? c : list); lastPh.push(p); if (lastPh.length > 8) lastPh.shift(); return p; }
+function clearCat() { ANIMS.forEach(a => mCat.classList.remove(a)); }
+function mFx(kind) {
+  const el = document.createElement("div");
+  const r = mCat.getBoundingClientRect(), s = mScene.getBoundingClientRect();
+  el.style.left = (r.left - s.left + 20 + Math.random() * (r.width - 40)) + "px";
+  el.style.top = (r.top - s.top + 30 + Math.random() * 30) + "px";
+  if (kind === "heart") { el.className = "m-fx"; el.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="#d8574a"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'; }
+  else if (kind === "star") { el.className = "m-fx"; el.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="#f3c76e"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2L12 16.6 5.7 21l2.3-7.2-6-4.6h7.6z"/></svg>'; }
+  else { el.className = "m-fx mur"; el.textContent = pick(["мур~", "мрр", "мурр~", "мр-р-р"]); }
+  mScene.appendChild(el); setTimeout(() => el.remove(), 1400);
+}
+function bumpCount() { renderMoisey(); restartAnim($("petCnt"), "bump"); setTimeout(() => $("petCnt").classList.remove("bump"), 220); }
+
+function pet() {
+  const now = Date.now();
+  recent = recent.filter(t => now - t < 15000); recent.push(now);
+  if (now < tired) return;
+  if (recent.length >= 15) {
+    tired = now + 1200; recent = []; mBusy = true; mImg.src = M_SMILE; clearCat(); restartAnim(mCat, "shake"); mSay(phrase(TOO));
+    setTimeout(() => mBusy = false, 600); return;
+  }
+  if (mBusy) return; mBusy = true; clearInterval(mTyping);
+  let i; do { i = Math.floor(Math.random() * REACT.length); } while (i === lastR); lastR = i; const R = REACT[i];
+  clearCat(); mHand.classList.remove("fix"); restartAnim(mHand, "stroke"); restartAnim(mCat, R.a);
+  setTimeout(() => mImg.src = R.f, 150); MS.purr();
+  R.fx.forEach((k, j) => setTimeout(() => mFx(k), j * 220));
+  H.pets++; setMoodV(H.mood + 6);
+  const slip = H.hatOk && Math.random() < 0.1;
+  if (slip) { H.hatOk = false; setWarmV(H.warm - 25); } else if (H.hatOk) setWarmV(H.warm + 5);
+  bumpCount(); haptic("light"); saveSoon();
+  setTimeout(() => mSay(MILE[H.pets] || (slip ? phrase(HAT_SLIP) : phrase(PH[R.a]))), 400);
+  setTimeout(() => { mImg.src = M_SMILE; mBusy = false; }, R.t);
+}
+function fixHat() {
+  if (mBusy) return; mBusy = true; clearInterval(mTyping);
+  mHand.classList.remove("stroke"); restartAnim(mHand, "fix"); clearCat(); restartAnim(mCat, "wiggle");
+  MS.rustle();
+  if (!H.hatOk) {
+    MS.sparkle();
+    setTimeout(() => { mImg.src = M_PROUD; [0, 200, 400].forEach(d => setTimeout(() => mFx("star"), d)); H.hatOk = true; setWarmV(H.warm + 30); renderMoisey(); mSay(phrase(HAT_FIX)); saveSoon(); }, 500);
+  } else {
+    MS.hm(); setTimeout(() => { setWarmV(H.warm + 5); renderMoisey(); mSay(phrase(HAT_OK)); saveSoon(); }, 500);
+  }
+  haptic("light");
+  setTimeout(() => { mImg.src = M_SMILE; mBusy = false; }, 1150);
+}
+function feed() {
+  if (mBusy) return;
+  const now = Date.now();
+  if (now < full) { mSay(phrase(FULL)); restartAnim(mCat, "shake"); MS.full(); return; }
+  treatsAt = treatsAt.filter(t => now - t < 60000);
+  if (treatsAt.length >= 3) { full = now + 20000; treatsAt = []; clearCat(); restartAnim(mCat, "shake"); mSay(phrase(FULL)); MS.full(); return; }
+  mBusy = true; clearInterval(mTyping); treatsAt.push(now);
+  const T = pick(TREATS); MS.whoosh();
+  const s = mScene.getBoundingClientRect(), b = $("foodBtn").getBoundingClientRect();
+  const x0 = b.left + b.width / 2 - s.left, y0 = b.top - s.top;
+  const x1 = mCat.offsetLeft + mCat.offsetWidth * 0.49, y1 = mCat.offsetTop + mCat.offsetHeight * 0.52;
+  const el = document.createElement("div"); el.className = "m-treat"; el.innerHTML = T.svg;
+  el.style.left = x1 + "px"; el.style.top = y1 + "px"; mScene.appendChild(el);
+  const dx = x0 - x1, dy = y0 - y1;
+  try {
+    el.animate([{ transform: `translate(${dx}px,${dy}px) scale(.8) rotate(0)` }, { transform: `translate(${dx * 0.4}px,${dy * 0.4 - 90}px) scale(1.15) rotate(200deg)`, offset: .55 },
+      { transform: "translate(0,0) scale(.4) rotate(360deg)", opacity: 1, offset: .95 }, { transform: "translate(0,0) scale(.2)", opacity: 0 }], { duration: 750, easing: "ease-in-out" });
+  } catch (e) {}
+  setTimeout(() => {
+    el.remove(); clearCat(); restartAnim(mCat, "chomp");
+    if (T.n === "milk") MS.lap(); else MS.crunch(); setTimeout(() => MS.yum(), 950);
+    let k = 0; const iv = setInterval(() => { mImg.src = (k++ % 2 ? M_SMILE : M_OPEN); if (k > 5) { clearInterval(iv); mImg.src = M_PROUD; } }, 150);
+    for (let i = 0; i < 6; i++) {
+      const c = document.createElement("div"); c.className = "m-crumb"; c.style.left = x1 + "px"; c.style.top = y1 + "px"; mScene.appendChild(c);
+      const a = (Math.random() - .5) * 2.4, r = 20 + Math.random() * 25;
+      try { c.animate([{ transform: "translate(0,0)", opacity: 1 }, { transform: `translate(${Math.sin(a) * r}px,${Math.abs(Math.cos(a)) * r + 10}px)`, opacity: 0 }], { duration: 600, easing: "ease-out" }); } catch (e) {}
+      setTimeout(() => c.remove(), 620);
+    }
+    H.treats++; setMoodV(H.mood + 10); setWarmV(H.warm + (T.n === "milk" ? 15 : 8)); renderMoisey(); saveSoon();
+    setTimeout(() => { mSay(phrase(T.ph)); mFx("heart"); }, 300);
+    haptic("light");
+  }, 720);
+  setTimeout(() => { mImg.src = M_SMILE; mBusy = false; }, 1900);
+}
+$("petBtn").addEventListener("click", pet);
+$("hatBtn").addEventListener("click", fixHat);
+$("foodBtn").addEventListener("click", feed);
+mCat.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pet(); } });
+let mSx = null, mDist = 0;
+mCat.addEventListener("pointerdown", (e) => { mSx = e.clientX; mDist = 0; try { mCat.setPointerCapture(e.pointerId); } catch (er) {} });
+mCat.addEventListener("pointermove", (e) => { if (mSx === null) return; mDist += Math.abs(e.clientX - mSx); mSx = e.clientX; if (mDist > 60) { mDist = 0; if (!mBusy) pet(); } });
+mCat.addEventListener("pointerup", () => { if (mSx !== null && mDist < 10) pet(); mSx = null; });
+[M_SMILE, M_PROUD, M_OPEN, M_CLOSED, "moisey_card.png?v=8"].forEach(src => { const im = new Image(); im.src = src; });
+// скрытый сброс для проверки: 7 быстрых нажатий на заголовок «Настройки»
+(() => {
+  let taps = [];
+  const t = document.querySelector("#page-settings .h-title");
+  t.addEventListener("click", () => {
+    const now = Date.now(); taps = taps.filter(x => now - x < 3000); taps.push(now);
+    if (taps.length < 7) return; taps = [];
+    const go = (ok) => { if (ok) Progress.clear(() => location.reload()); };
+    if (tg && tg.showConfirm && tg.isVersionAtLeast && tg.isVersionAtLeast("6.2")) tg.showConfirm("Сбросить весь прогресс и начать игру заново?", go);
+    else go(confirm("Сбросить весь прогресс и начать игру заново?"));
+  });
+})();
+
+
+document.getElementById("goBtn").addEventListener("click", () => {
+  haptic("medium"); Sound.found();
+  const fade = document.getElementById("fade");
+  fade.classList.add("on");
+  setTimeout(() => {
+    openHub(); hub.classList.add("enter"); lightUp();
+    requestAnimationFrame(() => fade.classList.remove("on"));
+    setTimeout(() => hub.classList.remove("enter"), 1400);
+  }, 750);
+});
 document.getElementById("restart").addEventListener("click", () => Progress.clear(() => location.reload()));
 
 /* пиксельные сердечки */
@@ -774,7 +1473,15 @@ function heartLoop() {
 heartLoop();
 if (/[?&]reset=1/.test(location.search)) Progress.clear();
 Progress.load((p) => {
-  if (p && p.found && !/[?&]reset=1/.test(location.search)) requestAnimationFrame(() => requestAnimationFrame(() => resume(p)));
+  if (p && p.h) loadH(p.h);
+  applySettings();
+  if (p && p.hub && !/[?&]reset=1/.test(location.search)) {
+    found = true; tipShown = true; node = DIALOG[p.node] || DIALOG.start;
+    if (p.used) p.used.forEach(u => usedChoices.add(u));
+    document.getElementById("task").style.opacity = 0; document.getElementById("swipe").style.opacity = 0;
+    openHub();
+  }
+  else if (p && p.found && !/[?&]reset=1/.test(location.search)) requestAnimationFrame(() => requestAnimationFrame(() => resume(p)));
   else resetIdle();
 });
 </script>
