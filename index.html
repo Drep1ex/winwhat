@@ -228,7 +228,6 @@ body {
     <div class="vrow"><label class="vhead" for="mvol"><span>Музыка</span><span id="mvolOut">70</span></label>
       <input type="range" class="vol" id="mvol" min="0" max="100" step="1" value="70"></div>
     <button type="button" class="mute" id="muteBtn">Выключить звук</button>
-    <div class="credit">Музыка: «We Wish You a Merry Christmas» — Kevin MacLeod (incompetech.com), CC BY 4.0</div>
   </div>
   <button type="button" class="sound" id="soundBtn" aria-label="Настройки звука" aria-expanded="false" aria-controls="vpanel">🔊</button>
 </div>
@@ -583,6 +582,55 @@ const dialog = document.getElementById("dialog"), lineEl = document.getElementBy
 moisey.style.height = (SIT.h * 100) + "%";
 moisey.style.left = pct(SIT.x, 0);
 moisey.style.top = (SIT.y / GRID[1] * 100 - SIT.h * 100) + "%";
+/* ---------- сохранение прогресса ----------
+   В Telegram — облачное хранилище пользователя (переживает закрытие и смену устройства),
+   в обычном браузере — localStorage. Сбросить для теста: открыть адрес с ?reset=1 */
+const Progress = (() => {
+  const KEY = "moisey_progress_v1";
+  const cloud = tg && tg.CloudStorage && tg.isVersionAtLeast && tg.isVersionAtLeast("6.9") ? tg.CloudStorage : null;
+  function load(cb) {
+    let done = false;
+    const finish = (v) => { if (done) return; done = true; try { cb(v ? JSON.parse(v) : null); } catch (e) { cb(null); } };
+    if (cloud) {
+      try { cloud.getItem(KEY, (err, v) => finish(err ? local() : (v || local()))); } catch (e) { finish(local()); }
+      setTimeout(() => finish(local()), 1500);                // если облако не ответило
+    } else finish(local());
+  }
+  function local() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function save(obj) {
+    const v = JSON.stringify(obj);
+    try { localStorage.setItem(KEY, v); } catch (e) {}
+    if (cloud) try { cloud.setItem(KEY, v, () => {}); } catch (e) {}
+  }
+  function clear(cb) {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    if (cloud) try { cloud.removeItem(KEY, () => cb && cb()); return; } catch (e) {}
+    cb && cb();
+  }
+  return { load, save, clear };
+})();
+function saveProgress() {
+  Progress.save({ found, node: node && node.id, used: [...usedChoices], tip: tipShown });
+}
+
+// уже находила Моисея раньше — сразу продолжаем разговор с того же места
+function resume(p) {
+  found = true; clearTimeout(idleTimer);
+  if (p.used) p.used.forEach(u => usedChoices.add(u));
+  tipShown = !!p.tip;
+  node = DIALOG[p.node] || DIALOG.start;
+  document.getElementById("task").style.opacity = 0;
+  document.getElementById("swipe").style.opacity = 0;
+  peek.style.opacity = 0;
+  vp.scrollLeft = pano.clientWidth * (SIT.x / GRID[0]) - innerWidth / 2;
+  vp.style.overflowX = "hidden";
+  document.getElementById("dim").classList.add("on");
+  document.body.classList.add("talking");
+  stage.classList.add("on");
+  dialog.classList.add("on");
+  showLine();
+}
+
 function findCat() {
   if (found) return;
   found = true; clearTimeout(idleTimer); haptic("heavy"); Sound.found();
@@ -610,6 +658,7 @@ function findCat() {
     setTimeout(() => { dialog.classList.add("on"); showLine(); }, reduce ? 0 : 900);
   }, reduce ? 50 : 750);
 }
+Object.entries(DIALOG).forEach(([k, v]) => v.id = k);
 
 let node = DIALOG.start, typing = false, typeTimer;
 const usedChoices = new Set();
@@ -651,10 +700,11 @@ function showTip() {
   document.getElementById("tipOk").focus();
 }
 document.getElementById("tipOk").addEventListener("click", (e) => {
-  e.stopPropagation(); tip.hidden = true; choicesEl.style.pointerEvents = ""; choicesEl.style.opacity = "";
+  e.stopPropagation(); tip.hidden = true; saveProgress(); choicesEl.style.pointerEvents = ""; choicesEl.style.opacity = "";
 });
 function showLine() {
   const L = node;
+  saveProgress();
   setMood(L.mood); haptic(L.mood === "grumpy" ? "rigid" : "soft");
   lineEl.textContent = ""; typing = true;
   choicesEl.hidden = true; choicesEl.innerHTML = "";
@@ -700,7 +750,7 @@ dialog.addEventListener("click", (e) => {
   if (node.next && !node.choices && !node.choicesFrom) { node = DIALOG[node.next]; showLine(); }
 });
 document.getElementById("goBtn").addEventListener("click", () => { haptic("medium"); document.getElementById("stub").classList.add("on"); });
-document.getElementById("restart").addEventListener("click", () => location.reload());
+document.getElementById("restart").addEventListener("click", () => Progress.clear(() => location.reload()));
 
 /* пиксельные сердечки */
 const hc = document.getElementById("hearts"), hx = hc.getContext("2d");
@@ -722,7 +772,11 @@ function heartLoop() {
   hx.globalAlpha = 1; requestAnimationFrame(heartLoop);
 }
 heartLoop();
-resetIdle();
+if (/[?&]reset=1/.test(location.search)) Progress.clear();
+Progress.load((p) => {
+  if (p && p.found && !/[?&]reset=1/.test(location.search)) requestAnimationFrame(() => requestAnimationFrame(() => resume(p)));
+  else resetIdle();
+});
 </script>
 </body>
 </html>
