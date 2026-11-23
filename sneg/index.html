@@ -61,7 +61,7 @@ button { font-family: inherit; cursor: pointer; }
 .st:active { transform: scale(.94); }
 .st-l { position: absolute; width: 140px; margin-top: -20px; font-size: 13.5px; font-weight: 700; line-height: 1.25; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
 .st-l small { display: block; font-size: 11px; letter-spacing: .08em; }
-.m-mo { position: absolute; z-index: 4; width: 62px; height: 76px; margin: -70px 0 0 -31px; transition: left .9s ease, top .9s ease; pointer-events: none; }
+.m-mo { position: absolute; z-index: 4; width: 62px; height: 76px; margin: -46px 0 0 -31px; transition: left .9s ease, top .9s ease; pointer-events: none; }
 .m-say { position: absolute; z-index: 5; left: 14px; right: 14px; bottom: calc(env(safe-area-inset-bottom) + 96px); opacity: 0; transform: translateY(6px); pointer-events: none; }
 .m-say.on { opacity: 1; transform: none; }
 .go { position: absolute; z-index: 5; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 34px); }
@@ -83,8 +83,10 @@ button { font-family: inherit; cursor: pointer; }
 .w-garl { position: absolute; left: 0; right: 0; top: -12px; height: 30px; pointer-events: none; }
 .w-scroll { position: absolute; inset: 16px 8px 10px; overflow-y: auto; scrollbar-width: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
 .w-scroll::-webkit-scrollbar { display: none; }
-.w-grid { display: flex; flex-direction: column; gap: var(--gap, 7px); }
-.w-row { display: flex; align-items: center; justify-content: center; gap: var(--tg, 6px); }
+.w-grid { display: flex; flex-direction: column; align-items: center; gap: var(--gap, 7px); }
+.w-row { display: flex; flex-direction: column; align-items: flex-start; gap: var(--lg, 5px); }
+.w-line { display: flex; align-items: center; justify-content: flex-start; gap: var(--tg, 6px); }
+.w-lamp.ghost { visibility: hidden; }
 .w-row.shake { animation: shake .4s; } @keyframes shake { 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
 .w-lamp { width: 12px; height: 17px; border-radius: 50% 50% 46% 46%; background: rgba(251,243,234,.12); flex: none; margin-right: 4px; transition: background .3s, box-shadow .3s; }
 .w-lamp.used { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
@@ -282,7 +284,7 @@ function renderHome(newLetter) {
       <span style="color:${done || isCur ? "#fbf3ea" : "rgba(251,243,234,.5)"}">${n}</span></div>`;
   });
   const mi = Math.min(P.done, 4), [mx, my] = pts[mi];
-  h += `<div class="mo m-mo" id="homeMo" style="left:${mx + (mx < W / 2 ? 74 : -74)}px;top:${my - 6}px"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div>`;
+  h += `<div class="mo m-mo" id="homeMo" style="left:${mx + (mx < W / 2 ? 72 : -72)}px;top:${my}px"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div>`;
   box.innerHTML = h;
   homeMo = $("homeMo");
   box.querySelectorAll(".st").forEach(b => b.addEventListener("click", () => {
@@ -352,30 +354,39 @@ addEventListener("keydown", (e) => {
   if (e.key === "Enter") press("enter"); else if (e.key === "Backspace") press("del");
   else { let c = e.key.toUpperCase(); if (c === "Ё") c = "Е"; if (/^[А-ЯЁ]$/.test(c)) press(c); }
 });
+// слова в раунде: одно слово — одна строка; два слова — каждое на своей строке, так клетки крупнее
+const parts = () => WORDS[round].split(" ");
+let fitRows = 6;
 function sizeGrid() {
-  const ans = WORDS[round], n = [...ans].filter(c => c !== " ").length, sp = ans.includes(" ") ? 1 : 0;
-  const card = $("wCard"), avail = Math.min(480, $("app").clientWidth) - 20 - 16 - 20;          // поля и лампочка
-  const gap = n > 9 ? 3 : 6, spW = sp ? 10 : 0;
-  const ts = Math.max(22, Math.min(54, Math.floor((avail - spW - gap * (n - 1 + sp)) / n)));
-  const app = $("app"), cardH = Math.max(230, Math.min(400, app.clientHeight - 112 - 98 - 200 - 40));
-  card.style.setProperty("--ts", ts + "px"); card.style.setProperty("--tg", gap + "px"); card.style.setProperty("--sp", spW + "px");
-  card.style.setProperty("--gap", (ts > 40 ? 7 : 5) + "px");
+  const ps = parts(), n = Math.max(...ps.map(w => w.length)), two = ps.length > 1;
+  const app = $("app"), card = $("wCard"), avail = Math.min(480, app.clientWidth) - 20 - 16 - 22;   // поля и лампочка
+  const gap = n > 7 ? 4 : 6;
+  const ts = Math.max(26, Math.min(54, Math.floor((avail - gap * (n - 1)) / n)));
+  const cardH = Math.max(230, Math.min(420, app.clientHeight - 112 - 98 - 200 - 40));
+  const rowGap = two ? 12 : (ts > 40 ? 7 : 5), lineGap = 5;
+  const rowH = two ? ts * 2 + lineGap : ts;
+  card.style.setProperty("--ts", ts + "px"); card.style.setProperty("--tg", gap + "px");
+  card.style.setProperty("--gap", rowGap + "px"); card.style.setProperty("--lg", lineGap + "px");
   app.style.setProperty("--cardH", cardH + "px");
+  fitRows = Math.max(3, Math.floor((cardH - 26 + rowGap) / (rowH + rowGap)));   // сколько попыток влезает без прокрутки
 }
 function rowHTML(i) {
-  const ans = WORDS[round], sh = shape(ans), g = guesses[i], isCur = i === guesses.length;
+  const ans = WORDS[round], ps = parts(), g = guesses[i], isCur = i === guesses.length;
   const res = g ? score(g, ans) : null;
-  let h = `<div class="w-row" data-r="${i}"><span class="w-lamp ${g ? "used" : isCur ? "cur" : ""}"></span>`, k = 0;
-  sh.forEach(c => {
-    if (c === null) { h += '<span class="w-sp"></span>'; return; }
-    const ch = g ? g[k] : isCur ? (typed[k] || "") : "";
-    const cls = g ? res[k] : ch ? "typed" : "";
-    h += `<span class="t ${cls}">${ch}</span>`; k++;
-  });
-  return h + "</div>";
+  let k = 0;
+  const lines = ps.map((w, li) => {
+    let h = li === 0 ? `<span class="w-lamp ${g ? "used" : isCur ? "cur" : ""}"></span>` : '<span class="w-lamp ghost"></span>';
+    for (let j = 0; j < w.length; j++) {
+      const ch = g ? g[k] : isCur ? (typed[k] || "") : "";
+      const cls = g ? res[k] : ch ? "typed" : "";
+      h += `<span class="t ${cls}">${ch}</span>`; k++;
+    }
+    return `<div class="w-line">${h}</div>`;
+  }).join("");
+  return `<div class="w-row" data-r="${i}">${lines}</div>`;
 }
 function renderGrid() {
-  const total = Math.max(guesses.length + 1, 6);
+  const total = Math.max(guesses.length + 1, fitRows);
   let h = ""; for (let i = 0; i < total; i++) h += rowHTML(i);
   $("wGrid").innerHTML = h;
   requestAnimationFrame(() => scrollToCur());
