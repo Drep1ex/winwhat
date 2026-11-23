@@ -123,8 +123,11 @@ button { font-family: inherit; cursor: pointer; }
 .card .word span { width: 30px; height: 34px; border-radius: 7px; background: var(--green); color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(111,174,124,.6); }
 .card .word span.sp { width: 10px; background: none; box-shadow: none; }
 .card .pics { display: flex; gap: 8px; }
-.card .pics div { flex: 1; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #2a1712; box-shadow: inset 0 0 0 2px #6b4636; }
-.card .pics svg { width: 100%; height: 100%; display: block; }
+.card .pics div { flex: 1; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: #2a1712; box-shadow: 0 0 0 2px #6b4636; }
+.card .pics img { width: 100%; height: 100%; display: block; object-fit: cover; cursor: zoom-in; }
+.zoom { position: absolute; inset: 0; z-index: 40; background: rgba(10,4,3,.92); display: flex; align-items: center; justify-content: center; padding: 14px; opacity: 0; transition: opacity .3s; }
+.zoom.on { opacity: 1; }
+.zoom img { max-width: 100%; max-height: 100%; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.6); }
 .card p { margin: 0; font-size: 14.5px; font-weight: 600; color: #ecd6c8; line-height: 1.5; text-align: left; }
 .card h3 { margin: 0; font-family: "Marck Script", cursive; font-weight: 400; font-size: 34px; color: var(--gold); line-height: 1.05; }
 .big-letter { align-self: center; width: 86px; height: 98px; border-radius: 16px; background: var(--paper); color: #7a2a20; font-size: 54px; font-weight: 700; display: flex; align-items: center; justify-content: center;
@@ -318,9 +321,9 @@ function giveLetter(i) {
 /* ================= этап 1: тайное слово ================= */
 const WORDS = ["ШХЩХТ", "КФХСФХК", "ЗЛФЗЦ'жЗФШЗЧС"].map(un);
 const INFO = [
-  { pics: ["lotus", "lotusPond"], text: "Лотос — священный цветок Китая. Он растёт из ила, но поднимается над водой чистым, поэтому его считают символом чистоты и счастья. В Китае лотос рисуют на вазах, вышивают на шёлке, а его семена и корни едят." },
-  { pics: ["harbor", "junk"], text: "Гонконг — по-китайски «ароматная гавань». Бухта Виктория — одна из лучших естественных глубоководных гаваней мира, и Гонконг много лет входил в число крупнейших контейнерных портов планеты. Небоскрёбы там растут прямо из гор, а между берегами до сих пор ходят паромы «Стар Ферри»." },
-  { pics: ["panda", "pandaTree"], text: "Красная, или малая, панда живёт в бамбуковых лесах Китая и Гималаев. Её открыли на 50 лет раньше большой панды, и слово «панда» сначала было именно её именем. Почти весь день она спит на ветке, свесив лапы, а мёрзнет — заворачивается в пушистый хвост, как в шарф." },
+  { pics: ["lotus1", "lotus2"], text: "Лотос — священный цветок Китая. Он растёт из ила, но поднимается над водой чистым, поэтому его считают символом чистоты и счастья. В Китае лотос рисуют на вазах, вышивают на шёлке, а его семена и корни едят. Отсюда и выражение, которое говорят о людях: «Лотос рождается в грязи, но остаётся чистым» — о тех, кто сохраняет доброе сердце, что бы ни творилось вокруг." },
+  { pics: ["hk2", "hk1"], text: "Гонконг — по-китайски «ароматная гавань». Бухта Виктория — одна из лучших естественных глубоководных гаваней мира, и Гонконг много лет входил в число крупнейших контейнерных портов планеты. Небоскрёбы там растут прямо из гор, а между берегами до сих пор ходят паромы «Стар Ферри»." },
+  { pics: ["panda1", "panda2"], text: "Красная, или малая, панда живёт в бамбуковых лесах Китая и Гималаев. Её открыли на 50 лет раньше большой панды, и слово «панда» сначала было именно её именем. Почти весь день она спит на ветке, свесив лапы, а мёрзнет — заворачивается в пушистый хвост, как в шарф. Ты уже знакома с ней :)" },
 ];
 const HINTS = [
   ["Это цветок. Красивый. Растёт в воде.", "В Китае на нём сидит Будда. Ну, на картинках."],
@@ -466,7 +469,7 @@ function roundWon() {
   const tries = guesses.length;
   $("wDoneCard").innerHTML = `<small>РАУНД ${round + 1} ИЗ 3 · ${tries} ${tries % 10 === 1 && tries % 100 !== 11 ? "ПОПЫТКА" : tries % 10 >= 2 && tries % 10 <= 4 && (tries % 100 < 12 || tries % 100 > 14) ? "ПОПЫТКИ" : "ПОПЫТОК"}</small>
     <div class="word">${word}</div>
-    <div class="pics">${info.pics.map(p => `<div>${PICS[p]}</div>`).join("")}</div>
+    <div class="pics">${info.pics.map(p => `<div><img src="assets/${p}.jpg" alt=""></div>`).join("")}</div>
     <p>${info.text}</p>
     <button type="button" class="btn" id="wNext">${round < 2 ? "Следующее слово" : "Забрать букву"}</button>`;
   $("wDone").hidden = false;
@@ -484,15 +487,15 @@ function roundWon() {
   });
 }
 
-/* ---------- картинки к словам (рисунки, потом можно заменить фото) ---------- */
-const PICS = {
-  lotus: `<svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#1c3a3f"/><ellipse cx="60" cy="98" rx="52" ry="12" fill="#2c6b42"/><path d="M60 92 C40 80 34 58 44 40 C52 58 58 70 60 92Z" fill="#f2a7c0"/><path d="M60 92 C80 80 86 58 76 40 C68 58 62 70 60 92Z" fill="#f2a7c0"/><path d="M60 92 C50 70 50 44 60 26 C70 44 70 70 60 92Z" fill="#f8c7d6"/><path d="M60 92 C30 88 18 70 20 56 C34 66 46 78 60 92Z" fill="#e889a8"/><path d="M60 92 C90 88 102 70 100 56 C86 66 74 78 60 92Z" fill="#e889a8"/><circle cx="60" cy="84" r="6" fill="#f3c76e"/></svg>`,
-  lotusPond: `<svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#24484e"/><g fill="#3f8a57"><ellipse cx="28" cy="40" rx="20" ry="9"/><ellipse cx="88" cy="58" rx="24" ry="10"/><ellipse cx="44" cy="90" rx="26" ry="11"/></g><g stroke="#2c6b42" stroke-width="2"><path d="M28 40 L28 31"/><path d="M88 58 L88 47"/></g><path d="M80 52 C76 44 78 36 84 32 C86 40 86 46 80 52Z M80 52 C84 44 92 40 96 42 C94 48 88 52 80 52Z" fill="#f2a7c0"/><path d="M22 36 C20 30 22 26 26 24 C28 30 26 34 22 36Z" fill="#f8c7d6"/><circle cx="70" cy="22" r="8" fill="#fbf3ea" opacity=".9"/></svg>`,
-  harbor: `<svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#1a2240"/><path d="M0 70 L18 40 L34 56 L52 30 L74 54 L92 36 L120 64 L120 80 L0 80Z" fill="#2b3a5e"/><g fill="#3e4f7c"><rect x="10" y="50" width="9" height="30"/><rect x="22" y="38" width="10" height="42"/><rect x="36" y="46" width="8" height="34"/><rect x="48" y="26" width="11" height="54"/><rect x="62" y="40" width="9" height="40"/><rect x="74" y="34" width="12" height="46"/><rect x="90" y="48" width="9" height="32"/><rect x="102" y="42" width="10" height="38"/></g><g fill="#f3c76e"><rect x="50" y="32" width="2" height="2"/><rect x="55" y="40" width="2" height="2"/><rect x="25" y="44" width="2" height="2"/><rect x="77" y="40" width="2" height="2"/><rect x="82" y="50" width="2" height="2"/><rect x="105" y="50" width="2" height="2"/><rect x="65" y="48" width="2" height="2"/><rect x="13" y="58" width="2" height="2"/></g><rect y="80" width="120" height="40" fill="#22345e"/><g stroke="#f3c76e" stroke-width="1.5" opacity=".6"><path d="M50 86 V114"/><path d="M78 88 V110"/><path d="M24 90 V108"/></g><path d="M30 98 L58 98 L54 104 L34 104Z" fill="#fbf3ea"/><rect x="40" y="92" width="10" height="6" fill="#d8574a"/></svg>`,
-  junk: `<svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#e9b07a"/><circle cx="92" cy="30" r="14" fill="#fbe3b0"/><rect y="88" width="120" height="32" fill="#3e6f9a"/><path d="M20 86 L100 86 L92 98 L28 98Z" fill="#6b3a24"/><path d="M58 86 V24" stroke="#4a2c1c" stroke-width="3"/><path d="M60 26 C80 34 84 60 84 80 L60 80Z" fill="#c8452f"/><path d="M60 26 L84 80 M60 40 L84 52 M60 54 L84 64 M60 68 L84 74" stroke="#8a2a1c" stroke-width="1.5"/><path d="M56 34 C40 42 36 62 38 80 L56 80Z" fill="#d8574a"/><path d="M56 48 L38 56 M56 62 L38 68" stroke="#8a2a1c" stroke-width="1.5"/></svg>`,
-  panda: `<svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#2f5a3a"/><g stroke="#4f8a5c" stroke-width="5"><path d="M10 120 L16 0"/><path d="M104 120 L110 0"/></g><ellipse cx="60" cy="100" rx="34" ry="22" fill="#b8481f"/><path d="M22 52 L34 30 L44 46Z M98 52 L86 30 L76 46Z" fill="#7a2e14"/><path d="M25 50 L33 36 L39 46Z M95 50 L87 36 L81 46Z" fill="#fbf3ea"/><ellipse cx="60" cy="62" rx="36" ry="30" fill="#c8562a"/><ellipse cx="60" cy="72" rx="22" ry="16" fill="#fbf3ea"/><path d="M42 50 C46 44 52 44 54 50 C52 56 46 58 42 50Z M78 50 C74 44 68 44 66 50 C68 56 74 58 78 50Z" fill="#fbf3ea"/><circle cx="48" cy="60" r="4.5" fill="#2b1a17"/><circle cx="72" cy="60" r="4.5" fill="#2b1a17"/><circle cx="49.5" cy="58.5" r="1.4" fill="#fff"/><circle cx="73.5" cy="58.5" r="1.4" fill="#fff"/><path d="M48 64 C46 72 44 78 40 82 M72 64 C74 72 76 78 80 82" stroke="#7a2e14" stroke-width="5" stroke-linecap="round" fill="none" opacity=".75"/><ellipse cx="60" cy="70" rx="4" ry="3" fill="#2b1a17"/><path d="M60 73 C58 77 54 77 53 75 M60 73 C62 77 66 77 67 75" stroke="#2b1a17" stroke-width="1.6" fill="none"/></svg>`,
-  pandaTree: `<svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#8fb4c9"/><path d="M0 70 C30 64 80 76 120 62 L120 120 L0 120Z" fill="#cfe2f5"/><path d="M-4 52 C30 46 70 58 124 44" stroke="#6b4230" stroke-width="10" stroke-linecap="round" fill="none"/><ellipse cx="62" cy="44" rx="28" ry="12" fill="#c8562a"/><path d="M86 44 C100 40 108 52 104 66 C100 76 94 78 92 72" stroke="#c8562a" stroke-width="11" stroke-linecap="round" fill="none"/><path d="M92 50 L102 52 M95 60 L104 62 M93 69 L100 72" stroke="#7a2e14" stroke-width="3"/><circle cx="36" cy="44" r="12" fill="#c8562a"/><path d="M28 34 L30 28 L36 33Z" fill="#7a2e14"/><ellipse cx="32" cy="48" rx="6" ry="4" fill="#fbf3ea"/><path d="M32 42 L36 44" stroke="#2b1a17" stroke-width="1.8" stroke-linecap="round"/><g fill="#2b1a17"><rect x="46" y="54" width="6" height="16" rx="3"/><rect x="70" y="54" width="6" height="16" rx="3"/><rect x="36" y="54" width="6" height="12" rx="3"/></g></svg>`,
-};
+/* ---------- фото на весь экран по тапу ---------- */
+document.addEventListener("click", (e) => {
+  const im = e.target.closest(".pics img"); if (!im) return;
+  const v = document.createElement("div"); v.className = "zoom"; v.innerHTML = `<img src="${im.getAttribute("src")}" alt="">`;
+  $("app").appendChild(v); requestAnimationFrame(() => v.classList.add("on"));
+  v.addEventListener("click", () => { v.classList.remove("on"); setTimeout(() => v.remove(), 300); });
+});
+// фото заранее, чтобы карточка открывалась сразу
+INFO.forEach(i => i.pics.forEach(p => { const im = new Image(); im.src = "assets/" + p + ".jpg"; }));
 
 renderHome();
 setTimeout(() => homeSay(P.done === 0 ? "Это тропа из пяти загадок. За каждую — буква. Пошли?" : P.done >= 5 ? "Ты прошла всю тропу!" : "С возвращением! Тропа ждёт.", 3600), 700);
