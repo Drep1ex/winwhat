@@ -47,7 +47,7 @@ body {
 @keyframes peekw { 25% { transform: translateX(-0.6%); } 75% { transform: translateX(0.6%); } }
 
 /* свечение огоньков */
-.glow { position: absolute; border-radius: 50%; pointer-events: none; z-index: 1; mix-blend-mode: screen;
+.glow { position: absolute; border-radius: 50%; pointer-events: none; z-index: 1; will-change: opacity;
   transform: translate(-50%, -50%); background: radial-gradient(circle, var(--c) 0%, transparent 65%); opacity: .55; }
 .glow.twinkle { animation: tw var(--t) ease-in-out infinite; animation-delay: var(--dl); }
 .glow.flicker { animation: fl 0.9s ease-in-out infinite alternate; animation-delay: var(--dl); }
@@ -624,6 +624,7 @@ body.noanim .m-cat, body.noanim .m-hand, body.noanim .m-fx, body.noanim .dot { a
   .face { transition: none; }
 }
 
+
 /* ===== экран загрузки, подсказка про звук, новогодний сюрприз ===== */
 .loader { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; overflow: hidden;
   background: radial-gradient(ellipse at 50% 30%, #4a201b, #1f0d0a 70%); color: #fbf3ea; transition: opacity .7s ease; }
@@ -643,8 +644,32 @@ body.noanim .m-cat, body.noanim .m-hand, body.noanim .m-fx, body.noanim .dot { a
   background: rgba(30,14,12,.92); color: #fbf3ea; border-radius: 999px; padding: 10px 16px 10px 12px; font-size: 14px; font-weight: 700; white-space: nowrap;
   box-shadow: 0 0 0 1.5px rgba(243,199,110,.6), 0 8px 24px rgba(0,0,0,.4); transition: opacity .5s, transform .5s cubic-bezier(.2,1.4,.4,1); cursor: pointer; }
 .snd-tip.on { opacity: 1; transform: translate(-50%, 0); }
+body.in-hub .snd-tip { bottom: auto; top: calc(env(safe-area-inset-top) + 12px); transform: translate(-50%, -24px); }
+body.in-hub .snd-tip.on { transform: translate(-50%, 0); }
 .snd-tip span { font-size: 20px; animation: sndWob 1s ease-in-out infinite; } @keyframes sndWob { 50% { transform: rotate(-12deg) scale(1.1); } }
 .ny-sky { position: fixed; inset: 0; z-index: 800; pointer-events: none; transition: opacity 1.2s; }
+
+/* экскурсия по главному экрану */
+.tour { position: fixed; inset: 0; z-index: 110; font-family: Lora, Georgia, serif; }
+.tour[hidden] { display: none; }
+.tour-spot { position: absolute; border-radius: 18px; box-shadow: 0 0 0 9999px rgba(10,4,3,.72), 0 0 0 2px rgba(243,199,110,.9), 0 0 24px 4px rgba(243,199,110,.5);
+  transition: left .55s cubic-bezier(.4,0,.2,1), top .55s cubic-bezier(.4,0,.2,1), width .55s cubic-bezier(.4,0,.2,1), height .55s cubic-bezier(.4,0,.2,1), opacity .4s; pointer-events: none; }
+.tour-spot.pulse { animation: tourPulse 1.6s ease-in-out infinite; }
+@keyframes tourPulse { 50% { box-shadow: 0 0 0 9999px rgba(10,4,3,.72), 0 0 0 3px rgba(243,199,110,1), 0 0 34px 8px rgba(243,199,110,.65); } }
+.tour-card { position: absolute; left: 12px; right: 12px; display: flex; align-items: flex-end; gap: 6px; transition: top .55s cubic-bezier(.4,0,.2,1), opacity .3s; }
+.tour-card img { width: 92px; height: 113px; object-fit: contain; flex: none; animation: wgHop .45s ease-out; }
+.tour-b { flex: 1; background: var(--paper); color: var(--ink); border-radius: 18px 18px 18px 4px; padding: 12px 14px 10px; box-shadow: 0 0 0 3px var(--ink), 0 0 0 5px var(--gold); }
+.tour-t { font-size: 15px; font-weight: 700; line-height: 1.4; min-height: 42px; }
+.tour-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.tour-dots { flex: 1; display: flex; gap: 4px; } .tour-dots i { width: 6px; height: 6px; border-radius: 50%; background: #d9c3b3; } .tour-dots i.on { background: #a8322a; width: 14px; border-radius: 3px; }
+.tour-skip { border: 0; background: none; font: inherit; font-size: 13px; font-weight: 600; color: #9a6e60; cursor: pointer; padding: 6px; }
+.tour-next { padding: 10px 18px; font-size: 15px; }
+.tour-again { align-self: center; margin-top: 4px; }
+
+/* производительность: невидимое не рисуем */
+body.in-hub .viewport { display: none; }
+body.playing #hub { visibility: hidden; }
+body.playing #hub * { animation-play-state: paused !important; }
 </style>
 </head>
 <body>
@@ -652,6 +677,14 @@ body.noanim .m-cat, body.noanim .m-hand, body.noanim .m-fx, body.noanim .dot { a
   <img src="moisey_smile.png?v=9" alt="">
   <div class="lt">Моисей прихорашивается<i>.</i><i>.</i><i>.</i></div>
   <div class="lbar"><div id="lbar"></div></div>
+</div>
+<div class="tour" id="tour" hidden>
+  <div class="tour-spot" id="tourSpot"></div>
+  <div class="tour-card" id="tourCard">
+    <img id="tourImg" src="moisey_smile.png?v=9" alt="Моисей">
+    <div class="tour-b"><div class="tour-t" id="tourText"></div>
+      <div class="tour-row"><span class="tour-dots" id="tourDots"></span><button type="button" class="tour-skip" id="tourSkip">Пропустить</button><button type="button" class="wg-go tour-next" id="tourNext">Дальше</button></div></div>
+  </div>
 </div>
 <div class="snd-tip" id="sndTip" role="status"><span>🔊</span>Включи звук — Моисей разговаривает</div>
 <div class="viewport" id="vp">
@@ -708,7 +741,7 @@ body.noanim .m-cat, body.noanim .m-hand, body.noanim .m-fx, body.noanim .dot { a
   <div class="sg-progress"><div id="sg-bar"></div></div>
   <div class="sg-lives" id="sg-lives" aria-label="Жизни"></div>
   <div class="sg-say" id="sg-say"></div>
-  <div class="sg-hint" id="sg-hint">Води пальцем влево-вправо</div>
+  <div class="sg-hint" id="sg-hint">Тяни Моисея пальцем влево-вправо</div>
   <div class="sg-cat" id="sg-cat"><div class="sg-in" id="sg-catIn"><img id="sg-catImg" src="moisey_smile.png?v=9" alt="Моисей"></div></div>
   <div class="sg-ground"></div>
 
@@ -718,7 +751,7 @@ body.noanim .m-cat, body.noanim .m-hand, body.noanim .m-fx, body.noanim .dot { a
       <h2>Поймай снежинки</h2>
       <p>Помоги Моисею наесться снега! Ловит он шапкой, а рот открывает — на всякий случай.</p>
       <div class="sg-rules">
-        <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f3c76e" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M5 12l4-4M5 12l4 4M19 12l-4-4M19 12l-4 4"/></svg>Води пальцем — Моисей ловит снежинки шапкой</div>
+        <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f3c76e" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M5 12l4-4M5 12l4 4M19 12l-4-4M19 12l-4 4"/></svg>Тяни Моисея пальцем — он ловит снежинки шапкой</div>
         <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fbf3ea" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/></svg>Белая снежинка — +1</div>
         <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f3c76e" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/></svg>Золотая снежинка — +3</div>
         <div><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="13" rx="6" ry="8" fill="#8a5a3a" stroke="#4a2c1c" stroke-width="1.5"/><path d="M7 11h10M7 15h10M9 8h6" stroke="#4a2c1c" stroke-width="1.3"/></svg>Шишка — минус сердечко</div>
@@ -1006,6 +1039,7 @@ body.noanim .m-cat, body.noanim .m-hand, body.noanim .m-fx, body.noanim .dot { a
         <div class="sw-row"><span>Подсказки к заданиям<small>Моисей подскажет, если застрянешь</small></span><button type="button" class="sw" role="switch" id="swHints" aria-checked="false" aria-label="Подсказки к заданиям"><i></i></button></div>
         <div class="sw-row"><span>Снег и анимации<small>Выключи, если телефон тормозит</small></span><button type="button" class="sw" role="switch" id="swAnim" aria-checked="true" aria-label="Снег и анимации"><i></i></button></div>
       </div>
+      <button type="button" class="chip-btn tour-again" id="tourAgain">🐾 Экскурсия с Моисеем</button>
     </div>
   </div>
   <nav class="hub-nav" role="tablist">
@@ -1159,7 +1193,12 @@ const Sound = (() => {
   try { musicEl.load(); } catch (e) {}
   let musicVol = 0.7, musicGain = null, fading = false;
   try { const v = parseFloat(localStorage.getItem("moisey-music")); if (!isNaN(v)) musicVol = v; } catch (e) {}
-  const musicLevel = () => Math.max(0.0001, 0.46 * musicVol * musicVol);
+  let duckK = 1;                                                      // приглушение музыки (в «Мелодии»)
+  const musicLevel = () => Math.max(0.0001, 0.46 * musicVol * musicVol * duckK);
+  function duck(on) {
+    duckK = on ? 0.28 : 1;
+    if (musicGain && !fading) { const t = ctx.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setTargetAtTime(musicLevel(), t, 0.35); }
+  }
   function fadeIn(sec) {
     if (!musicGain) return;
     const t = ctx.currentTime; musicGain.gain.cancelScheduledValues(t);
@@ -1258,7 +1297,7 @@ const Sound = (() => {
     if (document.hidden) { ctx.suspend(); if (musicEl) musicEl.pause(); }
     else if (started) { ctx.resume(); if (musicEl) musicEl.play().catch(() => {}); }
   });
-  return { get ctx() { return ctx; }, get sfx() { return sfxBus; }, start, syllable, boop, found, setMuted, setVolume, setMusicVolume, get musicVolume() { return musicVol; }, get muted() { return muted; }, get volume() { return volume; } };
+  return { get ctx() { return ctx; }, get sfx() { return sfxBus; }, start, duck, syllable, boop, found, setMuted, setVolume, setMusicVolume, get musicVolume() { return musicVol; }, get muted() { return muted; }, get volume() { return volume; } };
 })();
 
 const soundBtn = document.getElementById("soundBtn"), vpanel = document.getElementById("vpanel");
@@ -1329,11 +1368,14 @@ const sc = document.getElementById("snow"), sx = sc.getContext("2d");
 place(sc, WINDOW_GLASS);
 sc.width = (WINDOW_GLASS[2] - WINDOW_GLASS[0]); sc.height = (WINDOW_GLASS[3] - WINDOW_GLASS[1]);
 const flakes = Array.from({ length: 22 }, () => ({ x: Math.random() * sc.width, y: Math.random() * sc.height, v: .08 + Math.random() * .12 }));
-function snowLoop() {
+let snowLast = 0;
+function snowLoop(t) {
+  if (document.body.classList.contains("in-hub")) return;        // комната интро уже не видна — не тратим кадры
+  const k = snowLast && t ? Math.min(3, (t - snowLast) / 16.67) : 1; snowLast = t || 0;
   sx.clearRect(0, 0, sc.width, sc.height);
   sx.fillStyle = "#e4ecf6";
   flakes.forEach(f => {
-    f.y += f.v; f.x += Math.sin(f.y / 6) * .05;
+    f.y += f.v * k; f.x += Math.sin(f.y / 6) * .05 * k;
     if (f.y > sc.height) { f.y = 0; f.x = Math.random() * sc.width; }
     const rx = Math.round(f.x), ry = Math.round(f.y);
     if ((rx < 28 || rx > 30) && (ry < 35 || ry > 37)) sx.fillRect(Math.round(f.x), Math.round(f.y), 1, 1);
@@ -1584,7 +1626,7 @@ let inHub = false, lit = 1;  // H.lit хранит то же самое межд
 const LINK_PARTS = ["✦", "✦", "✦", "✦", "✦"];
 const TASK_NAMES = ["Моисей", "Снежинки", "Гирлянда", "Мелодия", "Финал"];
 // всё, что происходит в уголке Моисея и в настройках, сохраняется вместе с прогрессом
-const H = { lit: 1, wire: 0, simon: 0, pets: 0, treats: 0, mood: 60, warm: 45, hatOk: false, said: [], vib: true, hints: false, anim: true, ms: 0, snowLose: 0, wHint: 0, smErr: 0, fnTaps: 0 };
+const H = { lit: 1, wire: 0, simon: 0, pets: 0, treats: 0, mood: 60, warm: 45, hatOk: false, said: [], vib: true, hints: false, anim: true, ms: 0, tour: false, snowLose: 0, wHint: 0, smErr: 0, fnTaps: 0 };
 function loadH(o) { if (o && typeof o === "object") Object.keys(H).forEach(k => { if (k in o) H[k] = o[k]; }); lit = Math.max(1, Math.min(5, H.lit || 1)); }
 let saveT; function saveSoon() { clearTimeout(saveT); saveT = setTimeout(saveProgress, 800); }
 const $ = (id) => document.getElementById(id);
@@ -2053,7 +2095,9 @@ const SND = {
 let W = innerWidth, Hh = innerHeight;
 let catX = W / 2, targetX = W / 2, stunnedUntil = 0, mouthOpenUntil = 0;
 const CAT_W = 120, CAT_H = 148;
-function catTop() { return cat.getBoundingClientRect().top; }
+let catTopY = 0;
+function measureCat() { const t = cat.style.transform; cat.style.transform = "none"; catTopY = cat.getBoundingClientRect().top; cat.style.transform = t; }
+function catTop() { return catTopY; }
 function mouth() { return { x: catX, y: catTop() + CAT_H * 0.52 }; }
 function setFrame(k) { if (catImg.dataset.f !== k) { catImg.src = IMG[k]; catImg.dataset.f = k; } }
 let sayT;
@@ -2062,10 +2106,14 @@ function sayMinor(t) { if (Date.now() - lastSayAt > 2600) say(t); }
 function say(t, ms) { lastSayAt = Date.now(); sayEl.textContent = t; sayEl.classList.add("sg-on"); clearTimeout(sayT); sayT = setTimeout(() => sayEl.classList.remove("sg-on"), ms || 1800); }
 
 function moveTo(x) { lastMoveAt = performance.now(); targetX = Math.max(CAT_W / 2, Math.min(W - CAT_W / 2, x)); }
-game.addEventListener("pointerdown", (e) => { if (running) { moveTo(e.clientX); $("hint").style.opacity = 0; } });
-game.addEventListener("pointermove", (e) => { if (running && (e.pointerType !== "mouse" || e.buttons || true)) moveTo(e.clientX); });
+// Моисея тянут пальцем: он едет вместе с пальцем, а не прыгает туда, где коснулись
+let grab = null;
+game.addEventListener("pointerdown", (e) => { if (!running) return; grab = { id: e.pointerId, off: targetX - e.clientX }; lastMoveAt = performance.now(); $("hint").style.opacity = 0; });
+game.addEventListener("pointermove", (e) => { if (running && grab && e.pointerId === grab.id) moveTo(e.clientX + grab.off); });
+const ungrab = (e) => { if (grab && e.pointerId === grab.id) grab = null; };
+game.addEventListener("pointerup", ungrab); game.addEventListener("pointercancel", ungrab);
 addEventListener("keydown", (e) => { if (!running) return; if (e.key === "ArrowLeft") moveTo(targetX - 40); if (e.key === "ArrowRight") moveTo(targetX + 40); });
-addEventListener("resize", () => { W = innerWidth; Hh = innerHeight; moveTo(targetX); });
+addEventListener("resize", () => { W = innerWidth; Hh = innerHeight; measureCat(); moveTo(targetX); });
 
 /* ---------- падающие предметы ---------- */
 const FLAKE = (c, s) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 3.5 12 5.5l3-2M9 20.5 12 18.5l3 2M3.6 10.4 5.5 7.5 4.6 4.2M20.4 13.6 18.5 16.5l.9 3.3M3.6 13.6 5.5 16.5l-.9 3.3M20.4 10.4 18.5 7.5l.9-3.3"/></svg>`;
@@ -2153,9 +2201,9 @@ function tick(t) {
   const dt = Math.min(0.05, (t - last) / 1000 || 0); last = t; elapsed += dt;
   // Моисей мягко идёт за пальцем (оглушённый — медленнее)
   const stunned = t < stunnedUntil;
-  if (t - lastMoveAt > 6000 && Date.now() - lastSayAt > 6000) { lastMoveAt = t; say(pick(["Ну? Я сам не дойду.", "Води пальцем, я пойду за ним!", "Снежинки ждать не будут!"])); }
-  catX += (targetX - catX) * Math.min(1, dt * (stunned ? 3 : 12));
-  cat.style.transform = `translateX(${catX - CAT_W / 2}px)`;
+  if (t - lastMoveAt > 6000 && Date.now() - lastSayAt > 6000) { lastMoveAt = t; say(pick(["Ну? Я сам не дойду.", "Тяни меня пальцем, я поеду!", "Снежинки ждать не будут!"])); }
+  catX += (targetX - catX) * Math.min(1, dt * (stunned ? 3 : 22));
+  cat.style.transform = `translate3d(${(catX - CAT_W / 2).toFixed(1)}px,0,0)`;
   // появление
   spawnAcc += dt;
   const every = Math.max(0.85, 1.15 - score * 0.012);
@@ -2166,7 +2214,7 @@ function tick(t) {
     const it = items[i];
     it.y += it.vy * dt; it.sway += dt * 2; it.rot += it.vr * dt;
     const x = it.x + Math.sin(it.sway) * it.swayA;
-    it.el.style.transform = `translate(${x - it.size / 2}px, ${it.y - it.size / 2}px) rotate(${it.rot}deg)`;
+    it.el.style.transform = `translate3d(${(x - it.size / 2).toFixed(1)}px, ${(it.y - it.size / 2).toFixed(1)}px, 0) rotate(${it.rot.toFixed(1)}deg)`;
     const dx = Math.abs(x - m.x);
     if (it.kind !== "cone" && !stunned) {
       if (dx < 70 && it.y > hatY - 120 && it.y < hatY + 10) near = true;
@@ -2190,6 +2238,7 @@ function start(again) {
   if (!again) { const sh = $("startSheet"); sh.classList.add("sg-fade"); setTimeout(() => sh.hidden = true, 350); }
   score = 0; elapsed = 0; cones = 0; lives = LIVES * PARTS; setLives(); items.forEach(i => i.el.remove()); items = [];
   $("count").textContent = `0 / ${GOAL}`; $("bar").style.width = "0";
+  W = innerWidth; Hh = innerHeight; measureCat(); grab = null;
   running = true; last = performance.now(); lastMoveAt = last; streak = 0; coneWarned = false; requestAnimationFrame(tick);
   setTimeout(() => say(again ? "Вторая попытка! Я готов." : "Открываю рот… жду!"), 400);
 }
@@ -2640,7 +2689,7 @@ $("smSlow").addEventListener("click", () => {
 
 /* вход и выход */
 function close(after) {
-  runId++; locked = true; root.classList.add("wg-out");
+  runId++; locked = true; root.classList.add("wg-out"); Sound.duck(false);
   setTimeout(() => { root.hidden = true; root.classList.remove("wg-out"); if (after) after(); }, 450);
 }
 $("smQuit").addEventListener("click", () => { haptic("light"); close(); });
@@ -2653,6 +2702,7 @@ $("smStartBtn").addEventListener("click", () => {
 $("smWinBtn").addEventListener("click", () => { haptic("medium"); close(() => taskDone(4)); });
 addEventListener("resize", () => { if (!root.hidden) layout(); });
 window.openSimonGame = function (replay) {
+  Sound.duck(true);                                   // песни тише, чтобы мелодия игрушек была слышна
   if (!root.querySelector(".hb-garl")) { const g = document.querySelector("#hub .hb-garl"); if (g) root.insertBefore(g.cloneNode(true), root.firstChild); }
   runId++; $("smWin").hidden = true; $("smStart").hidden = false; $("smSlow").hidden = true;
   const done = H.simon || 0;
@@ -3095,7 +3145,7 @@ document.getElementById("goBtn").addEventListener("click", () => {
   const fade = document.getElementById("fade");
   fade.classList.add("on");
   setTimeout(() => {
-    openHub(); hub.classList.add("enter"); lightUp(); report("hub"); nySurprise();
+    openHub(); hub.classList.add("enter"); lightUp(); report("hub"); nySurprise(); if (!H.tour) setTimeout(startTour, 1300);
     requestAnimationFrame(() => fade.classList.remove("on"));
     setTimeout(() => hub.classList.remove("enter"), 1400);
   }, 750);
@@ -3108,6 +3158,7 @@ const hearts = { on: false, list: [] };
 function sizeHearts() { const r = document.getElementById("inner").getBoundingClientRect(); hc.width = r.width; hc.height = r.height; }
 sizeHearts(); addEventListener("resize", sizeHearts);
 function heartLoop() {
+  if (document.body.classList.contains("in-hub")) { hx.clearRect(0, 0, hc.width, hc.height); return; }
   hx.clearRect(0, 0, hc.width, hc.height);
   if (hearts.on && !reduce && Math.random() < .04)
   { const mr = moisey.getBoundingClientRect(), cr = hc.getBoundingClientRect();
@@ -3123,6 +3174,66 @@ function heartLoop() {
 }
 heartLoop();
 
+/* ===== экскурсия: Моисей рассказывает про главный экран и все четыре вкладки ===== */
+const TOUR = [
+  { page: "page-game", el: () => document.querySelector("#page-game .glass"), face: "smile",
+    t: "Добро пожаловать домой! Сейчас всё покажу. Это гирлянда: каждое задание зажигает на ней игрушку. Всего их пять." },
+  { page: "page-game", el: () => document.querySelector("#page-game .paper-card"), face: "proud",
+    t: "А здесь — следующее задание. Жмёшь «Зажечь», проходишь — и ещё одна игрушка горит." },
+  { page: "page-link", tab: true, el: () => document.querySelector('.tab[data-page="page-link"]'), face: "smile",
+    t: "Вкладка «Ссылка». Данил спрятал тут тайную ссылку и разорвал её на пять частей. Каждая игрушка открывает кусочек." },
+  { page: "page-moisey", tab: true, el: () => document.querySelector('.tab[data-page="page-moisey"]'), face: "proud",
+    t: "Вкладка «Моисей» — это я! Меня можно гладить, угощать и смотреть моё досье. Гладить — особенно." },
+  { page: "page-settings", tab: true, el: () => document.querySelector('.tab[data-page="page-settings"]'), face: "smile",
+    t: "«Настройки»: звук, музыка, снег и подсказки к заданиям, если вдруг застрянешь." },
+  { page: "page-game", tab: true, el: () => document.querySelector('.tab[data-page="page-game"]'), face: "proud",
+    t: "А вкладка «Игра» всегда вернёт тебя сюда. Экскурсия окончена! Зажжём первую игрушку?" },
+];
+let tourI = 0, tourTyping = null;
+function tourPlace() {
+  const st = TOUR[tourI], el = st.el(); if (!el) return;
+  const r = el.getBoundingClientRect(), pad = st.tab ? 4 : 6, spot = $("tourSpot"), card = $("tourCard");
+  Object.assign(spot.style, { left: (r.left - pad) + "px", top: (r.top - pad) + "px", width: (r.width + pad * 2) + "px", height: (r.height + pad * 2) + "px", borderRadius: st.tab ? "14px" : "20px" });
+  const ch = card.offsetHeight || 150, below = r.bottom + 14, above = r.top - ch - 14;
+  card.style.top = (r.top + r.height / 2 > innerHeight / 2 ? Math.max(12, above) : Math.min(innerHeight - ch - 12, below)) + "px";
+}
+function tourShow() {
+  const st = TOUR[tourI];
+  showPage(st.page);
+  $("tourImg").src = st.face === "proud" ? "moisey_proud.png?v=9" : "moisey_smile.png?v=9";
+  $("tourImg").style.animation = "none"; void $("tourImg").offsetWidth; $("tourImg").style.animation = "";
+  $("tourDots").innerHTML = TOUR.map((_, i) => `<i class="${i === tourI ? "on" : ""}"></i>`).join("");
+  $("tourNext").textContent = tourI === TOUR.length - 1 ? "Поехали!" : "Дальше";
+  $("tourSkip").style.visibility = tourI === TOUR.length - 1 ? "hidden" : "";
+  const el = $("tourText"), text = st.t; clearInterval(tourTyping); el.textContent = ""; let k = 0;
+  requestAnimationFrame(tourPlace);
+  tourTyping = setInterval(() => {
+    el.textContent = text.slice(0, ++k);
+    const c = (text[k - 1] || "").toLowerCase();
+    if ("аяоёуюэеиы".includes(c)) Sound.syllable(c, "soft", /[аяоёуюэеиы]/i.test(text.slice(k)) ? "" : (text.includes("?") ? "?" : "!"));
+    if (k >= text.length) clearInterval(tourTyping);
+  }, 32);
+}
+function startTour() {
+  if ($("tour").hidden === false) return;
+  $("sndTip").classList.remove("on");
+  tourI = 0; $("tour").hidden = false; $("tourSpot").classList.add("pulse"); tourShow();
+}
+function endTour() {
+  clearInterval(tourTyping); H.tour = true; saveProgress();
+  const t = $("tour"); t.style.transition = "opacity .4s"; t.style.opacity = 0;
+  setTimeout(() => { t.hidden = true; t.style.opacity = ""; t.style.transition = ""; }, 400);
+  showPage("page-game");
+}
+$("tourNext").addEventListener("click", () => {
+  haptic("light"); const el = $("tourText"), full = TOUR[tourI].t;
+  if (el.textContent.length < full.length) { clearInterval(tourTyping); el.textContent = full; return; }   // дописать сразу
+  if (++tourI >= TOUR.length) { endTour(); return; }
+  tourShow();
+});
+$("tourSkip").addEventListener("click", () => { haptic("light"); endTour(); });
+$("tourAgain").addEventListener("click", () => { haptic("light"); startTour(); });
+addEventListener("resize", () => { if (!$("tour").hidden) tourPlace(); });
 /* ===== экран загрузки: ждём комнату, Моисея и шрифты (не дольше 7 секунд) ===== */
 (function loaderRun() {
   const L = document.getElementById("loader"), bar = document.getElementById("lbar"), t0 = Date.now();
@@ -3195,6 +3306,19 @@ function nyFireworks() {
   }
   requestAnimationFrame(frame);
 }
+/* пока открыта игра, главный экран под ней не рисуется (после того как игра плавно появилась) */
+(function watchGames() {
+  const games = [...document.querySelectorAll(".wg, .sg-game")];
+  let t = null;
+  const check = () => {
+    const open = games.some(g => !g.hidden && !g.classList.contains("wg-out") && !g.classList.contains("sg-out"));
+    clearTimeout(t);
+    if (open) t = setTimeout(() => document.body.classList.add("playing"), 500);
+    else document.body.classList.remove("playing");
+  };
+  const mo = new MutationObserver(check);
+  games.forEach(g => mo.observe(g, { attributes: true, attributeFilter: ["hidden", "class"] }));
+})();
 if (/[?&]reset=1/.test(location.search)) Progress.clear();
 Progress.load((p) => {
   if (p && p.h) loadH(p.h);
@@ -3204,6 +3328,7 @@ Progress.load((p) => {
     if (p.used) p.used.forEach(u => usedChoices.add(u));
     document.getElementById("task").style.opacity = 0; document.getElementById("swipe").style.opacity = 0;
     openHub(); nySurprise();
+    if (!H.tour) setTimeout(startTour, 1800);
   }
   else if (p && p.found && !/[?&]reset=1/.test(location.search)) requestAnimationFrame(() => requestAnimationFrame(() => resume(p)));
   else resetIdle();
