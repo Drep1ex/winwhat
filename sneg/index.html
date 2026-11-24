@@ -1473,6 +1473,7 @@ function lToggle(i, silent) {
   [[r, c], [r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([y, x]) => { if (y >= 0 && y < LN && x >= 0 && x < LN) lState[y * LN + x] = !lState[y * LN + x]; });
 }
 function lRender() {
+  fitPlay();   // поле могло вырасти (3×3 → 4×4): подгоняем, только если размер поменялся
   $("lGrid").style.setProperty("--lw", (LN === 3 ? 28 : 22) + "%");
   let h = ""; for (let r = 0; r < LN; r++) { h += '<div class="l-row">'; for (let c = 0; c < LN; c++) { const i = r * LN + c; h += `<button type="button" class="lb${lState[i] ? " on" : ""}" data-i="${i}" aria-label="Фонарик" style="animation-delay:-${(i % 7) * .4}s">${LANT}</button>`; } h += "</div>"; }
   $("lGrid").innerHTML = h;
@@ -1535,22 +1536,35 @@ function fitCard(secId, card, sayId) {
   card.style.maxWidth = ""; card.style.marginLeft = card.style.marginRight = "";
   const say = $(sayId), keep = say.textContent;
   say.textContent = "Тапни звезду, потом соседнюю — между ними протянется линия. Первое созвездие с номерами: от 1 до 9, а потом хвостик! Ещё чуть-чуть.";
-  // низ Моисея должен остаться над нижним краем экрана (с запасом под снежный сугроб)
-  const mo = sec.querySelector(".w-mo"), limit = sec.getBoundingClientRect().bottom - 18;
-  for (let k = 0; k < 4; k++) {
-    const over = mo.getBoundingClientRect().bottom - limit; if (over <= 0) break;
-    const r = card.getBoundingClientRect(), w = r.width * Math.max(.5, (r.height - over - 4) / r.height);
-    card.style.maxWidth = w + "px"; card.style.marginLeft = card.style.marginRight = "auto";
+  // нижняя граница — то, что реально видно (у мобильных браузеров панели съедают часть экрана)
+  const vv = window.visualViewport, seen = vv ? vv.height + vv.offsetTop : innerHeight;
+  const limit = Math.min(sec.getBoundingClientRect().bottom, seen) - 18;
+  const mo = sec.querySelector(".w-mo"), over = mo.getBoundingClientRect().bottom - limit;
+  if (over > 0) {
+    // один расчёт от полного размера, без накопления; карточка не уже 60% ширины экрана
+    const r = card.getBoundingClientRect(), full = sec.clientWidth - 20;
+    const w = Math.max(full * .6, r.width * (r.height - over) / r.height);
+    card.style.maxWidth = Math.round(w) + "px"; card.style.marginLeft = card.style.marginRight = "auto";
   }
   say.textContent = keep;
 }
-function fitPlay() { requestAnimationFrame(() => { fitCard("s4", document.querySelector("#s4 .l-card"), "lSay"); fitCard("s5", $("cSky"), "cSay"); }); }
-addEventListener("resize", fitPlay);
+let fitT = null, fitKey = "";
+function fitPlay(force) {
+  clearTimeout(fitT);
+  fitT = setTimeout(() => {
+    // пересчитываем только если поменялся размер поля или видимая высота экрана — иначе ничего не трогаем
+    const vv = window.visualViewport, key = [cur, typeof LN !== "undefined" ? LN : 0, cc, Math.round(vv ? vv.height : innerHeight), innerWidth].join("|");
+    if (!force && key === fitKey) return; fitKey = key;
+    fitCard("s4", document.querySelector("#s4 .l-card"), "lSay"); fitCard("s5", $("cSky"), "cSay");
+  }, 120);
+}
+addEventListener("resize", () => fitPlay());
+if (window.visualViewport) visualViewport.addEventListener("resize", () => fitPlay());
 function openLights() {
   const st = P.s4;
   lf = st && st.f !== undefined ? Math.min(2, st.f) : 0;
   if (st && st.state) { LN = L_FIELDS[lf].n; LT = LN * LN; lState = st.state.slice(); lPress = (st.press || Array(LT).fill(false)).slice(); lMoves = st.moves || 0; lBusy = false; } else lStart(lf);
-  $("lDone").hidden = true; show("s4"); lRender(); fitPlay(); setTimeout(fitPlay, 400);
+  $("lDone").hidden = true; show("s4"); lRender(); fitPlay(true); setTimeout(() => fitPlay(true), 1700);
   lHintAt = Date.now() + 20000; lHintTick();
   setTimeout(() => lSay(lMoves ? "Продолжаем! Я запомнил, какие горят." : "Тап переключает фонарик и четырёх соседей — сверху, снизу, слева, справа. Зажги все!"), 380);
 }
@@ -1582,6 +1596,7 @@ let cc = 0, cDone = [], cSel = -1, cBusy = false, cHintAt = 0, cHintT = null, cM
 const ekey = (a, b) => a < b ? a + "-" + b : b + "-" + a;
 function cSay(t, face) { const s = $("cSay"); s.textContent = t; s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop"); setFace($("cMo"), face || "smile"); }
 function cRender() {
+  fitPlay();   // поле могло вырасти (3×3 → 4×4): подгоняем, только если размер поменялся
   const C = CONST[cc]; let rnd = 7 + cc * 13; const r = () => (rnd = (rnd * 9301 + 49297) % 233280) / 233280;
   let bg = ""; for (let i = 0; i < 110; i++) bg += `<circle cx="${(r() * 340).toFixed(0)}" cy="${(r() * 380).toFixed(0)}" r="${(.4 + r() * .9).toFixed(1)}" fill="#fff" opacity="${(.25 + r() * .55).toFixed(2)}"/>`;
   const all = C.st.map((p, i) => ({ p, i, real: true })).concat(C.fake.map((p, j) => ({ p, i: 100 + j, real: false })));
@@ -1666,7 +1681,7 @@ function cDoneCard() {
 }
 function openStars() {
   const st = P.s5; cc = st && st.c !== undefined ? Math.min(2, st.c) : 0; cDone = (st && st.done) ? st.done.slice() : []; cSel = -1; cBusy = false; cMiss = 0;
-  $("cDone").hidden = true; show("s5"); cRender(); fitPlay(); setTimeout(fitPlay, 400);
+  $("cDone").hidden = true; show("s5"); cRender(); fitPlay(true); setTimeout(() => fitPlay(true), 1700);
   cHintAt = Date.now() + 20000; cHintTick();
   setTimeout(() => cSay(cDone.length ? "Продолжаем! Линии на небе я сохранил." : "Тапни звезду, потом соседнюю — между ними протянется линия. Первое созвездие с номерами: от 1 до 9, а потом хвостик!"), 380);
 }
