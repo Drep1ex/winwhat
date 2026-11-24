@@ -520,6 +520,9 @@ body {
 .dark-btn { font-family: inherit; font-size: 16px; font-weight: 700; border: 0; border-radius: 12px; padding: 13px; background: #3a2118; color: #c9ad9e;
   box-shadow: inset 0 0 0 1px #6b4636; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .word { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #c9ad9e; }
+.dark-btn.ready { background: linear-gradient(#f3c76e, #d9a54a); color: #3a2420; box-shadow: 0 6px 14px rgba(0,0,0,.3); cursor: pointer; }
+.word input.ok { border-color: var(--gold); color: var(--gold); letter-spacing: .3em; text-align: center; font-weight: 700; }
+.word input.bad { animation: wordShake .4s; } @keyframes wordShake { 25% { transform: translateX(-6px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
 .word input { font-family: inherit; font-size: 15px; border: 2px solid #6b4636; border-radius: 12px; padding: 11px 12px; background: #3a2118; color: var(--paper); user-select: text; -webkit-user-select: text; }
 .chip-btn { font-family: inherit; font-size: 13px; font-weight: 700; border: 0; border-radius: 99px; padding: 8px 12px; margin-bottom: 6px; background: rgba(30,14,12,.82);
   color: var(--gold); box-shadow: 0 0 0 1px rgba(243,199,110,.5); display: flex; align-items: center; gap: 6px; cursor: pointer; flex: none; }
@@ -1626,7 +1629,7 @@ let inHub = false, lit = 1;  // H.lit хранит то же самое межд
 const LINK_PARTS = ["✦", "✦", "✦", "✦", "✦"];
 const TASK_NAMES = ["Моисей", "Снежинки", "Гирлянда", "Мелодия", "Финал"];
 // всё, что происходит в уголке Моисея и в настройках, сохраняется вместе с прогрессом
-const H = { lit: 1, wire: 0, simon: 0, pets: 0, treats: 0, mood: 60, warm: 45, hatOk: false, said: [], vib: true, hints: false, anim: true, ms: 0, tour: false, snowLose: 0, wHint: 0, smErr: 0, fnTaps: 0 };
+const H = { lit: 1, wire: 0, simon: 0, pets: 0, treats: 0, mood: 60, warm: 45, hatOk: false, said: [], vib: true, hints: false, anim: true, ms: 0, tour: false, snowLose: 0, wHint: 0, smErr: 0, fnTaps: 0, siteDone: 0, word: 0, wordVal: "" };
 function loadH(o) { if (o && typeof o === "object") Object.keys(H).forEach(k => { if (k in o) H[k] = o[k]; }); lit = Math.max(1, Math.min(5, H.lit || 1)); }
 let saveT; function saveSoon() { clearTimeout(saveT); saveT = setTimeout(saveProgress, 800); }
 const $ = (id) => document.getElementById(id);
@@ -1652,7 +1655,56 @@ function renderLink() {
     `<div class="chunk${i < lit ? " on" : i === lit ? " next" : ""}"><div>${i < lit ? LINK_PARTS[i] : "•••"}</div>${t}</div>`).join("");
   $("linkCount").textContent = `${lit} из 5`;
   $("linkBar").style.width = (lit * 20) + "%";
+  renderWord();
 }
+/* --- сайт и тайное слово --- */
+const SITE_URL = "https://drep1ex.github.io/winwhat/sneg/";
+const WORD_X = "ХТЦМЩ";   // слово хранится зашифрованным
+const wx = (v) => [...v].reverse().map(c => String.fromCharCode(c.charCodeAt(0) + 7)).join("");
+const LOCK_I = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+const GO_I = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+const linkSay = (t) => { const b = document.querySelector("#page-link .hub-moisey .bubble"); if (b) b.textContent = t; };
+const pickOne = (a) => a[Math.floor(Math.random() * a.length)];
+function renderWord() {
+  const go = $("goSite"), inp = $("secretWord"), ready = lit >= 5;
+  go.disabled = !ready; go.classList.toggle("ready", ready);
+  go.innerHTML = (ready ? GO_I : LOCK_I) + "Перейти на сайт";
+  inp.maxLength = 5;
+  if (H.word) { inp.disabled = true; inp.value = H.wordVal || ""; inp.classList.add("ok"); }
+  else if (H.siteDone) { inp.disabled = false; inp.placeholder = "Впиши слово из пяти букв"; }
+  else { inp.disabled = true; inp.placeholder = ready ? "Откроется, когда пройдёшь сайт" : "Откроется после сайта"; }
+}
+let siteAsk = 0;
+function checkSite() {
+  if (H.siteDone || lit < 5 || !tg || !tg.initData || Date.now() - siteAsk < 4000) return; siteAsk = Date.now();
+  fetch(WORKER_URL + "/sitestate", { method: "POST", body: tg.initData }).then(r => r.json()).then(j => {
+    if (!j || !j.done || H.siteDone) return;
+    H.siteDone = 1; saveProgress(); renderWord(); haptic("medium");
+    linkSay("Ты прошла всю тропу! Теперь сложи пять букв в слово и впиши его сюда.");
+  }).catch(() => {});
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("page-link").hidden) checkSite(); });
+setInterval(() => { if (!document.hidden && !$("page-link").hidden && !hub.hidden) checkSite(); }, 15000);
+$("goSite").addEventListener("click", () => {
+  if (lit < 5) return; haptic("medium");
+  const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user, url = SITE_URL + (u ? "?u=" + u.id : "");
+  if (tg && tg.openLink) tg.openLink(url); else window.open(url, "_blank");
+  if (!H.siteDone) linkSay("Я побежал на тропу — встречу тебя там! Когда пройдёшь её, возвращайся сюда.");
+});
+$("secretWord").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); e.target.blur(); } });
+$("secretWord").addEventListener("input", (e) => {
+  const inp = e.target, v = inp.value.toUpperCase().replace(/[^А-ЯЁ]/g, "").slice(0, 5);
+  inp.value = v; inp.classList.remove("bad");
+  if (v.length < 5) return;
+  if (wx(v) === WORD_X) {
+    H.word = 1; H.wordVal = v; saveProgress(); inp.disabled = true; inp.classList.add("ok"); inp.blur();
+    haptic("heavy"); Sound.found(); report("word");
+    linkSay("Да! Это то самое слово. Данил кое-что для тебя оставил…");
+  } else {
+    void inp.offsetWidth; inp.classList.add("bad"); haptic("light");
+    linkSay(pickOne(["Не то слово… Попробуй переставить буквы.", "Почти! Буквы те, а порядок — нет.", "Мяу, нет. Подумай, что они могут значить вместе."]));
+  }
+});
 function renderStats() {
   const min = Math.floor(H.ms / 60000);
   $("stLit").textContent = `${lit} из 5`;
@@ -1731,6 +1783,7 @@ function showPage(id) {
   $("hubScroll").scrollTop = 0;
   if (id === "page-moisey") requestAnimationFrame(() => { placeHand(); idleSay(); });
   if (id === "page-settings") renderStats();
+  if (id === "page-link") checkSite();
 }
 hub.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => { haptic("light"); closeDossier(); showPage(t.dataset.page); }));
 function openHub() {
@@ -1756,7 +1809,7 @@ function lightUp() {
 document.getElementById("playNext").addEventListener("click", () => {
   const t = TASKS[lit];
   if (!t) { haptic("light"); showPage("page-link"); return; }
-  if (t && t.open) { haptic("medium"); Sound.boop(); t.open(); return; }
+  if (t && t.open) { haptic("medium"); Sound.boop(); report("a" + lit); t.open(); return; }
   haptic("light");
   const b = document.getElementById("playNext");
   b.textContent = "Скоро здесь будет задание ✨";
@@ -3333,6 +3386,7 @@ Progress.load((p) => {
   else if (p && p.found && !/[?&]reset=1/.test(location.search)) requestAnimationFrame(() => requestAnimationFrame(() => resume(p)));
   else resetIdle();
   setTimeout(() => report("open"), 300);
+  if (!(p && p.found)) setTimeout(() => report("a0"), 600);   // первое испытание — найти Моисея
 });
 </script>
 </body>
