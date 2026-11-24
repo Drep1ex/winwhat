@@ -38,11 +38,22 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: 0 0 0 3px var(--ink), 0 0 0 5px var(--gold); transition: opacity .25s, transform .25s; }
 .say.pop { animation: sayPop .3s ease-out; } @keyframes sayPop { from { opacity: 0; transform: translateY(6px) scale(.96); } }
 
+.snowdive { position: absolute; inset: 0; z-index: 31; pointer-events: none; width: 100%; height: 100%; }
+.snowfog { position: absolute; inset: 0; z-index: 30; pointer-events: none; opacity: 0; }
+/* заставка */
+.loader { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: radial-gradient(ellipse at 50% 30%, #4a201b, #1f0d0a 70%); transition: opacity .7s ease; }
+.loader.out { opacity: 0; pointer-events: none; }
+.loader .mo { animation: ldBob 1.5s ease-in-out infinite; } @keyframes ldBob { 50% { transform: translateY(-8px) rotate(-3deg); } }
+.ld-t { font-family: "Marck Script", cursive; font-size: 28px; color: var(--gold); text-shadow: 0 0 14px rgba(243,199,110,.4); }
+.ld-t i { font-style: normal; animation: ldDot 1.2s infinite; } .ld-t i:nth-child(2) { animation-delay: .2s; } .ld-t i:nth-child(3) { animation-delay: .4s; }
+@keyframes ldDot { 0%,60%,100% { opacity: .2; } 30% { opacity: 1; } }
+.ld-b { width: 180px; height: 6px; border-radius: 3px; background: rgba(251,243,234,.12); overflow: hidden; } .ld-b div { height: 100%; width: 0; background: linear-gradient(90deg, #c9a24e, #f3c76e); transition: width .3s; }
 /* ===== главная: снежная тропа ===== */
 .m-head { position: absolute; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 44px); text-align: center; z-index: 3; }
 .m-head small { display: block; font-size: 12px; font-weight: 700; letter-spacing: .14em; color: #e6c3b0; }
 .m-head h1 { margin: 0; font-family: "Marck Script", cursive; font-weight: 400; font-size: 40px; line-height: 1.05; color: var(--gold); text-shadow: 0 0 18px rgba(243,199,110,.35); }
 .bag { position: absolute; z-index: 3; left: 16px; right: 16px; top: calc(env(safe-area-inset-top) + 112px); background: rgba(30,14,12,.84); border-radius: 18px; padding: 10px 12px; box-shadow: 0 0 0 1px rgba(243,199,110,.4); }
+
 .bag-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
 .bag-h b { font-family: "Marck Script", cursive; font-weight: 400; font-size: 22px; color: var(--gold); }
 .bag-h span { font-size: 12px; font-weight: 700; color: #e6c3b0; }
@@ -51,7 +62,7 @@ button { font-family: inherit; cursor: pointer; }
 .lt.on { background: var(--paper); color: #7a2a20; box-shadow: 0 3px 0 #c9ad9e, 0 0 14px rgba(243,199,110,.35); }
 .lt.off { border: 2px dashed rgba(251,243,234,.35); color: rgba(251,243,234,.4); font-size: 20px; }
 .lt.drop { animation: drop .9s cubic-bezier(.3,1.6,.5,1); } @keyframes drop { 0% { transform: translateY(-120px) rotate(-30deg); opacity: 0; } 60% { opacity: 1; } }
-.path { position: absolute; z-index: 2; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 214px); bottom: calc(env(safe-area-inset-bottom) + 130px); }
+.path { position: absolute; z-index: 2; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 222px); bottom: calc(env(safe-area-inset-bottom) + 130px); }
 .path svg.trail { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .st { position: absolute; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; border: 0; padding: 0; display: flex; align-items: center; justify-content: center; transition: transform .2s; }
 .st.done { background: var(--paper); box-shadow: 0 0 0 4px #c9a24e; color: #7a2a20; font-size: 26px; font-weight: 700; }
@@ -69,26 +80,110 @@ button { font-family: inherit; cursor: pointer; }
 .btn:active { transform: scale(.98); }
 .btn.ghost { background: transparent; color: #ecd6c8; box-shadow: 0 0 0 2px rgba(236,214,200,.5); }
 
+
+.m-mo.walk { animation: waddle .46s ease-in-out infinite; }
+@keyframes waddle { 0%,100% { transform: rotate(-7deg) translateY(0); } 25% { transform: rotate(0) translateY(-5px); } 50% { transform: rotate(7deg) translateY(0); } 75% { transform: rotate(0) translateY(-5px); } }
+.st.unlocking { animation: unl .5s ease-in-out; } @keyframes unl { 20%,60% { transform: rotate(-12deg); } 40%,80% { transform: rotate(12deg); } }
+.st.pop { animation: stPop .6s cubic-bezier(.3,1.6,.5,1), stPulse 1.8s ease-in-out .6s infinite; } @keyframes stPop { 0% { transform: scale(.4); } 100% { transform: scale(1); } }
+.st-l.reveal { animation: lblIn .7s ease-out; } @keyframes lblIn { from { opacity: 0; transform: translateY(6px); filter: blur(4px); } }
+.spark { position: absolute; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: #fff6dc; box-shadow: 0 0 8px 2px #f3c76e; pointer-events: none; z-index: 5; animation: sparkF .9s ease-out forwards; }
+@keyframes sparkF { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
+.m-mo { transform-origin: 50% 100%; }
+
+/* небо, звук, декор тропы */
+.sky { position: absolute; inset: 0 0 auto 0; height: 260px; pointer-events: none; z-index: 1; overflow: hidden; }
+.aurora { position: absolute; left: -20%; right: -20%; top: 20px; height: 140px; background: linear-gradient(100deg, transparent 10%, rgba(111,174,124,.28) 30%, rgba(127,176,224,.22) 50%, rgba(180,138,216,.2) 70%, transparent 90%);
+  filter: blur(24px); opacity: 0; animation: aurora 26s ease-in-out infinite; }
+@keyframes aurora { 0%,100% { opacity: 0; transform: translateX(-6%) skewY(-4deg); } 30% { opacity: .9; } 55% { opacity: .55; transform: translateX(6%) skewY(3deg); } 75% { opacity: 0; } }
+.moon { position: absolute; z-index: 6; right: 16px; top: calc(env(safe-area-inset-top) + 50px); width: 44px; height: 44px; }
+.shoot { position: absolute; width: 90px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, rgba(255,246,220,0), #fff6dc); transform: rotate(-18deg); animation: shoot 1.1s ease-in forwards; }
+@keyframes shoot { from { opacity: 0; translate: 0 0; } 15% { opacity: 1; } to { opacity: 0; translate: -220px 70px; } }
+.vpan { position: absolute; z-index: 9; left: 12px; top: calc(env(safe-area-inset-top) + 92px); width: 230px; padding: 12px 14px 14px; border-radius: 16px; background: rgba(30,14,12,.95); box-shadow: 0 0 0 1px rgba(243,199,110,.5), 0 12px 30px rgba(0,0,0,.5); display: flex; flex-direction: column; gap: 6px; animation: cardIn .25s ease-out; }
+.vpan[hidden] { display: none; }
+.vpan label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #ecd6c8; }
+.vpan label b { color: var(--gold); }
+.vpan input { width: 100%; accent-color: #f3c76e; margin: 0 0 6px; }
+.snd { position: absolute; z-index: 7; left: 12px; top: calc(env(safe-area-inset-top) + 50px); width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgba(30,14,12,.8); box-shadow: 0 0 0 1px rgba(243,199,110,.5); font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.tree { position: absolute; z-index: 1; pointer-events: none; transform: translate(-50%, -100%); filter: drop-shadow(0 4px 4px rgba(0,0,0,.35)); }
+.lan { position: absolute; z-index: 1; pointer-events: none; transform: translate(-50%, -100%); }
+.lan .glow { position: absolute; left: 50%; top: 4px; width: 46px; height: 46px; margin-left: -23px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,120,80,.55), transparent); animation: lanGlow 2.6s ease-in-out infinite; }
+.lan.off .glow { display: none; } .lan.off svg { filter: saturate(.25) brightness(.6); }
+@keyframes lanGlow { 50% { opacity: .55; transform: scale(.9); } }
+.lan svg { position: relative; animation: lanSwing 3.4s ease-in-out infinite; transform-origin: 50% 0; }
+@keyframes lanSwing { 0%,100% { rotate: -4deg; } 50% { rotate: 4deg; } }
+.drift { position: absolute; z-index: 1; pointer-events: none; bottom: -6px; height: 26px; border-radius: 50% 50% 0 0; background: #eef2f6; opacity: .85; }
+.tb { position: absolute; z-index: 1; width: 7px; height: 10px; margin: -3px 0 0 -3.5px; border-radius: 50% 50% 45% 45%; background: #3a2a26; box-shadow: inset 0 0 0 1px rgba(0,0,0,.3); pointer-events: none; transition: background .4s, box-shadow .4s; }
+.tb::before { content: ""; position: absolute; left: 1.5px; top: -3px; width: 4px; height: 3px; border-radius: 1px; background: #8a6a3a; }
+.tb.on { background: var(--c); box-shadow: 0 0 8px 1px var(--c); animation: tbBlink 2.2s ease-in-out infinite; }
+@keyframes tbBlink { 50% { opacity: .55; } }
+.bigflake { position: absolute; z-index: 6; top: -40px; width: 34px; height: 34px; margin-left: -17px; border: 0; padding: 4px; background: none; filter: drop-shadow(0 0 6px rgba(255,255,255,.6)); animation: bigFall 9s linear forwards; cursor: pointer; }
+@keyframes bigFall { 0% { transform: translate(0, 0) rotate(0); } 50% { transform: translate(var(--sw), 50vh) rotate(180deg); } 100% { transform: translate(0, 110vh) rotate(360deg); } }
+.paw { position: absolute; z-index: 1; width: 12px; height: 12px; margin: -6px; pointer-events: none; opacity: .75; }
+.paw.new { animation: pawIn .5s ease-out; } @keyframes pawIn { from { opacity: 0; transform: scale(.4); } }
+.st .ico { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+.st .ico svg { width: 30px; height: 30px; }
+.st .bdg { position: absolute; right: -6px; bottom: -6px; width: 22px; height: 22px; border-radius: 50%; background: #7a2a20; color: #fbf3ea; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px #fbf3ea; font-family: Lora, serif; }
+.m-mo { pointer-events: auto; cursor: pointer; }
+
+/* ===== пасхалки и мелочи ===== */
+.moon { pointer-events: auto; cursor: pointer; z-index: 6; }
+.m-head { pointer-events: none; }
+.sky { z-index: 1; }
+.moon-cat { position: absolute; right: 26px; top: calc(env(safe-area-inset-top) + 60px); width: 24px; height: 24px; z-index: 6; opacity: 0; pointer-events: none; transition: opacity 1.2s; }
+.moon-cat.on { opacity: .75; }
+.lan { pointer-events: auto; cursor: pointer; }
+.lan.ring svg { animation: lanRing .5s ease-out; } @keyframes lanRing { 30% { rotate: -14deg; } 60% { rotate: 10deg; } }
+.panda-peek { position: absolute; z-index: 2; width: 38px; height: 34px; margin-left: -19px; border: 0; padding: 0; background: none; transform: translateY(26px); transition: transform .5s cubic-bezier(.3,1.5,.5,1); cursor: pointer; }
+.panda-peek.up { transform: translateY(0); }
+.zzz { position: absolute; z-index: 5; font-family: "Marck Script", cursive; font-size: 20px; color: #fbf3ea; pointer-events: none; animation: zzz 2.4s ease-out infinite; }
+@keyframes zzz { 0% { opacity: 0; transform: translate(0,0) scale(.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(18px,-34px) scale(1.2); } }
+.m-mo.sleep { animation: breathe 2.4s ease-in-out infinite; } @keyframes breathe { 50% { transform: scale(1.03, .97); } }
+.wish-star { position: absolute; z-index: 7; width: 30px; height: 30px; margin: -15px; border: 0; padding: 0; background: radial-gradient(closest-side, #fff6dc, rgba(243,199,110,.6) 45%, transparent); border-radius: 50%; animation: wishTw 1s ease-in-out infinite; cursor: pointer; }
+@keyframes wishTw { 50% { transform: scale(1.3); opacity: .7; } }
+.wish-in { width: 100%; min-height: 90px; border: 0; border-radius: 12px; padding: 10px 12px; background: #fbf3ea; color: #2b1a17; font-family: "Marck Script", cursive; font-size: 22px; resize: none; outline: none; }
+/* сугробы растут, иней по углам, следы у станций */
+.drift { transition: height 4s ease; cursor: pointer; pointer-events: auto; }
+.frost { position: absolute; z-index: 1; width: 150px; height: 150px; pointer-events: none; opacity: 0; transition: opacity 30s linear; }
+.frost.on { opacity: .55; }
+.frost.tl { left: 0; top: 0; } .frost.tr { right: 0; top: 0; transform: scaleX(-1); } .frost.bl { left: 0; bottom: 0; transform: scaleY(-1); } .frost.br { right: 0; bottom: 0; transform: scale(-1,-1); }
+.trod { position: absolute; z-index: 1; width: 74px; height: 22px; margin: 18px 0 0 -37px; border-radius: 50%; background: radial-gradient(closest-side, rgba(238,242,246,.35), rgba(238,242,246,0)); pointer-events: none; }
+.sball { position: absolute; z-index: 1; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, #cfd8e2); box-shadow: 0 1px 2px rgba(0,0,0,.4); pointer-events: none; }
+/* Моисей в образе */
+.mo .prop { position: absolute; left: -8px; bottom: -4px; width: 44%; height: auto; pointer-events: none; z-index: 2; filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); }
+.mo .prop.wave .cloth { transform-origin: 9px 8px; animation: flagWave 1.6s ease-in-out infinite; }
+@keyframes flagWave { 50% { transform: skewY(6deg) scaleX(.92); } }
+.mo .prop.bob { animation: propBob 2.6s ease-in-out infinite; } @keyframes propBob { 50% { transform: translateY(-3px); } }
 /* ===== этап: шапка ===== */
 .hud { position: absolute; z-index: 5; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 40px); padding: 0 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.hud h2 { margin: 0; font-family: "Marck Script", cursive; font-weight: 400; font-size: clamp(26px, 8vw, 32px); white-space: nowrap; color: var(--gold); line-height: 1; }
+.hud h2 { margin: 0; font-family: "Marck Script", cursive; font-weight: 400; font-size: clamp(24px, 7.4vw, 32px); white-space: nowrap; color: var(--gold); line-height: 1; }
 .pill { white-space: nowrap; font-size: 14px; font-weight: 700; color: #3a2508; background: var(--gold); border-radius: 99px; padding: 5px 12px; }
+body:not(.dev) .x.dev, body:not(.dev) #devAll { display: none !important; }
+.x.dev { width: 34px; height: 34px; font-size: 17px; font-weight: 700; color: #b7e2c4; box-shadow: 0 0 0 1px rgba(183,226,196,.5); }
+.devall { position: absolute; z-index: 7; right: 8px; top: calc(env(safe-area-inset-top) + 206px); font-family: inherit; font-size: 11px; font-weight: 700; color: #b7e2c4; background: rgba(30,14,12,.8); border: 0; border-radius: 99px; padding: 6px 10px; box-shadow: 0 0 0 1px rgba(183,226,196,.5); }
 .x { width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(30,14,12,.8); color: var(--gold); box-shadow: 0 0 0 1px rgba(243,199,110,.5); display: flex; align-items: center; justify-content: center; flex: none; }
 
+/* шапки испытаний */
+.deco-lan { position: absolute; z-index: 4; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 70px); height: 0; pointer-events: none; }
+.deco-lan span { position: absolute; top: 0; width: 22px; height: 44px; background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 44'%3E%3Cpath d='M11 0 V8' stroke='%23c9a24e' stroke-width='1.5'/%3E%3Crect x='5' y='7' width='12' height='3' rx='1' fill='%23c9a24e'/%3E%3Cellipse cx='11' cy='20' rx='10' ry='11' fill='%23d8402e'/%3E%3Cpath d='M11 9 C6 13 6 27 11 31 M11 9 C16 13 16 27 11 31' fill='none' stroke='%23a8261a' stroke-width='1.2'/%3E%3Crect x='5' y='30' width='12' height='3' rx='1' fill='%23c9a24e'/%3E%3Cpath d='M11 33 V41 M9 41 H13' stroke='%23f3c76e' stroke-width='1.5'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 0 8px rgba(255,110,70,.6)); transform-origin: 50% 0; animation: lanSwing 3.4s ease-in-out infinite; }
+.deco-lan span:first-child { left: 14px; } .deco-lan span:last-child { right: 14px; animation-delay: -1.7s; }
+.ribbon { position: absolute; z-index: 3; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 78px); height: 22px; pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0 14px, rgba(243,199,110,.55) 14px 16px, transparent 16px 30px), linear-gradient(#a8322a, #8a2420);
+  box-shadow: 0 2px 0 #c9a24e, 0 -2px 0 #c9a24e, 0 6px 14px rgba(0,0,0,.35); }
+#s2 .w-round { z-index: 4; color: #fbf3ea; top: calc(env(safe-area-inset-top) + 81px) !important; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+#s2 .mm-grid { top: calc(env(safe-area-inset-top) + 112px); }
 /* ===== этап 1: тайное слово ===== */
 .w-round { position: absolute; z-index: 4; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 88px); display: flex; justify-content: center; gap: 8px; font-size: 12px; font-weight: 700; color: #e6c3b0; letter-spacing: .06em; }
 .w-round i { width: 26px; height: 6px; border-radius: 3px; background: rgba(251,243,234,.18); margin-top: 5px; }
 .w-round i.on { background: var(--gold); } .w-round i.ok { background: var(--green); }
-.w-card { position: absolute; z-index: 3; left: 10px; right: 10px; top: calc(env(safe-area-inset-top) + 112px); height: var(--cardH, 360px); border-radius: 20px; background: rgba(30,14,12,.84); box-shadow: 0 0 0 1px rgba(243,199,110,.4); }
+.w-card { position: relative; z-index: 3; flex: 1 1 auto; min-height: 140px; margin: 0 10px; border-radius: 20px; background: rgba(30,14,12,.84); box-shadow: 0 0 0 1px rgba(243,199,110,.4); }
 .w-garl { position: absolute; left: 0; right: 0; top: -12px; height: 30px; pointer-events: none; }
-.w-scroll { position: absolute; inset: 16px 8px 10px; overflow-y: auto; scrollbar-width: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+.w-scroll { position: absolute; inset: 16px 6px 10px; overflow-y: auto; scrollbar-width: none; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
 .w-scroll::-webkit-scrollbar { display: none; }
 .w-grid { display: flex; flex-direction: column; align-items: center; gap: var(--gap, 7px); }
-.w-row { display: flex; flex-direction: column; align-items: flex-start; gap: var(--lg, 5px); }
-.w-line { display: flex; align-items: center; justify-content: flex-start; gap: var(--tg, 6px); }
-.w-lamp.ghost { visibility: hidden; }
+.w-row { display: flex; align-items: center; justify-content: center; gap: var(--tg, 6px); }
 .w-row.shake { animation: shake .4s; } @keyframes shake { 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
-.w-lamp { width: 12px; height: 17px; border-radius: 50% 50% 46% 46%; background: rgba(251,243,234,.12); flex: none; margin-right: 4px; transition: background .3s, box-shadow .3s; }
+.w-lamp { width: var(--lw, 12px); height: calc(var(--lw, 12px) * 1.4); border-radius: 50% 50% 46% 46%; background: rgba(251,243,234,.12); flex: none; margin-right: 4px; transition: background .3s, box-shadow .3s; }
 .w-lamp.used { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
 .w-lamp.cur { background: var(--paper); }
 .w-sp { width: var(--sp, 10px); flex: none; }
@@ -100,18 +195,25 @@ button { font-family: inherit; cursor: pointer; }
 .t.g { background: var(--green); color: #fff; box-shadow: 0 0 14px rgba(111,174,124,.7); }
 .t.y { background: var(--yellow); color: #2a1610; box-shadow: 0 0 14px rgba(224,176,78,.7); }
 .t.n { background: var(--none); color: #a8968c; }
-.t.flip { animation: flip .5s ease-in-out both; }
-@keyframes flip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+.t.flip { animation: flip .5s ease-in-out; }
+@keyframes flip { 0% { transform: scaleY(1); } 50% { transform: scaleY(.05); } 100% { transform: scaleY(1); } }
 .t.win { animation: win .6s ease-out both; } @keyframes win { 40% { transform: translateY(-12px) scale(1.08); } }
-.w-mo { position: absolute; z-index: 4; left: 8px; right: 10px; top: calc(env(safe-area-inset-top) + 112px + var(--cardH, 360px) + 10px); display: flex; align-items: flex-end; gap: 6px; }
+.w-mo { position: relative; z-index: 4; flex: none; margin: 8px 10px auto 8px; display: flex; align-items: flex-end; gap: 6px; }
 .w-mo .mo { width: 64px; height: 79px; }
 .w-mo .say { flex: 1; margin-bottom: 8px; font-size: 13.5px; }
-.kb { position: absolute; z-index: 4; left: 4px; right: 4px; bottom: calc(env(safe-area-inset-bottom) + 30px); display: flex; flex-direction: column; gap: 7px; }
-.kb div { display: flex; gap: 4px; }
+.kb { position: relative; z-index: 4; flex: none; margin: 0 4px; display: flex; flex-direction: row; gap: 7px; }
+.kb .kl, .kb .kc { gap: 7px; }
+.screen.col:not([hidden]) { display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top) + 112px) 0 calc(env(safe-area-inset-bottom) + 30px); }
+@media (max-height: 640px) { .w-mo .mo { width: 48px; height: 59px; } .w-mo .say { font-size: 12.5px; padding: 7px 10px; } .k { height: 38px; } .kb, .kb .kl, .kb .kc { gap: 5px; } .kc .k.del { height: 38px; } .kc .k.wide { height: calc(38px * 2 + 5px); } }
+.kb .kl { flex: 1; display: flex; flex-direction: column; gap: inherit; min-width: 0; }
+.kb .kr { display: flex; gap: 4px; justify-content: center; }
+.kb .kr:last-child { padding: 0 6%; }
+.kb .kc { width: 15%; display: flex; flex-direction: column; gap: inherit; }
+.kb .kc .k { flex: none; width: 100%; }
 .k { flex: 1; height: 44px; border: 0; padding: 0; border-radius: 8px; background: #6b4636; color: var(--paper); font-size: 15px; font-weight: 700; box-shadow: 0 3px 0 rgba(0,0,0,.35); transition: background .3s, color .3s; }
 .k:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.35); }
 .k.g { background: var(--green); } .k.y { background: var(--yellow); color: #2a1610; } .k.n { background: #2a1610; color: rgba(251,243,234,.3); }
-.k.wide { flex: 1.6; background: var(--gold); color: #3a2508; font-size: 12px; } .k.del { flex: 1.4; }
+.k.wide { background: var(--gold); color: #3a2508; font-size: 12px; } .kc .k.del { height: 44px; } .kc .k.wide { height: calc(44px * 2 + 7px); }
 /* окно «слово отгадано» */
 .sheet { position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(10,4,3,.72); transition: opacity .35s; }
 .sheet[hidden] { display: none; } .sheet.fade { opacity: 0; }
@@ -133,6 +235,182 @@ button { font-family: inherit; cursor: pointer; }
 .big-letter { align-self: center; width: 86px; height: 98px; border-radius: 16px; background: var(--paper); color: #7a2a20; font-size: 54px; font-weight: 700; display: flex; align-items: center; justify-content: center;
   box-shadow: 0 5px 0 #c9ad9e, 0 0 34px rgba(243,199,110,.6); animation: bigIn .8s cubic-bezier(.3,1.6,.5,1); }
 @keyframes bigIn { from { transform: scale(.2) rotate(-30deg); opacity: 0; } }
+
+/* ===== этап 2: иероглифы (мемори) ===== */
+.mm-grid { position: absolute; z-index: 3; left: 14px; right: 14px; top: calc(env(safe-area-inset-top) + 100px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; perspective: 900px; }
+.mc { position: relative; aspect-ratio: 1 / 1.12; border: 0; padding: 0; background: none; transform-style: preserve-3d; transition: transform .45s cubic-bezier(.4,.2,.2,1); }
+.mc.open, .mc.done { transform: rotateY(180deg); }
+.mc > div { position: absolute; inset: 0; border-radius: 12px; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.mc .bk { background: #a8322a; box-shadow: inset 0 0 0 3px #c9a24e, 0 4px 0 #5a160f; color: var(--gold); font-size: clamp(24px, 8vw, 32px); font-family: "Songti SC", "STSong", "Noto Serif CJK SC", serif; }
+.mc .fr { transform: rotateY(180deg); background: radial-gradient(circle at 50% 35%, #5a3527, #42251b 75%, #361d15); color: #f6e2c2; box-shadow: inset 0 0 0 2px rgba(201,162,78,.45), 0 0 0 2px #8a6447, 0 6px 14px rgba(0,0,0,.35); }
+.mc .fr b { font-size: clamp(32px, 11vw, 46px); font-weight: 400; line-height: 1; color: #f3c76e; text-shadow: 0 0 12px rgba(243,199,110,.35); font-family: "Songti SC", "STSong", "Noto Serif CJK SC", "PingFang SC", serif; }
+.mc .fr .emo { font-size: clamp(34px, 11vw, 48px); line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.mc .fr svg, .mc .fr img { width: 74%; height: 74%; object-fit: contain; }
+.mc .fr small { font-size: 10.5px; font-weight: 700; color: #e6c3b0; margin-top: 3px; line-height: 1.1; text-align: center; }
+.mc.done .fr { background: radial-gradient(circle at 50% 35%, #3f4a33, #2f3a27 75%, #263020); box-shadow: inset 0 0 0 2px rgba(111,174,124,.55), 0 0 0 2px #4f7d5c, 0 0 14px rgba(111,174,124,.35); }
+.mc.done.glow { animation: mcGlow .7s ease-out; } @keyframes mcGlow { 40% { transform: rotateY(180deg) scale(1.1); } }
+.mc.miss .fr { box-shadow: inset 0 0 0 2px rgba(216,87,74,.6), 0 0 0 2px #e08a7c; }
+.mm-stat { position: absolute; z-index: 3; left: 0; right: 0; display: flex; justify-content: center; gap: 18px; font-size: 13px; font-weight: 700; color: #e6c3b0; }
+.mm-stat b { color: var(--gold); }
+.mm-mo { position: absolute; z-index: 4; left: 8px; right: 10px; display: flex; align-items: flex-end; gap: 6px; }
+.mm-mo .mo { width: 70px; height: 86px; }
+.mm-mo .say { flex: 1; margin-bottom: 8px; }
+.c-mo { display: flex; align-items: flex-end; gap: 6px; text-align: left; }
+.c-mo .mo { width: 54px; height: 66px; }
+.c-mo .say { flex: 1; margin-bottom: 6px; font-size: 13px; }
+
+/* ===== этап 3: флаги ===== */
+.gulls { position: absolute; z-index: 3; left: 0; top: calc(env(safe-area-inset-top) + 76px); width: 100%; height: 40px; pointer-events: none; }
+.gull { fill: none; stroke: #ecd6c8; stroke-width: 2; stroke-linecap: round; animation: gull 6s ease-in-out infinite; }
+.gull.g2 { animation-duration: 7.5s; animation-delay: -2s; } .gull.g3 { animation-duration: 5.2s; animation-delay: -3.4s; opacity: .7; }
+@keyframes gull { 0%,100% { transform: translate(0,0); } 50% { transform: translate(18px,-6px); } }
+.f-body { position: relative; z-index: 3; flex: 1 1 auto; min-height: 0; margin: 0 10px; display: flex; flex-direction: column; gap: 10px; }
+.plank { border-radius: 16px; padding: 12px; background: linear-gradient(180deg, #5a3527, #42251b); box-shadow: inset 0 0 0 2px rgba(201,162,78,.35), 0 0 0 1px #2a1610, 0 10px 22px rgba(0,0,0,.4);
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 2px, transparent 2px 26px), linear-gradient(180deg, #5a3527, #42251b); }
+.plank h4 { margin: 0 0 8px; font-family: "Marck Script", cursive; font-weight: 400; font-size: 21px; color: var(--gold); display: flex; justify-content: space-between; align-items: baseline; }
+.plank h4 small { font-family: Lora, serif; font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #e6c3b0; }
+.fl { display: block; width: var(--fw, 40px); height: calc(var(--fw, 40px) * .67); border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 2px 4px rgba(0,0,0,.3); }
+/* часть 1: мачта и рундук */
+.f-scene { display: flex; gap: 12px; align-items: stretch; }
+.f-mast { position: relative; width: 74px; flex: none; display: flex; flex-direction: column; align-items: flex-start; padding: 22px 0 6px 18px; gap: 3px; min-height: 236px; }
+.f-mast::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 6px; border-radius: 3px; background: linear-gradient(90deg, #8a5a3a, #6b4230); }
+.f-mast::after { content: ""; position: absolute; left: 4px; top: 0; width: 14px; height: 8px; border-radius: 4px; background: #c9a24e; }
+.f-slot { position: relative; height: 30px; display: flex; align-items: center; }
+.f-slot::before { content: ""; position: absolute; left: -7px; top: 50%; width: 7px; height: 1.5px; background: #d9c3b3; }
+.f-slot .empty { width: 42px; height: 28px; border-radius: 3px; border: 2px dashed rgba(251,243,234,.3); }
+.f-slot .fl { --fw: 42px; cursor: pointer; transform-origin: 0 50%; animation: flutter 2.4s ease-in-out infinite; }
+.f-slot .fl.bad { box-shadow: 0 0 0 2px #d8574a, 0 0 10px rgba(216,87,74,.7); }
+@keyframes flutter { 50% { transform: skewY(-3deg) scaleX(.95); } }
+.f-radio { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.f-msg { background: #fbf3ea; color: #2b1a17; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; font-weight: 700; line-height: 1.4; box-shadow: 0 3px 0 #c9ad9e; }
+.f-msg b { display: block; font-family: "Marck Script", cursive; font-weight: 400; font-size: 26px; color: #a8322a; letter-spacing: .04em; }
+.f-msg small { display: block; font-size: 11px; letter-spacing: .06em; color: #9a6e60; }
+.f-btn { font-family: inherit; font-size: 14px; font-weight: 700; border: 0; border-radius: 10px; padding: 11px; background: var(--gold); color: #3a2508; box-shadow: 0 4px 0 #a8822e; }
+.f-btn.ghost { background: transparent; color: #ecd6c8; box-shadow: 0 0 0 2px rgba(236,214,200,.45); }
+.f-locker { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px 6px; }
+.f-locker button { border: 0; padding: 4px 0; background: rgba(20,10,7,.35); border-radius: 8px; display: flex; justify-content: center; transition: opacity .2s, transform .15s; }
+.f-locker button .fl { --fw: 34px; }
+.f-locker button.used { opacity: .2; pointer-events: none; }
+.f-locker button:active { transform: scale(.92); }
+/* часть 2: шифровка */
+.f-target { display: flex; flex-direction: column; gap: 8px; }
+.f-line { display: flex; justify-content: center; gap: 4px; }
+.f-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.f-cell .fl { --fw: var(--tw, 32px); }
+.f-in { width: var(--tw, 32px); height: 32px; border: 0; padding: 0; border-radius: 7px; background: rgba(10,6,4,.5); box-shadow: inset 0 0 0 2px rgba(251,243,234,.25); color: var(--paper); font-family: inherit; font-size: 17px; font-weight: 700; }
+.f-in.sel { box-shadow: 0 0 0 2px var(--gold), 0 0 10px rgba(243,199,110,.6); }
+.f-in.ok { background: var(--green); color: #fff; box-shadow: none; }
+.f-in.bad { background: #a8322a; animation: shake .4s; }
+.f-clues { display: grid; grid-template-columns: 1.25fr 1fr; gap: 10px; }
+.f-log div { display: flex; align-items: center; gap: 3px; margin-bottom: 6px; }
+.f-log .fl { --fw: 24px; }
+.f-log span { margin-left: 6px; font-size: 13px; font-weight: 700; color: #fbf3ea; letter-spacing: .08em; }
+.f-torn { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 8px; position: relative; }
+.f-torn div { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; color: #fbf3ea; }
+.f-torn .fl { --fw: 24px; }
+.f-torn .gone { color: rgba(251,243,234,.35); }
+.f-torn .gone i { width: 24px; height: 16px; border-radius: 2px; border: 1.5px dashed rgba(251,243,234,.3); }
+.f-book { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px 8px; }
+.f-book div { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: #fbf3ea; }
+.f-book .fl { --fw: 32px; }
+.f-mo { margin-top: 8px; }
+.kb[hidden] { display: none; }
+#s3 .hud h2 { font-size: clamp(22px, 6.6vw, 30px); }
+#fKb .k.wide { font-size: 11px; }
+@media (max-height: 700px) { .f-leg-g svg { width: 22px; height: 15px; } .f-leg-g { gap: 4px 5px; } .f-leg-g div { font-size: 12.5px; } .f-in { height: 30px; } }
+/* ===== этап 4: фонарики ===== */
+#s4 .hud h2 { font-size: clamp(22px, 6.6vw, 30px); }
+.l-card { position: relative; z-index: 3; flex: none; margin: 4px 12px 0; padding: 10px 6px 14px; border-radius: 18px; background: rgba(30,14,12,.84); box-shadow: 0 0 0 1px rgba(243,199,110,.4); }
+.l-grid { display: flex; flex-direction: column; gap: 4px; }
+.l-row { position: relative; display: flex; justify-content: space-around; padding-top: 6px; }
+.l-row::before { content: ""; position: absolute; left: 4px; right: 4px; top: 2px; height: 2px; background: #2a1610; border-radius: 1px; }
+.lb { position: relative; width: var(--lw, 19%); aspect-ratio: 40 / 50; border: 0; padding: 0; background: none; display: flex; justify-content: center; cursor: pointer; }
+.lb svg { position: relative; width: 82%; height: 100%; transform-origin: 50% 0; transition: filter .25s; }
+.lb .lg { position: absolute; left: 50%; top: 56%; width: 170%; aspect-ratio: 1; transform: translate(-50%, -50%) scale(.4); border-radius: 50%; background: radial-gradient(closest-side, rgba(255,140,80,.55), transparent); opacity: 0; transition: opacity .3s, transform .35s; pointer-events: none; }
+.lb.on .lg { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.lb .bd { fill: #4a2420; transition: fill .25s; } .lb .rb { stroke: #2e1614; transition: stroke .25s; } .lb .fu { opacity: 0; transition: opacity .25s; } .lb .tl { stroke: #6b4a2a; }
+.lb.on .bd { fill: #e8402e; } .lb.on .rb { stroke: #a8261a; } .lb.on .fu { opacity: 1; } .lb.on .tl { stroke: #f3c76e; }
+.lb.on svg { animation: lanSwing 3.4s ease-in-out infinite; }
+.lb.tap svg { animation: lbTap .35s ease-out; } @keyframes lbTap { 40% { transform: scale(.88); } }
+.lb.hint::after { content: ""; position: absolute; inset: -4px 6%; border-radius: 12px; box-shadow: 0 0 0 2px #b7e2c4, 0 0 14px rgba(183,226,196,.7); animation: hintPulse 1s ease-in-out infinite; pointer-events: none; }
+@keyframes hintPulse { 50% { opacity: .4; } }
+.l-card.win .lb svg { animation: winSwing .8s ease-in-out infinite; } @keyframes winSwing { 0%,100% { rotate: -8deg; } 50% { rotate: 8deg; } }
+.l-stat { position: relative; margin: 10px 0 0; flex: none; }
+.l-btns { position: relative; z-index: 3; flex: none; display: flex; gap: 10px; margin: 10px 14px 0; }
+.l-btns .f-btn { flex: 1; }
+.l-btns .f-btn:disabled { opacity: .45; }
+.l-mo { margin-top: 10px; }
+/* ===== этап 5: созвездия ===== */
+.c-sky { position: relative; z-index: 3; flex: none; margin: 4px 10px 0; border-radius: 18px; overflow: hidden; box-shadow: 0 0 0 1px rgba(243,199,110,.4), 0 10px 24px rgba(0,0,0,.4); }
+.c-sky svg.sk { display: block; width: 100%; height: auto; touch-action: manipulation; }
+.c-star { cursor: pointer; }
+.c-star .hit { fill: transparent; }
+.c-star .core { transition: transform .2s; transform-box: fill-box; transform-origin: center; }
+.c-star.sel .core { transform: scale(1.6); }
+.c-star.sel .ring { opacity: 1; }
+.c-star .ring { opacity: 0; transition: opacity .2s; }
+.c-star.used .halo { opacity: .45; }
+.c-line { stroke: #f3c76e; stroke-width: 2.4; stroke-linecap: round; fill: none; filter: url(#cGl); stroke-dasharray: 400; stroke-dashoffset: 400; animation: cDraw .5s ease-out forwards; }
+@keyframes cDraw { to { stroke-dashoffset: 0; } }
+.c-bad { stroke: #e0806e; stroke-width: 2; stroke-linecap: round; animation: cBad .6s ease-out forwards; }
+@keyframes cBad { to { opacity: 0; } }
+.c-hint { stroke: #b7e2c4; stroke-width: 2; stroke-dasharray: 4 5; fill: none; animation: hintPulse 1s ease-in-out infinite; }
+.c-fig { opacity: 0; transition: opacity 1.6s ease; }
+.c-fig.on { opacity: .45; }
+.c-ghost { opacity: .18; }
+.c-name { opacity: 0; transition: opacity 1s .6s; }
+.c-name.on { opacity: 1; }
+.c-thumb { position: absolute; right: 8px; top: 8px; width: 74px; height: 80px; border-radius: 10px; background: rgba(10,12,28,.75); box-shadow: 0 0 0 1px rgba(243,199,110,.4); padding: 4px; }
+.c-thumb small { position: absolute; left: 0; right: 0; bottom: 2px; text-align: center; font-size: 9px; font-weight: 700; color: #e6c3b0; letter-spacing: .04em; }
+.c-bar { position: relative; z-index: 3; flex: none; margin: 10px 14px 0; display: flex; align-items: center; gap: 12px; }
+.c-bar span { flex: 1; font-size: 13px; font-weight: 700; color: #e6c3b0; } .c-bar span b { color: var(--gold); }
+.c-bar .f-btn { padding: 10px 14px; } .c-bar .f-btn:disabled { opacity: .45; }
+.c-mo { margin-top: 10px; }
+/* ===== итог тропы ===== */
+#fwk { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 40; pointer-events: none; }
+#finSky { position: fixed; inset: 0; z-index: 39; pointer-events: none; background: radial-gradient(ellipse at 50% 38%, rgba(30,26,60,.35), rgba(6,4,14,.62)); opacity: 0; transition: opacity 1.2s; }
+#finSky.on { opacity: 1; }
+#finSheet { position: fixed; z-index: 45; background: rgba(6,4,14,.35); align-items: flex-end; }
+#finSheet .card { max-height: 64vh; overflow: auto; padding-top: 16px; } #finSheet .fin-row span { text-align: left; } #finSheet h3 { margin: 4px 0 0; }
+.fl-letter { position: absolute; width: 54px; height: 62px; margin: -31px 0 0 -27px; font-size: 32px !important; display: grid; place-items: center; border-radius: 10px; background: #fbf3ea; color: #3a2420; font: 700 26px Lora, serif;
+  box-shadow: 0 0 0 2px #f3c76e, 0 0 22px rgba(243,199,110,.8); transition: left 1.6s cubic-bezier(.3,.7,.3,1), top 1.6s cubic-bezier(.3,.7,.3,1), transform 1.6s, opacity .8s; }
+.fl-letter.float { animation: flFloat 3s ease-in-out infinite; }
+@keyframes flFloat { 50% { translate: 0 -8px; rotate: 4deg; } }
+.path.fin .tb { background: var(--c); box-shadow: 0 0 10px 2px var(--c); animation: tbChase .9s ease-in-out infinite; animation-delay: var(--d); }
+@keyframes tbChase { 50% { opacity: .25; } }
+.fin-rows { display: grid; gap: 8px; margin: 12px 0 4px; }
+.fin-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; background: rgba(255,255,255,.06); opacity: 0; transform: translateY(8px); animation: finRow .5s ease-out forwards; }
+.fin-row i { font-style: normal; font-size: 20px; width: 26px; text-align: center; }
+.fin-row span { flex: 1; font-size: 14px; } .fin-row b { color: var(--gold); font-size: 16px; }
+.fin-row em { display: block; font-style: normal; font-size: 11.5px; color: #e6c3b0; margin-top: 2px; }
+@keyframes finRow { to { opacity: 1; transform: none; } }
+.fin-card .btn { display: block; text-align: center; text-decoration: none; margin-top: 12px; }
+.fin-stay { display: block; width: 100%; margin-top: 8px; }
+/* ===== первое знакомство: Моисей в снегу ===== */
+.greet { position: fixed; inset: 0; z-index: 48; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 24px 20px calc(env(safe-area-inset-bottom) + 28px);
+  background: radial-gradient(ellipse at 50% 35%, #2a3358 0%, #161a33 55%, #0b0c1c 100%); transition: opacity .8s; overflow: hidden; }
+.greet.out { opacity: 0; pointer-events: none; } .greet[hidden] { display: none; } .g-say:empty { visibility: hidden; } .g-go[hidden] { display: none; }
+.g-snow { position: absolute; inset: 0; pointer-events: none; }
+.g-snow i { position: absolute; top: -10px; width: var(--s); height: var(--s); border-radius: 50%; background: #fff; opacity: .7; animation: gFall var(--t) linear infinite; animation-delay: var(--d); }
+@keyframes gFall { to { transform: translate(var(--x), 105vh); } }
+.g-stage { position: relative; width: 220px; height: 280px; flex: none; }
+.g-mo { position: absolute; left: 20px; top: 0; width: 180px; height: 222px; z-index: 2; cursor: pointer; transform-origin: 50% 100%; }
+.g-mo .face, .g-mo .eyes { width: 100%; height: 100%; }
+.g-drift { position: absolute; left: -50px; right: -50px; bottom: 0; height: 74px; border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: linear-gradient(#fbfdff, #cfdcef); box-shadow: 0 -4px 18px rgba(255,255,255,.25); z-index: 3; }
+.g-say { position: relative; z-index: 2; max-width: 340px; width: 100%; font-size: 16px; padding: 13px 16px; border-radius: 18px; min-height: 64px; }
+.g-go { position: relative; z-index: 2; width: 100%; max-width: 340px; }
+.g-mo.arrive { animation: gArrive 1.6s ease-out; }
+@keyframes gArrive { 0% { translate: -110vw -30px; rotate: -10deg; } 50% { translate: -60px 0; rotate: 8deg; } 64% { translate: -16px 18px; rotate: 38deg; } 80% { translate: 0 8px; rotate: -12deg; } 100% { translate: 0 0; rotate: 0deg; } }
+.g-mo.shiver { animation: moShiver .45s ease-in-out; }
+.greet .dust { width: 8px; height: 8px; }
+.snowclump { position: absolute; pointer-events: none; z-index: 2; filter: drop-shadow(0 1px 1px rgba(80,90,120,.35)); transition: transform .35s ease-in, opacity .35s; }
+.snowclump.off { transform: translateY(14px) scale(.4); opacity: 0; }
+.m-mo.arrive { animation: moArrive 1.5s ease-out; }
+@keyframes moArrive { 0% { translate: -140px -10px; rotate: -8deg; } 45% { translate: -40px 0; rotate: 6deg; } 60% { translate: -10px 6px; rotate: 32deg; } 75% { translate: 0 4px; rotate: -10deg; } 100% { translate: 0 0; rotate: 0deg; } }
+.m-mo.shiver { animation: moShiver .45s ease-in-out; }
+@keyframes moShiver { 20% { rotate: -9deg; } 45% { rotate: 8deg; } 70% { rotate: -5deg; } }
+.dust { position: absolute; z-index: 5; width: 5px; height: 5px; border-radius: 50%; background: #fff; pointer-events: none; animation: dust .7s ease-out forwards; }
+@keyframes dust { to { translate: var(--dx) var(--dy); opacity: 0; scale: .4; } }
 /* заглушка этапов */
 .soon { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 30px; text-align: center; }
 .soon h3 { margin: 0; font-family: "Marck Script", cursive; font-weight: 400; font-size: 36px; color: var(--gold); }
@@ -140,23 +418,40 @@ button { font-family: inherit; cursor: pointer; }
 </style>
 </head>
 <body>
+<div class="loader" id="loader" aria-label="Загрузка">
+  <div class="mo" style="width:130px;height:160px"><img src="assets/moisey_smile.png" alt="" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div>
+  <div class="ld-t">Моисей протаптывает тропу<i>.</i><i>.</i><i>.</i></div>
+  <div class="ld-b"><div id="ldBar"></div></div>
+</div>
 <div class="app" id="app">
   <div class="fx" id="fx" aria-hidden="true"></div>
   <svg class="garl" id="garl" viewBox="0 0 390 40" preserveAspectRatio="none" aria-hidden="true"></svg>
 
   <!-- главная: снежная тропа -->
   <section class="screen" id="home">
+    <button type="button" class="devall" id="devAll">↺ всё заново</button>
+    <div class="sky" aria-hidden="true"><div class="aurora"></div>
+      <div id="stars"></div></div>
+<svg class="moon" viewBox="0 0 60 60"><defs><radialGradient id="hmG" cx="40%" cy="38%" r="65%"><stop offset="0" stop-color="#fff8dc"/><stop offset=".7" stop-color="#f6e3a6"/><stop offset="1" stop-color="#e9c97a"/></radialGradient></defs><circle cx="30" cy="30" r="29" fill="#f6e3a6" opacity=".12"/><circle cx="30" cy="30" r="20" fill="url(#hmG)"/><circle cx="24" cy="25" r="3.5" fill="#e2c07a" opacity=".7"/><circle cx="35" cy="35" r="4.4" fill="#e2c07a" opacity=".6"/><circle cx="36" cy="21" r="2" fill="#e2c07a" opacity=".6"/></svg>
+    <svg class="moon-cat" id="moonCat" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20 C5 13 7 10 8 8 L7 3 L10 6 C11 5.6 13 5.6 14 6 L17 3 L16 8 C17 10 19 13 19 20 Z" fill="#7a5a3a"/></svg>
+    <button type="button" class="snd" id="sndBtn" aria-label="Громкость">🔊</button>
+    <div class="vpan" id="vpan" hidden>
+      <label><span>Общая громкость</span><b id="vAllO">70</b></label><input type="range" id="vAll" min="0" max="100" step="1">
+      <label><span>Музыка</span><b id="vMusO">50</b></label><input type="range" id="vMus" min="0" max="100" step="1">
+    </div>
     <div class="m-head"><small>ДОРОГА ИЗ ПЯТИ ЗАГАДОК</small><h1>Снежная тропа</h1></div>
-    <div class="bag"><div class="bag-h"><b>Мешочек букв</b><span id="bagCount">0 из 5 · порядок — в конце</span></div><div class="bag-l" id="bag"></div></div>
+    <div class="bag" id="bagBox"><div class="bag-h"><b>Мешочек букв</b><span id="bagCount">0 из 5</span></div><div class="bag-l" id="bag"></div></div>
     <div class="path" id="path"></div>
     <div class="m-say" id="mSay"><div class="say" id="mSayT"></div></div>
+    <canvas id="fwk" aria-hidden="true"></canvas><div id="finSky" aria-hidden="true"></div>
     <div class="go"><button type="button" class="btn" id="goBtn">Идти к загадке №1</button></div>
   </section>
 
   <!-- этап 1: тайное слово -->
-  <section class="screen" id="s1" hidden>
-    <div class="hud"><h2>Тайное слово</h2><span style="display:flex;gap:8px;align-items:center"><span class="pill">1 / 5</span>
+  <section class="screen col" id="s1" hidden>
+    <div class="hud"><h2>Тайное слово</h2><span style="display:flex;gap:8px;align-items:center"><button type="button" class="x dev" data-restart="1" aria-label="Начать испытание заново" title="Заново">↺</button><button type="button" class="x dev" data-skip="1" aria-label="Пропустить испытание" title="Пропустить">⏭</button><span class="pill">1 / 5</span>
       <button type="button" class="x" data-home aria-label="К тропе"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></div>
+    <div class="deco-lan" aria-hidden="true"><span></span><span></span></div>
     <div class="w-round" id="wRound"></div>
     <div class="w-card" id="wCard">
       <svg class="w-garl" viewBox="0 0 370 30" preserveAspectRatio="none" aria-hidden="true"><path d="M4 8 Q 92 26 185 14 T 366 8" fill="none" stroke="#2a1610" stroke-width="2.5"/>
@@ -173,6 +468,71 @@ button { font-family: inherit; cursor: pointer; }
     <div class="sheet" id="wDone" hidden><div class="card" id="wDoneCard"></div></div>
   </section>
 
+  <!-- этап 2: иероглифы -->
+  <section class="screen" id="s2" hidden>
+    <div class="hud"><h2>Иероглифы</h2><span style="display:flex;gap:8px;align-items:center"><button type="button" class="x dev" data-restart="2" aria-label="Начать испытание заново" title="Заново">↺</button><button type="button" class="x dev" data-skip="2" aria-label="Пропустить испытание" title="Пропустить">⏭</button><span class="pill">2 / 5</span>
+      <button type="button" class="x" data-home aria-label="К тропе"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></div>
+    <div class="ribbon" aria-hidden="true"></div>
+    <div class="w-round" style="top:calc(env(safe-area-inset-top) + 84px)">ОТКРЫВАЙ ПО ДВЕ · НАЙДИ ВСЕ ПАРЫ</div>
+    <div class="mm-grid" id="mmGrid"></div>
+    <div class="mm-stat" id="mmStat"></div>
+    <div class="mm-mo" id="mmMoBox"><div class="mo" id="mmMo"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div><div class="say" id="mmSay"></div></div>
+    <div class="sheet" id="mmDone" hidden><div class="card" id="mmDoneCard"></div></div>
+  </section>
+
+  <!-- этап 3: флаги на мачте -->
+  <section class="screen col" id="s3" hidden>
+    <div class="hud"><h2>Флаги на мачте</h2><span style="display:flex;gap:8px;align-items:center"><button type="button" class="x dev" data-restart="3" aria-label="Начать испытание заново" title="Заново">↺</button><button type="button" class="x dev" data-skip="3" aria-label="Пропустить испытание" title="Пропустить">⏭</button><span class="pill">3 / 5</span>
+      <button type="button" class="x" data-home aria-label="К тропе"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></div>
+    <svg class="gulls" viewBox="0 0 390 40" aria-hidden="true"><path class="gull" d="M40 22 q8 -9 16 0 q8 -9 16 0" /><path class="gull g2" d="M300 14 q6 -7 12 0 q6 -7 12 0" /><path class="gull g3" d="M250 30 q5 -6 10 0 q5 -6 10 0" /></svg>
+    <div class="w-round" id="fRound" style="top:calc(env(safe-area-inset-top) + 88px)"></div>
+    <div class="f-body" id="fBody"></div>
+    <div class="w-mo f-mo"><div class="mo" id="fMo"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div><div class="say" id="fSay"></div></div>
+    <div class="kb" id="fKb" hidden></div>
+    <div class="sheet" id="fBook" hidden><div class="card" id="fBookCard"></div></div>
+    <div class="sheet" id="fDone" hidden><div class="card" id="fDoneCard"></div></div>
+  </section>
+
+  <!-- этап 4: зажги фонарики -->
+  <section class="screen col" id="s4" hidden>
+    <div class="hud"><h2>Зажги фонарики</h2><span style="display:flex;gap:8px;align-items:center"><button type="button" class="x dev" data-restart="4" aria-label="Начать испытание заново" title="Заново">↺</button><button type="button" class="x dev" data-skip="4" aria-label="Пропустить испытание" title="Пропустить">⏭</button><span class="pill">4 / 5</span>
+      <button type="button" class="x" data-home aria-label="К тропе"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></div>
+    <div class="w-round" id="lRound" style="top:calc(env(safe-area-inset-top) + 88px)"></div>
+    <div class="l-card"><div class="l-grid" id="lGrid"></div></div>
+    <div class="mm-stat l-stat" id="lStat"></div>
+    <div class="l-btns"><button type="button" class="f-btn ghost" id="lReset">↺ Сначала</button><button type="button" class="f-btn" id="lHint">🐾 Подсказка</button></div>
+    <div class="w-mo l-mo"><div class="mo" id="lMo"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div><div class="say" id="lSay"></div></div>
+    <div class="sheet" id="lDone" hidden><div class="card" id="lDoneCard"></div></div>
+  </section>
+
+  <!-- этап 5: созвездия -->
+  <section class="screen col" id="s5" hidden>
+    <div class="hud"><h2>Созвездия</h2><span style="display:flex;gap:8px;align-items:center"><button type="button" class="x dev" data-restart="5" aria-label="Начать испытание заново" title="Заново">↺</button><button type="button" class="x dev" data-skip="5" aria-label="Пропустить испытание" title="Пропустить">⏭</button><span class="pill">5 / 5</span>
+      <button type="button" class="x" data-home aria-label="К тропе"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></div>
+    <div class="w-round" id="cRound" style="top:calc(env(safe-area-inset-top) + 88px)"></div>
+    <div class="c-sky" id="cSky"></div>
+    <div class="c-bar"><span id="cStat"></span><button type="button" class="f-btn" id="cHint">✦ Подсказка</button></div>
+    <div class="w-mo c-mo"><div class="mo" id="cMo"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div><div class="say" id="cSay"></div></div>
+    <div class="sheet" id="cDone" hidden><div class="card" id="cDoneCard"></div></div>
+  </section>
+
+  <!-- первое знакомство -->
+  <div class="greet" id="greet" hidden>
+    <div class="g-snow" id="gSnow"></div>
+    <div class="g-stage"><div class="mo g-mo" id="gMo"><img src="assets/moisey.png" alt="Моисей" class="face"><img src="assets/moisey_blink.png" alt="" class="eyes"></div><div class="g-drift"></div></div>
+    <div class="say g-say" id="gSay"></div>
+    <button type="button" class="btn g-go" id="gGo" hidden>Пойдём на тропу</button>
+  </div>
+
+  <!-- итог тропы -->
+  <div class="sheet" id="finSheet" hidden><div class="card fin-card">
+    <small>ДОРОГА ИЗ ПЯТИ ЗАГАДОК · ПРОЙДЕНА</small><h3>Итоги тропы</h3>
+    <div class="fin-rows" id="finRows"></div>
+    <div class="c-mo"><div class="mo"><img src="assets/moisey_proud.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div><div class="say">Слово сложи сама — в приложении, во вкладке «Ссылка». Я жду там!</div></div>
+    <a class="btn" id="finApp" href="#" target="_blank" rel="noopener">Вернуться в приложение</a>
+    <button type="button" class="f-btn fin-stay" id="finStay">Ещё погулять по тропе</button>
+  </div></div>
+
   <!-- заглушка остальных этапов -->
   <section class="screen" id="sSoon" hidden>
     <div class="hud"><h2 id="soonTitle">Загадка</h2><span style="display:flex;gap:8px;align-items:center"><span class="pill" id="soonPill">2 / 5</span>
@@ -183,6 +543,8 @@ button { font-family: inherit; cursor: pointer; }
       <button type="button" class="btn" id="soonSkip" style="max-width:240px">Пропустить (для проверки)</button></div>
   </section>
 
+  <div class="frost tl"><svg viewBox="0 0 150 150"><g fill="none" stroke="#e6eef6" stroke-width="1.2" stroke-linecap="round" opacity=".9"><path d="M0 0 L60 60 M20 20 L30 6 M20 20 L6 30 M40 40 L54 24 M40 40 L24 54 M60 60 L76 48 M60 60 L48 76 M0 40 Q30 50 40 90 M40 0 Q50 30 90 40 M10 70 L22 76 M70 10 L76 22"/><path d="M0 100 Q20 80 30 110 M100 0 Q80 20 110 30" opacity=".6"/></g></svg></div><div class="frost tr"><svg viewBox="0 0 150 150"><g fill="none" stroke="#e6eef6" stroke-width="1.2" stroke-linecap="round" opacity=".9"><path d="M0 0 L60 60 M20 20 L30 6 M20 20 L6 30 M40 40 L54 24 M40 40 L24 54 M60 60 L76 48 M60 60 L48 76 M0 40 Q30 50 40 90 M40 0 Q50 30 90 40 M10 70 L22 76 M70 10 L76 22"/><path d="M0 100 Q20 80 30 110 M100 0 Q80 20 110 30" opacity=".6"/></g></svg></div><div class="frost bl"><svg viewBox="0 0 150 150"><g fill="none" stroke="#e6eef6" stroke-width="1.2" stroke-linecap="round" opacity=".9"><path d="M0 0 L60 60 M20 20 L30 6 M20 20 L6 30 M40 40 L54 24 M40 40 L24 54 M60 60 L76 48 M60 60 L48 76 M0 40 Q30 50 40 90 M40 0 Q50 30 90 40 M10 70 L22 76 M70 10 L76 22"/><path d="M0 100 Q20 80 30 110 M100 0 Q80 20 110 30" opacity=".6"/></g></svg></div><div class="frost br"><svg viewBox="0 0 150 150"><g fill="none" stroke="#e6eef6" stroke-width="1.2" stroke-linecap="round" opacity=".9"><path d="M0 0 L60 60 M20 20 L30 6 M20 20 L6 30 M40 40 L54 24 M40 40 L24 54 M60 60 L76 48 M60 60 L48 76 M0 40 Q30 50 40 90 M40 0 Q50 30 90 40 M10 70 L22 76 M70 10 L76 22"/><path d="M0 100 Q20 80 30 110 M100 0 Q80 20 110 30" opacity=".6"/></g></svg></div>
+  <div class="sheet" id="wishSheet" hidden><div class="card"><small>ЗВЕЗДА ЖЕЛАНИЙ</small><h3>Загадай желание</h3><textarea class="wish-in" id="wishText" placeholder="Напиши здесь…"></textarea><p style="font-size:12.5px;text-align:center">Моисей отправит его прямо Деду Морозу</p><button type="button" class="btn" id="wishSend">Отправить</button><button type="button" class="btn ghost" id="wishX">Не сейчас</button></div></div>
   <div class="ground"></div>
 </div>
 
@@ -197,7 +559,10 @@ const un = (s) => [...s].reverse().map(c => String.fromCharCode(c.charCodeAt(0) 
 /* ---------- звук ---------- */
 let ac = null;
 function A() { if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (ac && ac.state === "suspended") ac.resume(); return ac; }
+let vAll = .7, vMus = .5;
+try { const a = parseFloat(localStorage.getItem("sneg_vall")), m = parseFloat(localStorage.getItem("sneg_vmus")); if (!isNaN(a)) vAll = a; if (!isNaN(m)) vMus = m; } catch (e) {}
 function tone(at, f, dur, vol, f2, type) {
+  if (vAll <= 0) return; vol *= vAll * 1.4;
   const c = A(); if (!c) return;
   const t = c.currentTime + at, o = c.createOscillator(), g = c.createGain();
   o.type = type || "sine"; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
@@ -214,6 +579,64 @@ const SND = {
 };
 const vib = (k) => { try { navigator.vibrate && navigator.vibrate(k === "heavy" ? 40 : 12); } catch (e) {} };
 
+
+/* ---------- музыка: те же четыре песни, что в приложении, по кругу без повторов подряд ---------- */
+const TRACKS = ["assets/music.mp3", "assets/music1.mp3", "assets/music2.mp3", "assets/music3.mp3"];
+let queue = [], lastTrack = null, mus = null, musOn = false;
+const musVol = () => Math.min(1, vAll * vMus * .7);
+function nextTrack() {
+  if (!queue.length) { queue = TRACKS.slice().sort(() => Math.random() - .5); if (queue[0] === lastTrack) queue.push(queue.shift()); }
+  return (lastTrack = queue.shift());
+}
+function startMusic() {
+  if (musOn || musVol() <= 0) return;
+  if (!mus) { mus = new Audio(nextTrack()); mus.addEventListener("ended", () => { mus.src = nextTrack(); mus.play().catch(() => {}); }); }
+  mus.volume = musVol();
+  mus.play().then(() => { musOn = true; }).catch(() => {});
+}
+document.addEventListener("pointerdown", startMusic);
+document.addEventListener("keydown", startMusic);
+document.addEventListener("visibilitychange", () => { if (!mus) return; if (document.hidden) mus.pause(); else if (musOn) mus.play().catch(() => {}); });
+function applyVol() {
+  try { localStorage.setItem("sneg_vall", vAll); localStorage.setItem("sneg_vmus", vMus); } catch (e) {}
+  $("vAllO").textContent = Math.round(vAll * 100); $("vMusO").textContent = Math.round(vMus * 100);
+  $("sndBtn").textContent = vAll <= 0 ? "🔇" : vAll < .4 ? "🔉" : "🔊";
+  if (mus) { mus.volume = musVol(); if (musVol() <= 0) { mus.pause(); musOn = false; } else startMusic(); }
+}
+$("vAll").value = Math.round(vAll * 100); $("vMus").value = Math.round(vMus * 100);
+$("vAll").addEventListener("input", (e) => { vAll = e.target.value / 100; applyVol(); });
+$("vMus").addEventListener("input", (e) => { vMus = e.target.value / 100; applyVol(); });
+$("vAll").addEventListener("change", () => tone(0, 660, .15, .08));
+$("sndBtn").addEventListener("click", (e) => { e.stopPropagation(); vib(); $("vpan").hidden = !$("vpan").hidden; });
+document.addEventListener("pointerdown", (e) => { if (!$("vpan").hidden && !e.target.closest("#vpan, #sndBtn")) $("vpan").hidden = true; });
+applyVol();
+/* ---------- крупные снежинки, которые можно поймать на тропе ---------- */
+const FLAKE_SVG = '<svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 3.5 12 5.5l3-2M9 20.5 12 18.5l3 2M3.6 10.4 5.5 7.5 4.6 4.2M20.4 13.6 18.5 16.5l.9 3.3M3.6 13.6 5.5 16.5l-.9 3.3M20.4 10.4 18.5 7.5l.9-3.3" stroke="#fbf3ea" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>';
+let caught = 0;
+setInterval(() => {
+  if (cur !== "home" || document.hidden || document.querySelectorAll(".bigflake").length > 1) return;
+  const f = document.createElement("button"); f.type = "button"; f.className = "bigflake"; f.setAttribute("aria-label", "Снежинка");
+  f.innerHTML = FLAKE_SVG; const x = 30 + Math.random() * (Math.min(480, innerWidth) - 60);
+  f.style.left = x + "px"; f.style.setProperty("--sw", (Math.random() < .5 ? -1 : 1) * (20 + Math.random() * 30) + "px");
+  $("home").appendChild(f); setTimeout(() => f.remove(), 9000);
+  f.addEventListener("pointerdown", (e) => {
+    e.preventDefault(); e.stopPropagation(); const r = f.getBoundingClientRect(), ar = $("app").getBoundingClientRect();
+    f.remove(); caught++; P.flakes++; save(); if (caught === 10) egg("flakes"); vib(); [1047, 1319, 1568].forEach((fr, i) => tone(i * .05, fr, .3, .05));
+    for (let i = 0; i < 10; i++) { const sp = document.createElement("i"); sp.className = "spark"; const a = Math.PI * 2 * i / 10, rr = 24 + Math.random() * 20;
+      sp.style.left = (r.left - ar.left + r.width / 2) + "px"; sp.style.top = (r.top - ar.top + r.height / 2) + "px"; sp.style.position = "absolute"; sp.style.zIndex = 8;
+      sp.style.setProperty("--dx", Math.cos(a) * rr + "px"); sp.style.setProperty("--dy", Math.sin(a) * rr + "px"); $("home").appendChild(sp); setTimeout(() => sp.remove(), 900); }
+    if (caught === 10) homeSay("Десять! Ты теперь официально снеголов. Выдаю удостоверение. Мысленно.", 3600);
+    else if (caught === 1 || Math.random() < .4) homeSay(caught === 1 ? "Поймала снежинку! Я в своё время ловил их шапкой." : pick(["Ещё одна! " + caught + " штук уже.", "Ловкая! Мне бы так.", "Снежинки — это вкусно. Проверено.", "Красиво рассыпалась!"]), 2400);
+  });
+}, 7000);
+/* ---------- падающие звёзды ---------- */
+setInterval(() => {
+  if (cur !== "home" || document.hidden || Math.random() < .35) return;
+  const s = document.createElement("i"); s.className = "shoot";
+  s.style.left = (140 + Math.random() * 220) + "px"; s.style.top = (40 + Math.random() * 120) + "px";
+  $("stars").appendChild(s); setTimeout(() => s.remove(), 1200);
+  const sx = parseFloat(s.style.left) - 200, sy = parseFloat(s.style.top) + 64; setTimeout(() => wishStar(sx, sy), 1000);
+}, 6500);
 /* ---------- снег, огоньки, гирлянда ---------- */
 (function decor() {
   let h = "";
@@ -245,20 +668,90 @@ function setFace(m, kind) {   // kind: smile | plain | proud
 
 /* ---------- прогресс ---------- */
 const KEY = "sneg_progress_v1";
+const DEV_URL = (() => { try { return localStorage.getItem("sneg_dev") === "1"; } catch (e) { return false; } })();
 const LETTERS = un("ЦМЩХТ");                                    // буквы этапов 1..5
-const STAGES = ["Тайное слово", "Пазл", "Новогодний ребус", "5 вопросов о Даниле", "Снежная головоломка"];
-let P = { done: 0, bag: [], s1: { round: 0, guesses: [] } };
+const STAGES = ["Тайное слово", "Иероглифы", "Флаги на мачте", "Зажги фонарики", "Созвездия"];
+let P = { done: 0, bag: [], s1: { round: 0, guesses: [] }, s2: null, s3: null, s4: null, s5: null };
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) P = Object.assign(P, s); } catch (e) {}
-if (/[?&]reset=1/.test(location.search)) { P = { done: 0, bag: [], s1: { round: 0, guesses: [] } }; }
+if (DEV_URL && /[?&]reset=1/.test(location.search)) { P = { done: 0, bag: [], s1: { round: 0, guesses: [] }, s2: null, s3: null, s4: null, s5: null }; }
+if (DEV_URL && /[?&]stage=5/.test(location.search) && P.done < 4) { P.done = 4; P.bag = [...un("ЦМЩХТ")].slice(0, 4); }
+if (DEV_URL && /[?&]stage=4/.test(location.search) && P.done < 3) { P.done = 3; P.bag = [...un("ЦМЩХТ")].slice(0, 3); }
+if (DEV_URL && /[?&]stage=3/.test(location.search) && P.done < 2) { P.done = 2; P.bag = [un("ЦМЩХТ")[0], un("ЦМЩХТ")[1]]; }
+if (DEV_URL && /[?&]stage=2/.test(location.search) && P.done < 1) { P.done = 1; P.bag = [LETTERS[0]]; }
+P.ms = P.ms || 0; P.flakes = P.flakes || 0; P.eggs = P.eggs || [];
+// время в пути: считаем только пока вкладка открыта и тропа не пройдена
+setInterval(() => { if (!document.hidden && P.done < 5 && (P.done > 0 || cur !== "home")) { P.ms += 5000; save(); } }, 5000);
+const EGGS = ["moon", "melody", "panda", "wish", "meow", "flakes", "sleep"];
+function egg(k) { if (!P.eggs.includes(k)) { P.eggs.push(k); save(); } }
+// режим разработки: кнопки ↺ ⏭ и «всё заново» спрятаны; включается 8 быстрыми тапами по «Мешочек букв»
+let DEV = false; try { DEV = localStorage.getItem("sneg_dev") === "1"; } catch (e) {}
+// кто проходит: id из ссылки приложения (нужен боту для уведомлений и чтобы открыть поле для слова)
+let UID = ""; try { const m = location.search.match(/[?&]u=(\d+)/); UID = m ? m[1] : (localStorage.getItem("sneg_u") || ""); if (m) localStorage.setItem("sneg_u", UID); } catch (e) {}
+function ping(path, data) { if (!UID) return; try { fetch(WORKER_URL + path, { method: "POST", body: JSON.stringify({ u: UID, ...data }), keepalive: true }).catch(() => {}); } catch (e) {} }
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} };
 
 /* ---------- экраны ---------- */
 let cur = "home", pendingDrop = false;
+
+/* ---------- переход «сквозь снег» ---------- */
+function snowDive(a, b, origin, back) {
+  const app = $("app"), W = app.clientWidth, H = app.clientHeight;
+  const [ox, oy] = origin.split(" ").map((v, i) => v.endsWith("%") ? parseFloat(v) / 100 * (i ? H : W) : parseFloat(v));
+  const cv = document.createElement("canvas"), dpr = Math.min(2, devicePixelRatio || 1);
+  cv.className = "snowdive"; cv.width = W * dpr; cv.height = H * dpr; app.appendChild(cv);
+  const c = cv.getContext("2d"); c.scale(dpr, dpr);
+  const fog = document.createElement("div"); fog.className = "snowfog"; fog.style.background = `radial-gradient(circle at ${ox}px ${oy}px, rgba(96,104,122,.96), rgba(52,50,62,.97) 55%, rgba(30,20,22,.98))`;   // ночная метель — не слепит app.appendChild(fog);
+  const N = 170, fl = Array.from({ length: N }, () => ({ a: Math.random() * Math.PI * 2, d: Math.random() * 40, v: 120 + Math.random() * 520, r: .8 + Math.random() * 2.4, w: Math.random() * 6 }));
+  const T = 1500, mid = 700, t0 = performance.now();
+  a.style.transformOrigin = origin;
+  b.hidden = false; b.style.opacity = "0";                    // новый экран уже на месте (чтобы всё посчиталось), но пока невидим
+  // уходим в снег: экран мягко приближается и размывается
+  a.animate([{ transform: "scale(1)", filter: "blur(0)" }, { transform: `scale(${back ? 1.12 : 1.35})`, filter: "blur(6px)" }], { duration: mid, easing: "cubic-bezier(.45,0,.8,.4)", fill: "forwards" });
+  fog.animate([{ opacity: 0 }, { opacity: 0, offset: .25 }, { opacity: 1, offset: .47 }, { opacity: 1, offset: .53 }, { opacity: 0 }], { duration: T, easing: "ease-in-out", fill: "forwards" });
+  setTimeout(() => {                                          // в самой гуще снега меняем экран
+    a.hidden = true; a.getAnimations().forEach(x => x.cancel());
+    b.style.opacity = ""; b.style.transformOrigin = origin;
+    b.animate([{ transform: `scale(${back ? 1.18 : .9})`, filter: "blur(6px)" }, { transform: "scale(1)", filter: "blur(0)" }], { duration: T - mid, easing: "cubic-bezier(.2,.7,.3,1)" });
+  }, mid);
+  const frame = (t) => {
+    const k = (t - t0) / T; if (k >= 1) { cv.remove(); fog.remove(); return; }
+    c.clearRect(0, 0, W, H);
+    const dens = Math.sin(Math.PI * k);                      // метель сильнее всего посередине
+    fl.forEach(f => {
+      f.d += f.v * 0.016 * (.4 + dens * 1.6); f.a += Math.sin(t / 300 + f.w) * .004;
+      if (f.d > Math.hypot(W, H)) f.d = Math.random() * 30;
+      const x = ox + Math.cos(f.a) * f.d, y = oy + Math.sin(f.a) * f.d, rr = f.r * (1 + f.d / 160);
+      c.globalAlpha = Math.min(1, dens * 1.3) * .8; c.fillStyle = "#e9eef5";
+      c.beginPath(); c.arc(x, y, rr, 0, 7); c.fill();
+    });
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  whoosh();
+}
+function whoosh() {
+  if (vAll <= 0) return; const ctx = A(); if (!ctx) return;
+  const len = 1.3, buf = ctx.createBuffer(1, ctx.sampleRate * len, ctx.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.sin(Math.PI * i / d.length);
+  const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+  src.buffer = buf; f.type = "bandpass"; f.frequency.value = 900; f.Q.value = .7; g.gain.value = .12 * vAll;
+  src.connect(f); f.connect(g); g.connect(ctx.destination); src.start();
+}
+let zoomFrom = null;           // точка станции, к которой «летит камера»
+function stationOrigin(i) {
+  const st = $("path").querySelector(`.st[data-i="${i}"]`), ar = $("app").getBoundingClientRect();
+  if (!st) return "50% 50%"; const r = st.getBoundingClientRect();
+  return `${r.left - ar.left + r.width / 2}px ${r.top - ar.top + r.height / 2}px`;
+}
 function show(id) {
   if (id === cur) return;
-  const a = $(cur), b = $(id);
-  a.classList.add("hide"); setTimeout(() => { a.hidden = true; }, 450);
-  b.hidden = false; b.classList.add("hide"); requestAnimationFrame(() => requestAnimationFrame(() => b.classList.remove("hide")));
+  const a = $(cur), b = $(id), fromHome = cur === "home", toHome = id === "home";
+  if (fromHome !== toHome) {                                  // переход «сквозь снег»: камера ныряет в метель, из неё появляется экран
+    snowDive(a, b, zoomFrom || "50% 50%", toHome);
+  } else {
+    a.classList.add("hide"); setTimeout(() => { a.hidden = true; }, 450);
+    b.hidden = false; b.classList.add("hide"); requestAnimationFrame(() => requestAnimationFrame(() => b.classList.remove("hide")));
+  }
   cur = id;
   if (id === "home") renderHome(pendingDrop), pendingDrop = false;          // тропу считаем, когда экран уже виден
 }
@@ -268,43 +761,164 @@ document.querySelectorAll("[data-home]").forEach(b => b.addEventListener("click"
 const POS = [[.22, .09], [.78, .31], [.22, .53], [.78, .75], [.5, .93]];   // доли ширины/высоты тропы
 const LOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 let homeMo;
+// что говорит Моисей, когда открывается новая загадка
+const INTRO = [
+  "Первая загадка — «Тайное слово». Угадай слово по буквам: зелёный — буква на месте, жёлтый — есть, но не тут. Три слова, и все про Китай!",
+  "Открылась вторая — «Иероглифы»! Под карточками прячутся китайские знаки и картинки. Найди все пары — и выучишь восемь иероглифов.",
+  "Третья — «Флаги на мачте»! Корабль поднял сигнал морскими флагами. Прочитай его по таблице, как настоящий штурман.",
+  "Четвёртая — «Зажги фонарики»! Тап зажигает фонарик и его соседей. Зажги всю улицу — тут нужна голова, а не удача.",
+  "Последняя — «Созвездия»! Соедини звёзды так, чтобы на небе проступила фигура. Три созвездия, каждое сложнее.",
+];
+const LABEL = (i, st) => `<small style="color:${st === "done" ? "#b7e2c4" : st === "cur" ? "#f3c76e" : "rgba(251,243,234,.45)"}">${st === "done" ? "ПРОЙДЕНО" : st === "cur" ? "СЕЙЧАС" : "ЗАКРЫТО"}</small>
+      <span style="color:${st === "lock" ? "rgba(251,243,234,.5)" : "#fbf3ea"}">${st === "lock" ? "? ? ?" : STAGES[i]}</span>`;
+let homePts = [], homeW = 0;
+const ST_ICO = [
+  '<svg viewBox="0 0 30 30"><path d="M15 25 C9 21 7 14 10 8 C12 14 14 18 15 25Z M15 25 C21 21 23 14 20 8 C18 14 16 18 15 25Z" fill="#e889a8"/><path d="M15 25 C12 18 12 10 15 5 C18 10 18 18 15 25Z" fill="#f2a7c0"/><path d="M15 25 C7 24 3 18 4 14 C8 17 12 21 15 25Z M15 25 C23 24 27 18 26 14 C22 17 18 21 15 25Z" fill="#d9779a"/></svg>',
+  '<span style="font-size:24px;color:#a8322a;font-family:serif;line-height:1">福</span>',
+  '<svg viewBox="0 0 30 30"><path d="M8 4 V27" stroke="#6b4230" stroke-width="2.4" stroke-linecap="round"/><rect x="9" y="5" width="16" height="11" fill="#2f5aa8"/><rect x="13" y="8" width="8" height="5" fill="#fff"/></svg>',
+  '<svg viewBox="0 0 40 50"><path d="M20 0 V6" stroke="#c9a24e" stroke-width="2"/><rect x="12" y="5" width="16" height="4" rx="1" fill="#c9a24e"/><ellipse cx="20" cy="24" rx="18" ry="16" fill="#e8402e"/><path d="M20 8 C11 13 11 35 20 40 M20 8 C29 13 29 35 20 40" fill="none" stroke="#a8261a" stroke-width="1.5"/><rect x="12" y="39" width="16" height="4" rx="1" fill="#c9a24e"/></svg>',
+  '<svg viewBox="0 0 30 30"><path d="M6 22 L13 12 L21 16 L25 6" stroke="#c9a24e" stroke-width="1.6" fill="none" stroke-linecap="round"/><g fill="#2b3f72"><circle cx="6" cy="22" r="3"/><circle cx="13" cy="12" r="3.4"/><circle cx="21" cy="16" r="2.8"/><circle cx="25" cy="6" r="3"/></g></svg>',
+];
+const TREE = (h) => `<svg width="${h * .7}" height="${h}" viewBox="0 0 28 40"><path d="M14 2 L22 14 L18 14 L25 25 L20 25 L27 35 L1 35 L8 25 L3 25 L10 14 L6 14Z" fill="#2c6b42"/><path d="M14 2 L18 8 L14 9 L10 8Z M6 14 L10 14 L13 16 L9 17Z M3 25 L8 25 L11 27 L5 28Z M18 25 L23 25 L21 28 L16 27Z" fill="#fbf3ea"/><rect x="12" y="35" width="4" height="5" fill="#5a3a26"/></svg>`;
+const LANTERN = '<svg width="22" height="44" viewBox="0 0 22 44"><path d="M11 0 V8" stroke="#c9a24e" stroke-width="1.5"/><rect x="5" y="7" width="12" height="3" rx="1" fill="#c9a24e"/><ellipse cx="11" cy="20" rx="10" ry="11" fill="#d8402e"/><path d="M11 9 C6 13 6 27 11 31 M11 9 C16 13 16 27 11 31" fill="none" stroke="#a8261a" stroke-width="1.2"/><rect x="5" y="30" width="12" height="3" rx="1" fill="#c9a24e"/><path d="M11 33 V41 M9 41 H13" stroke="#f3c76e" stroke-width="1.5"/></svg>';
+const PAW = '<svg viewBox="0 0 10 10"><ellipse cx="5" cy="6.4" rx="2.6" ry="2.2" fill="#fbf3ea"/><circle cx="2" cy="3.6" r="1.1" fill="#fbf3ea"/><circle cx="4" cy="2.2" r="1.1" fill="#fbf3ea"/><circle cx="6" cy="2.2" r="1.1" fill="#fbf3ea"/><circle cx="8" cy="3.6" r="1.1" fill="#fbf3ea"/></svg>';
+function segPath(a, b) { const p = document.createElementNS("http://www.w3.org/2000/svg", "path"), mx = (a[0] + b[0]) / 2; p.setAttribute("d", `M ${a[0]} ${a[1]} C ${mx} ${a[1]} ${mx} ${b[1]} ${b[0]} ${b[1]}`); return p; }
+function pawAt(p, q, k, fresh) {   // следы: попеременно левая-правая лапа, носком по ходу движения
+  const ang = Math.atan2(q.y - p.y, q.x - p.x), off = (k % 2 ? 11 : -11);
+  const x = p.x + Math.cos(ang + Math.PI / 2) * off, y = p.y + Math.sin(ang + Math.PI / 2) * off;
+  return `<div class="paw${fresh ? " new" : ""}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;transform:rotate(${(ang * 180 / Math.PI + 90).toFixed(0)}deg)">${PAW}</div>`;
+}
+function pawsFor(a, b, upto) {
+  const sp = segPath(a, b), L = sp.getTotalLength(); let h = "", k = 0;
+  for (let d = 26; d < L * (upto || 1) - 26; d += 15) { const p = sp.getPointAtLength(d), q = sp.getPointAtLength(Math.min(L, d + 2)); h += pawAt(p, q, k++); }
+  return h;
+}
+function moRest(i) { const [x, y] = homePts[Math.min(i, 4)]; return [x + (x < homeW / 2 ? 72 : -72), y]; }
 function renderHome(newLetter) {
   // мешочек: буквы в том порядке, в каком выпадали
   $("bag").innerHTML = [0, 1, 2, 3, 4].map(i => P.bag[i] ? `<span class="lt on${newLetter && i === P.bag.length - 1 ? " drop" : ""}">${P.bag[i]}</span>` : '<span class="lt off">?</span>').join("");
-  $("bagCount").textContent = `${P.bag.length} из 5 · порядок — в конце`;
-  const box = $("path"), W = box.clientWidth, H = box.clientHeight;
-  const pts = POS.map(([x, y]) => [x * W, y * H]);
+  $("bagCount").textContent = `${P.bag.length} из 5`;
+    const box = $("path"), W = box.clientWidth, H = box.clientHeight;
+  const pts = POS.map(([x, y]) => [x * W, y * H]); homePts = pts; homeW = W;
   let d = `M ${pts[0][0]} ${pts[0][1]}`;
   for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i], mx = (a[0] + b[0]) / 2; d += ` C ${mx} ${a[1]} ${mx} ${b[1]} ${b[0]} ${b[1]}`; }
-  let h = `<svg class="trail" aria-hidden="true"><path d="${d}" fill="none" stroke="rgba(238,242,246,.85)" stroke-width="10" stroke-linecap="round" stroke-dasharray="1 16"/></svg>`;
+  let h = `<svg class="trail" aria-hidden="true"><path d="${d}" fill="none" stroke="#1d0f0b" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+  const unlock = newLetter && P.done < 5 ? P.done : -1;      // эту станцию откроем анимацией
+  // гирлянда вдоль тропы: пройденный путь горит, впереди — тёмные лампочки
+  const BC = ["#d8574a", "#f3c76e", "#6fae7c", "#7fb0e0"];
+  let bi = 0;
+  for (let k = 1; k < pts.length; k++) {
+    const sp = segPath(pts[k - 1], pts[k]), L = sp.getTotalLength(), lit = k <= P.done && k !== unlock;
+    for (let dd = 30; dd < L - 28; dd += 22) {
+      const pt = sp.getPointAtLength(dd), c = BC[bi % 4];
+      h += `<i class="tb${lit ? " on" : ""}" data-seg="${k}" style="left:${pt.x.toFixed(1)}px;top:${pt.y.toFixed(1)}px;--c:${c};animation-delay:-${(bi % 5) * .35}s"></i>`; bi++;
+    }
+  }
   STAGES.forEach((n, i) => {
-    const [x, y] = pts[i], done = i < P.done, isCur = i === P.done;
-    const cls = done ? "done" : isCur ? "cur" : "lock";
-    const inner = done ? LETTERS[i] : isCur ? String(i + 1) : LOCK;
-    h += `<button type="button" class="st ${cls}" data-i="${i}" style="left:${x}px;top:${y}px" aria-label="${n}">${inner}</button>`;
-    h += `<div class="st-l" style="top:${y + 52}px;left:${Math.max(4, Math.min(W - 144, x - 70))}px;text-align:center">
-      <small style="color:${done ? "#b7e2c4" : isCur ? "#f3c76e" : "rgba(251,243,234,.45)"}">${done ? "ПРОЙДЕНО" : isCur ? "СЕЙЧАС" : "ЗАКРЫТО"}</small>
-      <span style="color:${done || isCur ? "#fbf3ea" : "rgba(251,243,234,.5)"}">${n}</span></div>`;
+    const [x, y] = pts[i];
+    const st = i < P.done ? "done" : (i === P.done && i !== unlock) ? "cur" : "lock";
+    const inner = st === "done" ? `<span class="ico">${ST_ICO[i]}</span><span class="bdg">${LETTERS[i]}</span>` : st === "cur" ? String(i + 1) : LOCK;
+    h += `<button type="button" class="st ${st}" data-i="${i}" style="left:${x}px;top:${y}px" aria-label="${st === "lock" ? "Закрыто" : n}">${inner}</button>`;
+    h += `<div class="st-l" data-l="${i}" style="top:${y + 52}px;left:${Math.max(4, Math.min(W - 144, x - 70))}px;text-align:center">${LABEL(i, st)}</div>`;
   });
-  const mi = Math.min(P.done, 4), [mx, my] = pts[mi];
-  h += `<div class="mo m-mo" id="homeMo" style="left:${mx + (mx < W / 2 ? 72 : -72)}px;top:${my}px"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div>`;
+  // декор: ёлки по краям, фонарики у станций, следы лапок на пройденном пути, сугробы
+  [[.06, .26, 46], [.94, .1, 40], [.95, .56, 50], [.05, .8, 44], [.92, .99, 36]].forEach(([x, y, hh]) => { h += `<div class="tree" style="left:${x * W}px;top:${y * H}px">${TREE(hh)}</div>`; });
+  pts.forEach(([x, y], i) => {
+    const side = (i === 4 ? -1 : x < W / 2 ? -1 : 1), lit = i <= P.done && i !== unlock;
+    h += `<div class="lan${lit ? "" : " off"}" data-lan="${i}" style="left:${x + side * 46}px;top:${y + 6}px"><div class="glow"></div>${LANTERN}</div>`;
+  });
+  for (let k = 1; k <= Math.min(P.done, 4); k++) if (k !== unlock) h += pawsFor(pts[k - 1], pts[k]);
+  h += `<div class="drift" style="left:-10px;width:46%;height:${26 + driftGrow}px"></div><div class="drift" style="right:-10px;width:40%;height:${20 + driftGrow}px"></div>`;
+  pts.forEach(([x, y], i) => { if (i >= P.done) return; h += `<div class="trod" style="left:${x}px;top:${y}px"></div><div class="sball" style="left:${x + 24}px;top:${y + 30}px"></div><div class="sball" style="left:${x + 32}px;top:${y + 27}px;transform:scale(.8)"></div>`; });
+  const [rx, ry] = moRest(unlock >= 0 ? unlock - 1 : P.done);
+  h += `<div class="mo m-mo" id="homeMo" style="left:${rx}px;top:${ry}px"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div>`;
   box.innerHTML = h;
   homeMo = $("homeMo");
+  homeMo.addEventListener("click", petHome);
   box.querySelectorAll(".st").forEach(b => b.addEventListener("click", () => {
     const i = +b.dataset.i;
-    if (i > P.done) { vib(); homeSay(pick(["Сначала предыдущая загадка! Я слежу.", "Закрыто. Даже я не открою — пробовал.", "По порядку, по порядку!"])); return; }
+    if (i > P.done || b.classList.contains("lock")) { vib(); homeSay(pick(["Сначала предыдущая загадка! Я слежу.", "Закрыто. Даже я не открою — пробовал.", "По порядку, по порядку!"])); return; }
     openStage(i);
   }));
-  $("goBtn").textContent = P.done >= 5 ? "Все загадки пройдены!" : `Идти к загадке №${P.done + 1}`;
+  $("goBtn").textContent = P.done >= 5 ? "✦ Итоги тропы ✦" : `Идти к загадке №${P.done + 1}`;
+  if (unlock >= 0) setTimeout(() => walkTo(unlock), 1300);
 }
+// Моисей вперевалочку идёт по тропе к новой загадке, она открывается
+function walkTo(k) {
+  const mo = homeMo, a = homePts[k - 1], b = homePts[k];
+  const tmp = document.createElementNS("http://www.w3.org/2000/svg", "path"), mx = (a[0] + b[0]) / 2;
+  tmp.setAttribute("d", `M ${a[0]} ${a[1]} C ${mx} ${a[1]} ${mx} ${b[1]} ${b[0]} ${b[1]}`);
+  const L = tmp.getTotalLength(), frames = [], [sx, sy] = moRest(k - 1), [ex, ey] = moRest(k);
+  frames.push({ left: sx + "px", top: sy + "px" });
+  for (let t = .12; t <= .88; t += .04) { const p = tmp.getPointAtLength(L * t); frames.push({ left: p.x + "px", top: (p.y - 18) + "px" }); }
+  frames.push({ left: ex + "px", top: ey + "px" });
+  mo.classList.add("walk");
+  homeSay("Пошли дальше!", 1800);
+  const anim = mo.animate(frames, { duration: 2600, easing: "ease-in-out", fill: "forwards" });
+  // следы появляются за Моисеем по мере ходьбы
+  const box = $("path"), t0 = performance.now(); let pk = 0, pd = 26;
+  const pawTick = () => {
+    const prog = Math.min(1, (performance.now() - t0) / 2600), lim = L * prog - 26;
+    while (pd < lim && pd < L - 26) { const p = tmp.getPointAtLength(pd), q = tmp.getPointAtLength(Math.min(L, pd + 2)); box.insertAdjacentHTML("afterbegin", pawAt(p, q, pk++, true)); pd += 15; }
+    const bulbs = box.querySelectorAll(`.tb[data-seg="${k}"]`), nOn = Math.floor(bulbs.length * prog);
+    bulbs.forEach((bb, j) => { if (j < nOn) bb.classList.add("on"); });
+    if (prog < 1) requestAnimationFrame(pawTick); else box.querySelectorAll(`.tb[data-seg="${k}"]`).forEach(bb => bb.classList.add("on"));
+  };
+  requestAnimationFrame(pawTick);
+  let step = 0; const steps = setInterval(() => { tone(0, step++ % 2 ? 300 : 340, .06, .03, 0, "triangle"); }, 230);
+  anim.onfinish = () => {
+    clearInterval(steps); mo.classList.remove("walk"); mo.style.left = ex + "px"; mo.style.top = ey + "px"; anim.cancel();
+    const st = $("path").querySelector(`.st[data-i="${k}"]`), lb = $("path").querySelector(`[data-l="${k}"]`);
+    st.classList.add("unlocking"); tone(0, 180, .12, .08, 120, "triangle");
+    setTimeout(() => {
+      st.className = "st cur pop"; st.textContent = String(k + 1); st.setAttribute("aria-label", STAGES[k]);
+      lb.classList.add("reveal"); lb.innerHTML = LABEL(k, "cur");
+      const ln = $("path").querySelector(`[data-lan="${k}"]`); if (ln) ln.classList.remove("off");
+      [659, 880, 1175].forEach((f, i) => tone(i * .08, f, .45, .07)); vib("heavy");
+      burstAt(homePts[k]);
+      setFace(mo, "proud");
+      homeSay(INTRO[k], 6500);
+    }, 520);
+  };
+}
+function burstAt([x, y]) {
+  const box = $("path");
+  for (let i = 0; i < 14; i++) {
+    const sp = document.createElement("i"); sp.className = "spark"; const a = Math.PI * 2 * i / 14, r = 40 + Math.random() * 26;
+    sp.style.left = x + "px"; sp.style.top = y + "px"; sp.style.setProperty("--dx", Math.cos(a) * r + "px"); sp.style.setProperty("--dy", Math.sin(a) * r + "px");
+    box.appendChild(sp); setTimeout(() => sp.remove(), 900);
+  }
+}
+const PET = ["Мур. Это было приятно.", "Эй, я на работе! Ну ладно, ещё разок.", "Лапки замёрзли, но я держусь.", "Тропа длинная, но мы справимся.", "Я тут каждую снежинку знаю.", "Ты гладишь лучше, чем Данил. Только ему не говори.", "Фонарики зажигаются, когда проходишь загадку. Красиво, да?", "В мешочке уже что-то шуршит…"];
+const HINT_NOW = [
+  "Подсказка: в «Тайном слове» начни со слов, где много разных гласных.",
+  "Подсказка: в «Иероглифах» открывай карточки по порядку и запоминай, где что.",
+  "Подсказка: во «Флагах» сначала ищи в таблице самые яркие флаги — их проще узнать.", "Подсказка: в «Фонариках» не бойся жать кнопку подсказки — я подсвечу нужный фонарик.", "Подсказка: в «Созвездиях» соединяй звёзды по краю фигуры — тапни одну, потом соседнюю.",
+];
+let petN = 0, idleT = null;
+function petHome() {
+  vib(); tone(0, 620, .12, .06, 880); petN++;
+  homeSay(petN % 4 === 0 && P.done < 5 ? HINT_NOW[P.done] : pick(PET), 3200);
+  setFace(homeMo, petN % 2 ? "proud" : "smile"); resetIdle();
+}
+function resetIdle() {
+  clearTimeout(idleT);
+  idleT = setTimeout(() => { if (cur === "home" && !$("mSay").classList.contains("on")) homeSay(pick(["Я тут. Жду тебя у следующей загадки.", "Можно меня погладить, я не кусаюсь.", "Смотри, звезда упала! Загадывай желание.", "Мешочек ждёт новую букву!"]), 3600); resetIdle(); }, 22000);
+}
+document.addEventListener("pointerdown", resetIdle);
 let sayT;
 function homeSay(t, ms) { $("mSayT").textContent = t; $("mSay").classList.add("on"); clearTimeout(sayT); sayT = setTimeout(() => $("mSay").classList.remove("on"), ms || 2600); if (homeMo) setFace(homeMo, "smile"); }
-$("goBtn").addEventListener("click", () => { A(); vib(); if (P.done < 5) openStage(P.done); });
-addEventListener("resize", () => { if (cur === "home") renderHome(); else if (cur === "s1") sizeGrid(); });
+$("goBtn").addEventListener("click", () => { A(); vib(); if (P.done < 5) openStage(P.done); else finale(false); });
+addEventListener("resize", () => { if (cur === "home") renderHome(); else if (cur === "s1") { sizeGrid(); renderGrid(); } else if (cur === "s2") placeMemory(); });
 
 function openStage(i) {
-  A(); vib();
+  P.sent = P.sent || []; if (!P.sent.includes(i)) { P.sent.push(i); save(); ping("/sitestage", { i }); }
+  A(); vib(); if (cur === "home") zoomFrom = stationOrigin(i);
   if (i === 0) { openWord(); return; }
+  if (i === 1) { openMemory(); return; }
+  if (i === 2) { openFlags(); return; }
+  if (i === 3) { openLights(); return; }
+  if (i === 4) { openStars(); return; }
   $("soonTitle").textContent = STAGES[i]; $("soonPill").textContent = `${i + 1} / 5`; $("soonSkip").dataset.i = i;
   show("sSoon");
 }
@@ -315,7 +929,8 @@ function giveLetter(i) {
   P.done = i + 1; P.bag.push(LETTERS[i]); save();
   SND.letter(); vib("heavy");
   pendingDrop = true; show("home");
-  setTimeout(() => homeSay(P.done >= 5 ? "Все пять букв в мешочке! Теперь вспомни, в каком порядке их сложить…" : `Буква «${LETTERS[i]}» в мешочке! Идём дальше по тропе.`, 3600), 500);
+  if (P.done >= 5) { ping("/sitedone", {}); setTimeout(() => homeSay("Пятая буква! Мешочек полный… Ой. Он светится!", 2600), 1300); setTimeout(() => finale(true), 3800); }
+  else setTimeout(() => homeSay(`Буква «${LETTERS[i]}» в мешочке!`), 1300);
 }
 
 /* ================= этап 1: тайное слово ================= */
@@ -340,53 +955,48 @@ function score(g, ans) {
   return res;
 }
 function buildKb() {
-  let h = "";
-  ROWS.forEach((r, k) => {
-    h += "<div>";
-    if (k === 2) h += '<button type="button" class="k wide" data-k="enter">ВВОД</button>';
-    h += [...r].map(c => `<button type="button" class="k" data-k="${c}">${c}</button>`).join("");
-    if (k === 2) h += '<button type="button" class="k del" data-k="del" aria-label="Стереть">⌫</button>';
-    h += "</div>";
-  });
-  $("kb").innerHTML = h;
+  // слева три ряда букв, справа столбик: «стереть» сверху, «ввод» снизу
+  const letters = ROWS.map(r => `<div class="kr">${[...r].map(c => `<button type="button" class="k" data-k="${c}">${c}</button>`).join("")}</div>`).join("");
+  $("kb").innerHTML = `<div class="kl">${letters}</div><div class="kc"><button type="button" class="k del" data-k="del" aria-label="Стереть">⌫</button><button type="button" class="k wide" data-k="enter">ВВОД</button></div>`;
 }
 buildKb();
 $("kb").addEventListener("pointerdown", (e) => { const b = e.target.closest(".k"); if (!b) return; e.preventDefault(); press(b.dataset.k); });
 addEventListener("keydown", (e) => {
   if (cur !== "s1" || !$("wDone").hidden) return;
-  if (e.key === "Enter") press("enter"); else if (e.key === "Backspace") press("del");
+  // Enter не должен «нажимать» кнопку, на которой остался фокус (например ↺ — она сбрасывала игру)
+  if (e.key === "Enter") { e.preventDefault(); if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); press("enter"); }
+  else if (e.key === "Backspace") { e.preventDefault(); press("del"); }
   else { let c = e.key.toUpperCase(); if (c === "Ё") c = "Е"; if (/^[А-ЯЁ]$/.test(c)) press(c); }
 });
-// слова в раунде: одно слово — одна строка; два слова — каждое на своей строке, так клетки крупнее
+// два слова идут в одну строку с небольшим промежутком; строк столько, чтобы рамка была заполнена
 const parts = () => WORDS[round].split(" ");
 let fitRows = 6;
 function sizeGrid() {
-  const ps = parts(), n = Math.max(...ps.map(w => w.length)), two = ps.length > 1;
-  const app = $("app"), card = $("wCard"), avail = Math.min(480, app.clientWidth) - 20 - 16 - 22;   // поля и лампочка
-  const gap = n > 7 ? 4 : 6;
-  const ts = Math.max(26, Math.min(54, Math.floor((avail - gap * (n - 1)) / n)));
-  const cardH = Math.max(230, Math.min(420, app.clientHeight - 112 - 98 - 200 - 40));
-  const rowGap = two ? 12 : (ts > 40 ? 7 : 5), lineGap = 5;
-  const rowH = two ? ts * 2 + lineGap : ts;
-  card.style.setProperty("--ts", ts + "px"); card.style.setProperty("--tg", gap + "px");
-  card.style.setProperty("--gap", rowGap + "px"); card.style.setProperty("--lg", lineGap + "px");
-  app.style.setProperty("--cardH", cardH + "px");
-  fitRows = Math.max(3, Math.floor((cardH - 26 + rowGap) / (rowH + rowGap)));   // сколько попыток влезает без прокрутки
+  const ps = parts(), n = ps.join("").length, sps = ps.length - 1;
+  const app = $("app"), card = $("wCard"), W = Math.min(480, app.clientWidth);
+  const gap = n > 9 ? 3 : 6, spW = sps ? 8 : 0, lamp = n > 9 ? 12 : 22;
+  const avail = W - 20 - 12 - lamp;
+  const ts = Math.max(20, Math.min(66, Math.floor((avail - spW * sps - gap * (n - 1 + sps)) / n)));
+  card.style.height = ""; card.style.flex = ""; const cardH = card.clientHeight || 300;
+  const rowGap = ts > 40 ? 7 : 6;
+  card.style.setProperty("--ts", ts + "px"); card.style.setProperty("--tg", gap + "px"); card.style.setProperty("--sp", spW + "px");
+  card.style.setProperty("--gap", rowGap + "px"); card.style.setProperty("--lw", (n > 9 ? 8 : 12) + "px");
+  fitRows = Math.max(3, Math.min(6, Math.floor((cardH - 26 + rowGap) / (ts + rowGap))));   // не больше шести строк на виду
+  card.style.height = (fitRows * ts + (fitRows - 1) * rowGap + 26) + "px"; card.style.flex = "none";
 }
 function rowHTML(i) {
   const ans = WORDS[round], ps = parts(), g = guesses[i], isCur = i === guesses.length;
   const res = g ? score(g, ans) : null;
-  let k = 0;
-  const lines = ps.map((w, li) => {
-    let h = li === 0 ? `<span class="w-lamp ${g ? "used" : isCur ? "cur" : ""}"></span>` : '<span class="w-lamp ghost"></span>';
+  let k = 0, h = `<div class="w-row" data-r="${i}"><span class="w-lamp ${g ? "used" : isCur ? "cur" : ""}"></span>`;
+  ps.forEach((w, wi) => {
+    if (wi) h += '<span class="w-sp"></span>';
     for (let j = 0; j < w.length; j++) {
       const ch = g ? g[k] : isCur ? (typed[k] || "") : "";
       const cls = g ? res[k] : ch ? "typed" : "";
       h += `<span class="t ${cls}">${ch}</span>`; k++;
     }
-    return `<div class="w-line">${h}</div>`;
-  }).join("");
-  return `<div class="w-row" data-r="${i}">${lines}</div>`;
+  });
+  return h + "</div>";
 }
 function renderGrid() {
   const total = Math.max(guesses.length + 1, fitRows);
@@ -411,8 +1021,8 @@ function say(t, face) { const s = $("wSay"); s.textContent = t; s.classList.remo
 function openWord() {
   round = P.s1.round || 0; guesses = (P.s1.guesses || []).map(g => [...g]); typed = [];
   if (round > 2) round = 2;
-  sizeGrid(); renderRound(); renderGrid(); paintKb(); $("wDone").hidden = true;
-  show("s1");
+  $("wDone").hidden = true; show("s1");
+  sizeGrid(); renderRound(); renderGrid(); paintKb();
   const n = [...WORDS[round]].filter(c => c !== " ").length;
   setTimeout(() => say(guesses.length ? "Продолжаем! Я запомнил все твои попытки." : round === 0 ? `Угадай слово из ${n} букв. Зелёный — буква на месте, жёлтый — есть, но не тут.` : `Раунд ${round + 1}: ${WORDS[round].includes(" ") ? "два слова, 7 и 5 букв" : n + " букв"}. Попыток сколько угодно!`), 350);
 }
@@ -435,6 +1045,10 @@ const LINES_OK = { 0: ["Ни одной буквы… Зато теперь зн
   3: ["Больше половины! Я чую слово.", "Горячо! Ещё чуть-чуть.", "Ого, ты близко!"] };
 async function submit() {
   const ans = WORDS[round], n = [...ans].filter(c => c !== " ").length, row = $("wGrid").children[guesses.length];
+  if (typed.join("") === "МЯУ") {
+    egg("meow"); typed = []; updRow(row); tone(0, 700, .2, .08, 520); tone(.18, 620, .25, .08, 900);
+    say("Не отвлекайся! …но спасибо. Мур.", "proud"); return;
+  }
   if (typed.length < n) {
     SND.bad(); vib(); row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake");
     say(pick(["Не хватает букв!", `Нужно ${n} букв. Я посчитал.`, "Слово ещё не дописано!"]), "plain"); return;
@@ -451,7 +1065,7 @@ async function submit() {
   guesses.push(g); typed = []; P.s1 = { round, guesses: guesses.map(x => x.join("")) }; save();
   paintKb();
   const win = res.every(r => r === "g");
-  if (win) { busy = false; tiles.forEach((t, i) => setTimeout(() => { t.classList.remove("flip"); t.classList.add("win"); }, i * 70)); SND.win(); vib("heavy"); setTimeout(roundWon, 1100); return; }
+  if (win) { busy = false; tiles.forEach((t, i) => { t.textContent = g[i]; setTimeout(() => { t.className = "t g win"; t.textContent = g[i]; }, i * 70); }); SND.win(); vib("heavy"); setTimeout(roundWon, 700); return; }
   // новая пустая строка снизу, сетка плавно уезжает
   const grid = $("wGrid");
   if (grid.children.length <= guesses.length) grid.insertAdjacentHTML("beforeend", rowHTML(guesses.length));
@@ -467,13 +1081,15 @@ function roundWon() {
   const ans = WORDS[round], info = INFO[round];
   const word = [...ans].map(c => c === " " ? '<span class="sp"></span>' : `<span>${c}</span>`).join("");
   const tries = guesses.length;
+  const react = round === 0 ? "Угадала! Лотос — как ты: красивый и… ну, ты поняла." : round === 1 ? "Гонконг! Данил одобряет — там отличная гавань." : "КРАСНАЯ ПАНДА! Я, конечно, лучше. Но она тоже ничего.";
+  busy = true; say(react, "proud");
   $("wDoneCard").innerHTML = `<small>РАУНД ${round + 1} ИЗ 3 · ${tries} ${tries % 10 === 1 && tries % 100 !== 11 ? "ПОПЫТКА" : tries % 10 >= 2 && tries % 10 <= 4 && (tries % 100 < 12 || tries % 100 > 14) ? "ПОПЫТКИ" : "ПОПЫТОК"}</small>
     <div class="word">${word}</div>
     <div class="pics">${info.pics.map(p => `<div><img src="assets/${p}.jpg" alt=""></div>`).join("")}</div>
     <p>${info.text}</p>
+    <div class="c-mo"><div class="mo"><img src="assets/moisey_proud.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div><div class="say">${react}</div></div>
     <button type="button" class="btn" id="wNext">${round < 2 ? "Следующее слово" : "Забрать букву"}</button>`;
-  $("wDone").hidden = false;
-  say(round === 0 ? "Угадала! Лотос — как ты: красивый и… ну, ты поняла." : round === 1 ? "Гонконг! Данил одобряет — там отличная гавань." : "КРАСНАЯ ПАНДА! Я, конечно, лучше. Но она тоже ничего.", "proud");
+  setTimeout(() => { $("wDone").hidden = false; busy = false; }, 1700);     // сначала даём прочитать Моисея
   $("wNext").addEventListener("click", () => {
     vib();
     const s = $("wDone"); s.classList.add("fade");
@@ -487,6 +1103,711 @@ function roundWon() {
   });
 }
 
+
+/* ================= этап 2: иероглифы ================= */
+const ICON = {
+  fire: '<svg viewBox="0 0 60 60"><path d="M30 6 C34 18 46 22 46 38 A16 16 0 0 1 14 38 C14 28 20 24 22 16 C26 22 26 26 28 28 C30 22 28 14 30 6Z" fill="#e8642c"/><path d="M30 24 C32 32 39 34 39 42 A9 9 0 0 1 21 42 C21 36 25 34 26 30 C28 33 29 34 30 35 C31 31 30 28 30 24Z" fill="#f3c76e"/></svg>',
+  mountain: '<svg viewBox="0 0 60 60"><path d="M2 50 L20 20 L30 34 L40 14 L58 50Z" fill="#5f7d6a"/><path d="M40 14 L46 26 L42 24 L38 28 L34 24Z M20 20 L25 28 L21 27 L17 30 L15 28Z" fill="#fbf3ea"/><path d="M2 50 L58 50" stroke="#3f5a48" stroke-width="3"/></svg>',
+  moon: '<svg viewBox="0 0 60 60"><defs><radialGradient id="mmMoonG" cx="40%" cy="38%" r="65%"><stop offset="0" stop-color="#fff8dc"/><stop offset=".7" stop-color="#f6e3a6"/><stop offset="1" stop-color="#e9c97a"/></radialGradient><radialGradient id="mmMoonH" r=".5"><stop offset=".55" stop-color="#f6e3a6" stop-opacity=".55"/><stop offset="1" stop-color="#f6e3a6" stop-opacity="0"/></radialGradient></defs><circle cx="30" cy="28" r="27" fill="url(#mmMoonH)"/><circle cx="30" cy="28" r="18" fill="url(#mmMoonG)"/><circle cx="24" cy="23" r="3.6" fill="#e2c07a" opacity=".7"/><circle cx="35" cy="33" r="4.6" fill="#e2c07a" opacity=".6"/><circle cx="35" cy="20" r="2" fill="#e2c07a" opacity=".6"/><circle cx="23" cy="35" r="1.8" fill="#e2c07a" opacity=".6"/><path d="M14 47 C14 42 20 41 22 44 C24 40 31 40 32 45 C36 44 39 48 36 50 H16 C13 50 12 48 14 47Z" fill="#fbfbfd" stroke="#d7dde6" stroke-width="1"/></svg>',
+  dragon: '<svg viewBox="0 0 60 60"><path d="M6 50 C10 36 22 50 28 38 C33 28 22 22 30 14 C34 10 40 11 43 14" fill="none" stroke="#c8452f" stroke-width="8" stroke-linecap="round"/><path d="M6 50 C10 36 22 50 28 38 C33 28 22 22 30 14 C34 10 40 11 43 14" fill="none" stroke="#f3c76e" stroke-width="2" stroke-dasharray="3 4" stroke-linecap="round"/><path d="M12 42 l-3-5 5 2Z M20 44 l-1-6 4 4Z M28 31 l-5-3 5-1Z M27 21 l-5-1 4-3Z" fill="#4f9a62"/><path d="M4 52 C1 48 2 44 5 46 C4 50 7 51 9 49" fill="#4f9a62"/><circle cx="46" cy="16" r="8" fill="#d8574a"/><path d="M42 9 L38 3 M48 8 L50 2" stroke="#c9952e" stroke-width="2.2" stroke-linecap="round"/><circle cx="48" cy="14" r="2.2" fill="#fff"/><circle cx="48.6" cy="14.2" r="1.1" fill="#2b1a17"/><path d="M51 19 C56 20 58 26 55 29 M50 21 C53 24 52 30 48 31" stroke="#c9952e" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M53 17 H55" stroke="#7a2018" stroke-width="1.6" stroke-linecap="round"/><path d="M8 18 C12 14 18 16 18 20 C22 18 26 22 22 25 H8 C4 25 4 19 8 18Z" fill="#e7eef5" opacity=".9"/></svg>',
+  tea: '<svg viewBox="0 0 60 60"><path d="M22 8 C18 12 26 14 22 18 M30 6 C26 10 34 12 30 16 M38 8 C34 12 42 14 38 18" stroke="#c9ad9e" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M10 24 H50 L46 46 A6 6 0 0 1 40 50 H20 A6 6 0 0 1 14 46Z" fill="#7fb0e0"/><path d="M12 30 H48" stroke="#fbf3ea" stroke-width="2"/><path d="M26 36 C30 32 34 40 38 36" stroke="#fbf3ea" stroke-width="2" fill="none"/><ellipse cx="30" cy="25" rx="19" ry="3" fill="#8a5a3a"/></svg>',
+  sun: '<svg viewBox="0 0 60 60"><g stroke="#f0a35a" stroke-width="4" stroke-linecap="round"><path d="M30 4V12M30 48V56M4 30H12M48 30H56M11.6 11.6L17.3 17.3M42.7 42.7L48.4 48.4M11.6 48.4L17.3 42.7M42.7 17.3L48.4 11.6"/></g><circle cx="30" cy="30" r="13" fill="#f3c76e" stroke="#f0a35a" stroke-width="2"/></svg>',
+  star: '<svg viewBox="0 0 60 60"><path d="M30 5 L37 22 L55 23 L41 35 L46 53 L30 43 L14 53 L19 35 L5 23 L23 22Z" fill="#f3c76e" stroke="#c9952e" stroke-width="2" stroke-linejoin="round"/><circle cx="25" cy="24" r="3" fill="#fff6dc"/></svg>',
+};
+const PAIRS = [
+  { ch: "猫", rd: "мао", pic: '<img src="assets/moisey_smile.png" alt="">', ru: "кот", say: "猫 — «мао», кот. Читается почти как «мяу». Китайцы явно знали, кто тут главный." },
+  { ch: "火", rd: "хуо", pic: ICON.fire, ru: "огонь", say: "火 — «хуо», огонь. Похоже на костёр с искрами, правда?" },
+  { ch: "山", rd: "шань", pic: ICON.mountain, ru: "гора", say: "山 — «шань», гора. Три вершины — проще не придумаешь." },
+  { ch: "月", rd: "юэ", pic: ICON.moon, ru: "луна", say: "月 — «юэ», луна. Раньше рисовали полумесяц, потом он стал квадратным. Как я после праздников." },
+  { ch: "龙", rd: "лун", pic: '<span class="emo">🐉</span>', ru: "дракон", say: "龙 — «лун», дракон. В Китае он добрый и приносит удачу. Как кот, только больше." },
+  { ch: "茶", rd: "ча", pic: ICON.tea, ru: "чай", say: "茶 — «ча», чай. Наше слово «чай» пришло прямо из китайского! Ты говоришь по-китайски каждый день." },
+  { ch: "日", rd: "жи", pic: ICON.sun, ru: "солнце", say: "日 — «жи», солнце. Раньше это был кружок с точкой, а потом он стал квадратным." },
+  { ch: "星", rd: "син", pic: ICON.star, ru: "звезда", say: "星 — «син», звезда. Внутри спрятано 日 — солнце. Звезда — это солнце, только очень далеко." },
+];
+let mm = null, mmOpen = [], mmLock = false;
+function newMemory() {
+  const deck = [];
+  PAIRS.forEach((_, i) => { deck.push(i * 2); deck.push(i * 2 + 1); });   // чётные — иероглиф, нечётные — картинка
+  for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
+  return { deck, done: [], moves: 0 };
+}
+function cardHTML(id, k) {
+  const pi = id >> 1, isCh = id % 2 === 0, p = PAIRS[pi], done = mm.done.includes(pi);
+  return `<button type="button" class="mc${done ? " done" : ""}" data-k="${k}" aria-label="Карточка"><div class="bk">福</div><div class="fr">${isCh ? `<b>${p.ch}</b><small>${p.ru} · «${p.rd}»</small>` : `${p.pic}<small>${p.ru}</small>`}</div></button>`;
+}
+function renderMemory() {
+  $("mmGrid").innerHTML = mm.deck.map((id, k) => cardHTML(id, k)).join("");
+  $("mmGrid").querySelectorAll(".mc").forEach(b => b.addEventListener("click", () => flipCard(+b.dataset.k, b)));
+  memStat(); placeMemory();
+}
+function memStat() { $("mmStat").innerHTML = `<span>Пар: <b>${mm.done.length} / ${PAIRS.length}</b></span><span>Ходов: <b>${mm.moves}</b></span>`; }
+function placeMemory() {          // подпись и Моисей — сразу под сеткой
+  const g = $("mmGrid"), top = g.offsetTop + g.offsetHeight;
+  $("mmStat").style.top = (top + 12) + "px";
+  $("mmMoBox").style.top = (top + 36) + "px";
+}
+function memSay(t, face) { const s = $("mmSay"); s.textContent = t; s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop"); setFace($("mmMo"), face || "smile"); }
+function openMemory() {
+  if (!P.s2 || !P.s2.deck) { P.s2 = newMemory(); save(); }
+  mm = P.s2; mmOpen = []; mmLock = false; $("mmDone").hidden = true;
+  show("s2"); renderMemory(); requestAnimationFrame(placeMemory);
+  setTimeout(() => memSay(mm.done.length ? "Продолжаем! Найденные пары я запомнил." : "Под карточками — иероглифы и картинки, на каждой подписано, что это. Открывай по две и запоминай, где что лежит!"), 350);
+}
+const MISS = ["Не пара. Но выглядело убедительно!", "Мимо. Запоминай, где что лежит!", "Эти двое не знакомы.", "Хм, нет. Я бы тоже ошибся. Наверное."];
+function flipCard(k, el) {
+  if (mmLock || el.classList.contains("open") || el.classList.contains("done")) return;
+  A(); vib(); tone(0, 520, .08, .05, 700, "triangle");
+  el.classList.add("open"); mmOpen.push({ k, el });
+  if (mmOpen.length < 2) return;
+  mm.moves++; memStat();
+  const [a, b] = mmOpen, ia = mm.deck[a.k], ib = mm.deck[b.k];
+  if ((ia >> 1) === (ib >> 1)) {                    // пара: иероглиф и его картинка
+    const pi = ia >> 1; mm.done.push(pi); mmOpen = []; save();
+    setTimeout(() => {
+      [a.el, b.el].forEach(e => { e.classList.remove("open"); e.classList.add("done", "glow"); });
+      [784, 988, 1175].forEach((f, i) => tone(i * .07, f, .4, .07)); vib("heavy");
+      memStat();
+      if (mm.done.length === PAIRS.length) { memSay("Все пары! Ты теперь знаешь восемь иероглифов. Это больше, чем я.", "proud"); setTimeout(memoryWon, 1600); }
+      else memSay(PAIRS[pi].say, "proud");
+    }, 450);
+  } else {
+    mmLock = true; save();
+    setTimeout(() => { a.el.classList.add("miss"); b.el.classList.add("miss"); tone(0, 260, .16, .08, 200, "triangle"); }, 450);
+    setTimeout(() => { [a.el, b.el].forEach(e => e.classList.remove("open", "miss")); mmOpen = []; mmLock = false; }, 1250);
+    if (mm.moves % 3 === 0) memSay(pick(MISS), "plain");
+  }
+}
+function memoryWon() {
+  $("mmDoneCard").innerHTML = `<small>ЭТАП 2 · ${mm.moves} ХОДОВ</small>
+    <h3>Все пары найдены!</h3>
+    <div class="word" style="font-family:serif">${PAIRS.map(p => `<span style="width:34px;height:38px;font-size:22px;font-weight:400">${p.ch}</span>`).join("")}</div>
+    <p>И ещё один иероглиф напоследок — тот, что на обороте всех карточек: <b style="color:#f3c76e;font-family:serif;font-size:18px">福</b> «фу», счастье. На китайский Новый год его вешают на дверь вверх ногами. «Счастье перевернулось» по-китайски звучит так же, как «счастье пришло».</p>
+    <button type="button" class="btn" id="mmNext">Забрать букву</button>`;
+  $("mmDone").hidden = false;
+  $("mmNext").addEventListener("click", () => { vib(); const s = $("mmDone"); s.classList.add("fade"); setTimeout(() => { s.hidden = true; s.classList.remove("fade"); }, 350); setTimeout(() => giveLetter(1), 300); });
+}
+
+
+/* ================= этап 3: флаги на мачте ================= */
+// морские сигнальные флаги и их русские буквы (так их читают по Международному своду сигналов)
+const FLAG = {
+  "А": '<path d="M0 0H18V24H0Z" fill="#fff"/><path d="M18 0H36L28 12L36 24H18Z" fill="#2f5aa8"/>',
+  "В": '<rect width="36" height="24" fill="#2f5aa8"/><rect x="6" y="4" width="24" height="16" fill="#fff"/><rect x="12" y="8" width="12" height="8" fill="#d33a2c"/>',
+  "Г": '<rect width="36" height="24" fill="#f3c33b"/><rect x="6" width="6" height="24" fill="#2f5aa8"/><rect x="18" width="6" height="24" fill="#2f5aa8"/><rect x="30" width="6" height="24" fill="#2f5aa8"/>',
+  "Д": '<rect width="36" height="24" fill="#f3c33b"/><rect y="7" width="36" height="10" fill="#2f5aa8"/>',
+  "Е": '<rect width="36" height="12" fill="#2f5aa8"/><rect y="12" width="36" height="12" fill="#d33a2c"/>',
+  "И": '<rect width="36" height="24" fill="#f3c33b"/><circle cx="18" cy="12" r="6" fill="#111"/>',
+  "К": '<rect width="18" height="24" fill="#f3c33b"/><rect x="18" width="18" height="24" fill="#2f5aa8"/>',
+  "Л": '<rect width="36" height="24" fill="#f3c33b"/><rect x="18" width="18" height="12" fill="#111"/><rect y="12" width="18" height="12" fill="#111"/>',
+  "М": '<rect width="36" height="24" fill="#2f5aa8"/><path d="M0 0L36 24M36 0L0 24" stroke="#fff" stroke-width="5"/>',
+  "Н": [0, 1, 2, 3].map(x => [0, 1, 2, 3].map(y => `<rect x="${x * 9}" y="${y * 6}" width="9" height="6" fill="${(x + y) % 2 ? "#fff" : "#2f5aa8"}"/>`).join("")).join(""),
+  "О": '<path d="M0 0H36V24Z" fill="#d33a2c"/><path d="M0 0V24H36Z" fill="#f3c33b"/>',
+  "П": '<rect width="36" height="24" fill="#2f5aa8"/><rect x="10" y="7" width="16" height="10" fill="#fff"/>',
+  "Р": '<rect width="36" height="24" fill="#d33a2c"/><rect x="15" width="6" height="24" fill="#f3c33b"/><rect y="9" width="36" height="6" fill="#f3c33b"/>',
+  "С": '<rect width="36" height="24" fill="#fff"/><rect x="11" y="7" width="14" height="10" fill="#2f5aa8"/>',
+  "Т": '<rect width="12" height="24" fill="#d33a2c"/><rect x="12" width="12" height="24" fill="#fff"/><rect x="24" width="12" height="24" fill="#2f5aa8"/>',
+  "У": '<rect width="36" height="24" fill="#fff"/><rect width="18" height="12" fill="#d33a2c"/><rect x="18" y="12" width="18" height="12" fill="#d33a2c"/>',
+  "Х": '<rect width="18" height="24" fill="#fff"/><rect x="18" width="18" height="24" fill="#d33a2c"/>',
+  "Ы": '<rect width="36" height="24" fill="#f3c33b"/><path d="M-6 6L6 -6M-6 18L18 -6M-6 30L30 -6M6 30L42 -6M18 30L42 6M30 30L42 18" stroke="#d33a2c" stroke-width="5"/>',
+};
+FLAG["З"] = '<path d="M0 0H36L18 12Z" fill="#f3c33b"/><path d="M0 0V24L18 12Z" fill="#111"/><path d="M36 0V24L18 12Z" fill="#2f5aa8"/><path d="M0 24H36L18 12Z" fill="#d33a2c"/>';
+const fsvg = (c) => `<svg class="fl" viewBox="0 0 36 24" aria-label="флаг">${FLAG[c]}</svg>`;
+// часть 1 — поднять сигнал; часть 2 — прочитать ответ корабля, когда половину справочника смыло волной
+const F1 = un("ЩМЙПЧЦ"), F2 = un("ЗЧЩМЙ'ХКХФЩЪЦХЦ");
+const LOCKER = ["Д", "Т", "К", "П", "Ы", "Е", "Л", "Р", "Н", "И", "Х", "В", "М", "А", "С", "У"];   // рундук с флагами (порядок постоянный)
+const BOOK_FULL = ["А", "В", "Д", "Е", "И", "К", "Л", "М", "Н", "П", "Р", "С", "Т", "У", "Х", "Ы"];
+const LOG = [un("ЩЧХЦ"), un("ОЪЧК"), un("ЗЛХЙ")];                // журнал: старые сигналы с переводом
+const TORN = ["А", "Е", "Н", "О", "Т"];                           // что осталось от справочника
+const F_INFO = [
+  "Сигналы флагами поднимают на мачте сверху вниз — читают их тоже сверху. Ты только что поздоровалась с кораблём на языке, который понимают моряки всего мира.",
+  "«Попутного ветра» — главное пожелание у моряков: так прощаются с теми, кто уходит в рейс. Сигнальные флаги придумали ещё в парусном флоте, а Международный свод сигналов действует до сих пор — его учит каждый штурман. Данил, например.",
+];
+let fp = 0, hoist = [], fsel = 0, fbusy = false;
+function fSay(t, face) { const s = $("fSay"); s.textContent = t; s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop"); setFace($("fMo"), face || "smile"); }
+function fRoundHead() { $("fRound").innerHTML = (fp === 0 ? "ЧАСТЬ 1 ИЗ 2 · ПОДНИМИ СИГНАЛ" : "ЧАСТЬ 2 ИЗ 2 · ПРОЧИТАЙ ОТВЕТ") + [0, 1].map(i => `<i class="${i < fp ? "ok" : i === fp ? "on" : ""}"></i>`).join(""); }
+/* --- часть 1 --- */
+function renderHoist() {
+  const n = F1.length;
+  let mast = ""; for (let i = 0; i < n; i++) mast += `<div class="f-slot">${hoist[i] ? `<span data-h="${i}" style="display:block;animation-delay:-${i * .3}s">${fsvg(hoist[i])}</span>` : '<span class="empty"></span>'}</div>`;
+  $("fBody").innerHTML = `<div class="plank"><div class="f-scene">
+      <div class="f-mast" id="fMast">${mast}</div>
+      <div class="f-radio"><div class="f-msg"><small>📻 РАЦИЯ · КАПИТАН</small>Поднимите сигнал:<b>${F1}</b></div>
+        <button type="button" class="f-btn ghost" id="fBookBtn">📖 Справочник флагов</button>
+        <button type="button" class="f-btn" id="fUp">⚑ Поднять сигнал</button></div></div></div>
+    <div class="plank"><h4>Рундук с флагами <small>ТАП — НА МАЧТУ</small></h4><div class="f-locker" id="fLocker">${LOCKER.map((c, i) => `<button type="button" data-c="${c}" data-i="${i}" class="${hoist.includes(c) ? "used" : ""}">${fsvg(c)}</button>`).join("")}</div></div>`;
+  $("fLocker").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    if (fbusy) return; const i = hoist.findIndex(x => !x), slot = i < 0 ? (hoist.length < n ? hoist.length : -1) : i;
+    if (slot < 0) { fSay("Мачта полная! Сними лишний флаг — тапни по нему.", "plain"); return; }
+    hoist[slot] = b.dataset.c; tone(0, 520 + slot * 60, .12, .06); vib(); renderHoist();
+  }));
+  $("fMast").querySelectorAll("[data-h]").forEach(f => f.addEventListener("click", () => { if (fbusy) return; hoist[+f.dataset.h] = null; tone(0, 300, .1, .05); vib(); renderHoist(); }));
+  $("fBookBtn").addEventListener("click", () => openBook(BOOK_FULL));
+  $("fUp").addEventListener("click", checkHoist);
+}
+function checkHoist() {
+  if (fbusy) return;
+  const n = F1.length, filled = Array.from({ length: n }, (_, i) => hoist[i]).filter(Boolean).length;
+  if (filled < n) { SND.bad(); fSay(`На мачте ${filled} из ${n} флагов. Сигнал не полный!`, "plain"); return; }
+  const wrong = [...F1].map((c, i) => hoist[i] !== c);
+  if (wrong.some(Boolean)) {
+    SND.bad(); vib("heavy"); P.s3.miss = (P.s3.miss || 0) + 1; save();
+    $("fMast").querySelectorAll("[data-h]").forEach(f => { if (wrong[+f.dataset.h]) f.querySelector(".fl").classList.add("bad"); });
+    const k = wrong.filter(Boolean).length;
+    fSay(k === 1 ? "Почти! Один флаг не тот — он подсвечен красным." : `Капитан не понял сигнал: ${k} флага не на месте. Сверься со справочником!`, "plain");
+    return;
+  }
+  fbusy = true; [523, 659, 784, 1047].forEach((f, i) => tone(i * .1, f, .5, .08)); vib("heavy");
+  fSay("Сигнал принят! Корабль отвечает…", "proud");
+  setTimeout(() => flagPartWon(0), 1400);
+}
+/* --- часть 2 --- */
+function renderCipher() {
+  const words = F2.split(" "), got = P.s3.got;
+  const W = Math.min(480, $("app").clientWidth) - 20 - 24, maxLen = Math.max(...words.map(w => w.length));
+  const tw = Math.max(24, Math.min(36, Math.floor((W - (maxLen - 1) * 4) / maxLen)));
+  let k = 0;
+  const target = words.map(w => `<div class="f-line">${[...w].map(c => { const g = got[k]; const h = `<div class="f-cell">${fsvg(c)}<button type="button" class="f-in${g ? " ok" : ""}" data-k="${k}">${g || ""}</button></div>`; k++; return h; }).join("")}</div>`).join("");
+  $("fBody").innerHTML = `<div class="plank" style="--tw:${tw}px"><h4>Ответ корабля <small>ВПИШИ БУКВЫ</small></h4><div class="f-target">${target}</div></div>
+    <div class="plank"><div class="f-clues">
+      <div><h4>Судовой журнал</h4><div class="f-log">${LOG.map(w => `<div>${[...w].map(c => fsvg(c)).join("")}<span>${w}</span></div>`).join("")}</div></div>
+      <div><h4>Обрывок</h4><div class="f-torn">${TORN.map(c => `<div>${fsvg(c)}${c}</div>`).join("")}<div class="gone"><i></i>…</div></div></div>
+    </div></div>`;
+  $("fBody").querySelectorAll(".f-in").forEach(b => b.addEventListener("click", () => { if (!b.classList.contains("ok")) { fsel = +b.dataset.k; fSelect(); vib(); } }));
+  fsel = got.findIndex(x => !x); if (fsel < 0) fsel = 0; fSelect();
+}
+function fCells() { return [...$("fBody").querySelectorAll(".f-in")]; }
+function fSelect() { fCells().forEach((b, i) => b.classList.toggle("sel", i === fsel && !b.classList.contains("ok"))); }
+function f2Letters() { return [...F2].filter(c => c !== " "); }
+function fNextEmpty(from) { const got = P.s3.got, n = got.length; for (let i = 1; i <= n; i++) { const j = (from + i) % n; if (!got[j]) return j; } return -1; }
+function buildFKb() {
+  const letters = ROWS.map(r => `<div class="kr">${[...r].map(c => `<button type="button" class="k" data-k="${c}">${c}</button>`).join("")}</div>`).join("");
+  $("fKb").innerHTML = `<div class="kl">${letters}</div><div class="kc"><button type="button" class="k del" data-k="del" aria-label="Стереть">⌫</button><button type="button" class="k wide" data-k="check">ГОТОВО</button></div>`;
+  $("fKb").addEventListener("pointerdown", (e) => { const b = e.target.closest(".k"); if (!b) return; e.preventDefault(); fPress(b.dataset.k); });
+}
+buildFKb();
+function fPress(k) {
+  if (fbusy || cur !== "s3" || fp !== 1) return;
+  const cells = fCells(), b = cells[fsel], got = P.s3.got;
+  if (k === "check") { checkCipher(); return; }
+  if (k === "del") { if (b && !b.classList.contains("ok") && b.textContent) { b.textContent = ""; P.s3.typed[fsel] = ""; } else { const prev = (fsel - 1 + cells.length) % cells.length; if (!got[prev]) { fsel = prev; cells[prev].textContent = ""; P.s3.typed[prev] = ""; } } fSelect(); SND.del(); save(); return; }
+  if (!b || got[fsel]) return;
+  b.textContent = k; b.classList.remove("bad"); P.s3.typed[fsel] = k; save(); SND.key();
+  const j = fNextEmpty(fsel); if (j >= 0 && j > fsel) { fsel = j; } fSelect();
+}
+function checkCipher() {
+  const L = f2Letters(), cells = fCells(), got = P.s3.got, typed = P.s3.typed;
+  const empty = L.findIndex((c, i) => !got[i] && !typed[i]);
+  if (empty >= 0) { SND.bad(); fSay("Сначала заполни все клетки — потом проверим.", "plain"); fsel = empty; fSelect(); return; }
+  let bad = 0;
+  L.forEach((c, i) => { if (got[i]) return; if (typed[i] === c) { got[i] = c; cells[i].className = "f-in ok"; } else { bad++; cells[i].classList.remove("bad"); void cells[i].offsetWidth; cells[i].classList.add("bad"); } });
+  save();
+  if (!bad) { fbusy = true; [523, 659, 784, 1047, 1319].forEach((f, i) => tone(i * .1, f, .6, .08)); vib("heavy"); fSay("«Попутного ветра»! Это лучшее, что моряк может пожелать.", "proud"); setTimeout(() => flagPartWon(1), 1500); return; }
+  SND.bad(); vib("heavy"); P.s3.miss = (P.s3.miss || 0) + 1; save();
+  fSay(bad > 6 ? "Много мимо. Подсказка: флаги из журнала стоят в том же порядке, что и буквы слова." : pick([`Неверно: ${bad}. Красные клетки — перепроверь по журналу.`, "Верные буквы я закрепил. Остальное — ещё раз!"]), "plain");
+  setTimeout(() => cells.forEach((c, i) => { if (!got[i]) { c.textContent = ""; c.classList.remove("bad"); P.s3.typed[i] = ""; } }), 900);
+  fsel = L.findIndex((c, i) => !got[i]); setTimeout(fSelect, 950);
+}
+addEventListener("keydown", (e) => {
+  if (cur !== "s3" || fp !== 1 || !$("fDone").hidden || !$("fBook").hidden) return;
+  if (e.key === "Enter") { e.preventDefault(); fPress("check"); return; }
+  if (e.key === "Backspace") { e.preventDefault(); fPress("del"); return; }
+  let c = e.key.toUpperCase(); if (c === "Ё") c = "Е"; if (/^[А-ЯЁ]$/.test(c)) fPress(c);
+});
+/* --- справочник --- */
+function openBook(list) {
+  vib();
+  $("fBookCard").innerHTML = `<small>МЕЖДУНАРОДНЫЙ СВОД СИГНАЛОВ</small><h3>Справочник флагов</h3><div class="f-book">${list.map(c => `<div>${fsvg(c)}${c}</div>`).join("")}</div>
+    <div class="c-mo"><div class="mo"><img src="assets/moisey_smile.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div><div class="say">Данил такие флаги читает без справочника. Я — только со справочником. И с рыбкой.</div></div>
+    <button type="button" class="btn" id="fBookX">Закрыть</button>`;
+  $("fBook").hidden = false; $("fBookX").addEventListener("click", () => { $("fBook").hidden = true; });
+}
+/* --- общее --- */
+function showPart() {
+  fRoundHead(); fbusy = false;
+  if (fp === 0) { $("fKb").hidden = true; renderHoist(); }
+  else { $("fKb").hidden = false; renderCipher(); }
+}
+function openFlags() {
+  if (!P.s3 || P.s3.p === undefined) { P.s3 = { p: 0, got: [], typed: [], miss: 0 }; save(); }
+  fp = Math.min(1, P.s3.p); hoist = []; $("fDone").hidden = true; $("fBook").hidden = true;
+  if (fp === 1 && !P.s3.got.length) { P.s3.got = f2Letters().map(() => null); P.s3.typed = f2Letters().map(() => ""); }
+  show("s3"); showPart();
+  setTimeout(() => fSay(fp === 0 ? "Капитан просит поднять сигнал. Найди нужные флаги в рундуке — справочник поможет." : "Корабль ответил! Но волна смыла половину справочника. Выручит судовой журнал."), 380);
+}
+function flagPartWon(part) {
+  const word = part === 0 ? F1 : F2;
+  $("fDoneCard").innerHTML = `<small>ЧАСТЬ ${part + 1} ИЗ 2</small>
+    <div class="word" style="gap:4px 12px">${word.split(" ").map(w => `<div style="display:flex;gap:4px">${[...w].map(c => `<span>${c}</span>`).join("")}</div>`).join("")}</div>
+    <div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;--fw:26px">${[...word].filter(c => c !== " ").map(c => fsvg(c)).join("")}</div>
+    <p>${F_INFO[part]}</p>
+    <button type="button" class="btn" id="fNext">${part === 0 ? "Что ответил корабль?" : "Забрать букву"}</button>`;
+  $("fDone").hidden = false;
+  $("fNext").addEventListener("click", () => {
+    vib(); const s = $("fDone"); s.classList.add("fade"); setTimeout(() => { s.hidden = true; s.classList.remove("fade"); }, 350);
+    if (part === 0) {
+      fp = 1; P.s3 = { p: 1, got: f2Letters().map(() => null), typed: f2Letters().map(() => ""), miss: P.s3.miss || 0 }; save(); showPart();
+      setTimeout(() => fSay("Ой! Волна смыла половину справочника. Но в судовом журнале остались старые сигналы с переводом — сопоставь!", "plain"), 450);
+    } else { P.s3.p = 2; save(); setTimeout(() => giveLetter(2), 300); }
+  });
+}
+
+/* ===================== пасхалки ===================== */
+const WORKER_URL = "https://winwhat-bot.dreplex.workers.dev";
+// 1. кот на луне: пять тапов по луне
+let moonTaps = 0;
+document.querySelector(".moon").addEventListener("click", () => {
+  moonTaps++; vib(); tone(0, 900 + moonTaps * 60, .15, .05);
+  if (moonTaps === 5) { egg("moon"); $("moonCat").classList.add("on"); homeSay("Это я в прошлой жизни. Лунный кот. Очень важная должность.", 4200); if (homeMo) setFace(homeMo, "proud"); }
+});
+// 3. фонарики звенят; по порядку с первого по пятый — мелодия из «Повтори за Моисеем»
+const LAN_NOTE = [523, 587, 659, 784, 880]; let lanSeq = [];
+$("path").addEventListener("click", (e) => {
+  const l = e.target.closest(".lan"); if (!l) return;
+  const i = +l.dataset.lan; l.classList.remove("ring"); void l.offsetWidth; l.classList.add("ring");
+  tone(0, LAN_NOTE[i], .9, .09); tone(0, LAN_NOTE[i] * 2, .5, .02); vib();
+  lanSeq.push(i); lanSeq = lanSeq.slice(-5);
+  if (lanSeq.join("") === "01234") {
+    lanSeq = []; egg("melody");
+    [784, 659, 784, 880, 784, 659, 523, 587, 659].forEach((f, k) => tone(.5 + k * .22, f, .5, .08));
+    setTimeout(() => homeSay("Эй! Это же мелодия из «Повтори за Моисеем»! Ты помнишь!", 3600), 600);
+  }
+});
+// 4. красная панда выглядывает из-за ёлки
+const PANDA_SVG = '<svg viewBox="0 0 38 34"><path d="M5 12 L8 3 L14 9Z M33 12 L30 3 L24 9Z" fill="#7a2e14"/><ellipse cx="19" cy="20" rx="15" ry="13" fill="#c8562a"/><ellipse cx="19" cy="25" rx="9" ry="7" fill="#fbf3ea"/><path d="M9 15 C11 11 15 12 15 16 C13 19 10 19 9 15Z M29 15 C27 11 23 12 23 16 C25 19 28 19 29 15Z" fill="#fbf3ea"/><circle cx="13.5" cy="18" r="2" fill="#2b1a17"/><circle cx="24.5" cy="18" r="2" fill="#2b1a17"/><ellipse cx="19" cy="23" rx="2" ry="1.5" fill="#2b1a17"/></svg>';
+function pandaPeek() {
+  if (cur === "home" && !document.hidden && homePts.length) {
+    const trees = [...$("path").querySelectorAll(".tree")]; const t = pick(trees);
+    if (t) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "panda-peek"; b.setAttribute("aria-label", "Красная панда"); b.innerHTML = PANDA_SVG;
+      b.style.left = t.style.left; b.style.top = (parseFloat(t.style.top) - 34) + "px";
+      $("path").appendChild(b); requestAnimationFrame(() => requestAnimationFrame(() => b.classList.add("up")));
+      const hide = setTimeout(() => { b.classList.remove("up"); setTimeout(() => b.remove(), 600); }, 2600);
+      b.addEventListener("click", (e) => { e.stopPropagation(); clearTimeout(hide); vib(); egg("panda"); tone(0, 1200, .1, .06, 1600); b.classList.remove("up"); setTimeout(() => b.remove(), 500);
+        homeSay(pick(["Кто это вообще?! Это моя тропа!", "Опять эта рыжая! Она тебе нравится больше меня, да?", "Не смотри на неё. Смотри на меня. Я тоже пушистый."]), 3400); if (homeMo) setFace(homeMo, "plain"); });
+    }
+  }
+  setTimeout(pandaPeek, 25000 + Math.random() * 20000);
+}
+setTimeout(pandaPeek, 15000);
+// 6. Моисей засыпает, если долго ничего не трогать
+let sleepT = null, asleep = false, zz = null;
+function fallAsleep() {
+  if (cur !== "home" || !homeMo) return;
+  asleep = true; egg("sleep"); homeMo.classList.add("sleep"); setFace(homeMo, "proud"); $("mSay").classList.remove("on");
+  zz = document.createElement("div"); zz.className = "zzz"; zz.textContent = "Z z z";
+  zz.style.left = (parseFloat(homeMo.style.left) + 18) + "px"; zz.style.top = (parseFloat(homeMo.style.top) - 76) + "px"; $("path").appendChild(zz);
+}
+function wake() {
+  clearTimeout(sleepT); sleepT = setTimeout(fallAsleep, 45000);
+  if (!asleep) return; asleep = false; if (zz) zz.remove();
+  if (homeMo) { homeMo.classList.remove("sleep"); setFace(homeMo, "smile"); }
+  homeSay(pick(["А? Я не спал! Я… охранял тропу.", "Мур… Уже утро? А, это ты.", "Я просто моргнул. Надолго."]), 2800);
+}
+document.addEventListener("pointerdown", wake); wake();
+// 7. звезда желаний: иногда падающая звезда оставляет искру
+let wishDone = false;
+function wishStar(x, y) {
+  if (wishDone || Math.random() > .35) return;
+  const b = document.createElement("button"); b.type = "button"; b.className = "wish-star"; b.setAttribute("aria-label", "Звезда желаний");
+  b.style.left = x + "px"; b.style.top = y + "px"; $("home").appendChild(b); setTimeout(() => b.remove(), 4500);
+  b.addEventListener("click", (e) => { e.stopPropagation(); b.remove(); vib(); [1175, 1568, 2093].forEach((f, i) => tone(i * .08, f, .5, .05)); $("wishSheet").hidden = false; setTimeout(() => $("wishText").focus(), 200); });
+}
+$("wishX").addEventListener("click", () => { $("wishSheet").hidden = true; });
+$("wishSend").addEventListener("click", () => {
+  const t = $("wishText").value.trim(); if (!t) { $("wishText").focus(); return; }
+  wishDone = true; egg("wish"); $("wishSheet").hidden = true; $("wishText").value = "";
+  try { fetch(WORKER_URL + "/sitewish", { method: "POST", body: JSON.stringify({ wish: t }), keepalive: true }).catch(() => {}); } catch (e) {}
+  homeSay("Улетело! Звёзды — самая быстрая почта. Быстрее только я, когда слышу шуршание пакета.", 4200); if (homeMo) setFace(homeMo, "proud");
+});
+/* ===================== визуал ===================== */
+// сугробы растут, пока открыт сайт; тап — снег разлетается
+let driftGrow = 0;
+setInterval(() => { if (cur !== "home" || document.hidden) return; driftGrow = Math.min(40, driftGrow + 2); $("path").querySelectorAll(".drift").forEach((d, i) => d.style.height = (i ? 20 : 26) + driftGrow + "px"); }, 15000);
+$("path").addEventListener("click", (e) => {
+  const d = e.target.closest(".drift"); if (!d) return;
+  driftGrow = Math.max(0, driftGrow - 14); d.style.height = (26 + driftGrow) + "px"; tone(0, 200, .25, .04, 120, "triangle");
+  const r = d.getBoundingClientRect(), br = $("path").getBoundingClientRect();
+  for (let i = 0; i < 12; i++) { const sp = document.createElement("i"); sp.className = "spark"; const a = -Math.PI * (Math.random()), rr = 30 + Math.random() * 40;
+    sp.style.left = (e.clientX - br.left) + "px"; sp.style.top = (e.clientY - br.top) + "px"; sp.style.setProperty("--dx", Math.cos(a) * rr + "px"); sp.style.setProperty("--dy", Math.sin(a) * rr + "px");
+    $("path").appendChild(sp); setTimeout(() => sp.remove(), 900); }
+});
+// иней медленно нарастает по углам
+setTimeout(() => document.querySelectorAll(".frost").forEach(f => f.classList.add("on")), 8000);
+// Моисей в образе на испытаниях
+// вместо шапок — предмет рядом с Моисеем, своя у каждого испытания
+const PROP_FLAG = '<svg class="prop wave" viewBox="0 0 40 50" aria-hidden="true"><path d="M8 48 V6" stroke="#6b4230" stroke-width="3" stroke-linecap="round"/><circle cx="8" cy="5" r="3" fill="#c9a24e"/><g class="cloth"><rect x="9" y="8" width="28" height="19" fill="#2f5aa8"/><rect x="17" y="13" width="12" height="9" fill="#fff"/></g></svg>';
+const PROP_BRUSH = '<svg class="prop" viewBox="0 0 40 50" aria-hidden="true"><rect x="6" y="30" width="28" height="16" rx="3" fill="#2b1a17"/><ellipse cx="20" cy="32" rx="11" ry="3" fill="#111"/><path d="M27 4 L15 30" stroke="#8a5a3a" stroke-width="3.2" stroke-linecap="round"/><path d="M15 30 L12 37 L17 33Z" fill="#111"/><rect x="24" y="6" width="5" height="3" rx="1" transform="rotate(25 26 7)" fill="#d8574a"/></svg>';
+const PROP_LOTUS = '<svg class="prop bob" viewBox="0 0 40 50" aria-hidden="true"><ellipse cx="20" cy="44" rx="17" ry="5" fill="#3f8a57"/><path d="M20 42 C13 37 11 28 14 20 C16 28 18 33 20 42Z M20 42 C27 37 29 28 26 20 C24 28 22 33 20 42Z" fill="#e889a8"/><path d="M20 42 C16 33 16 24 20 16 C24 24 24 33 20 42Z" fill="#f2a7c0"/></svg>';
+$("fMo").insertAdjacentHTML("beforeend", PROP_FLAG);
+$("mmMo").insertAdjacentHTML("beforeend", PROP_BRUSH);
+$("wMo").insertAdjacentHTML("beforeend", PROP_LOTUS);
+$("cMo").insertAdjacentHTML("beforeend", '<svg class="prop bob" viewBox="0 0 40 50" aria-hidden="true"><rect x="6" y="20" width="26" height="9" rx="3" transform="rotate(-25 19 24)" fill="#c9a24e"/><rect x="26" y="9" width="10" height="12" rx="2" transform="rotate(-25 31 15)" fill="#8a6447"/><path d="M14 30 L8 48 M20 28 L24 48" stroke="#6b4230" stroke-width="2.4" stroke-linecap="round"/></svg>');
+$("lMo").insertAdjacentHTML("beforeend", '<svg class="prop bob" viewBox="0 0 40 50" aria-hidden="true"><path d="M20 0 V6" stroke="#c9a24e" stroke-width="2"/><rect x="12" y="5" width="16" height="4" rx="1" fill="#c9a24e"/><ellipse cx="20" cy="24" rx="18" ry="16" fill="#e8402e"/><path d="M20 8 C11 13 11 35 20 40 M20 8 C29 13 29 35 20 40" fill="none" stroke="#a8261a" stroke-width="1.5"/><rect x="12" y="39" width="16" height="4" rx="1" fill="#c9a24e"/><path d="M20 43 V49" stroke="#f3c76e" stroke-width="2"/></svg>');
+
+
+/* ================= этап 4: зажги фонарики ================= */
+// поля строятся от «всё горит» нажатиями из решения — значит, каждое точно решается
+const L_FIELDS = [{ n: 3, sol: [0, 8] }, { n: 4, sol: [1, 6, 11] }, { n: 4, sol: [0, 7, 9, 14] }];   // 3×3 на 2 хода, 4×4 на 3 и на 4
+let LN = 3, LT = 9;
+const L_SOLVE = L_FIELDS.map(f => f.sol);
+const LANT = '<span class="lg"></span><svg viewBox="0 0 40 50" aria-hidden="true"><path d="M20 0 V6" stroke="#c9a24e" stroke-width="1.6"/><rect x="12" y="5" width="16" height="4" rx="1" fill="#c9a24e"/><ellipse class="bd" cx="20" cy="24" rx="18" ry="16"/><path class="rb" d="M20 8 C11 13 11 35 20 40 M20 8 C29 13 29 35 20 40 M5 24 H35" fill="none" stroke-width="1.3"/><text class="fu" x="20" y="29" text-anchor="middle" font-size="13" fill="#f3c76e" font-family="serif">福</text><rect x="12" y="39" width="16" height="4" rx="1" fill="#c9a24e"/><path class="tl" d="M20 43 V49 M17 49 H23" stroke-width="1.6"/></svg>';
+let lf = 0, lState = [], lPress = [], lMoves = 0, lBusy = false, lHintAt = 0, lHintTimer = null;
+function lStart(f) {
+  LN = L_FIELDS[f].n; LT = LN * LN;
+  lState = Array(LT).fill(true); L_SOLVE[f].forEach(i => lToggle(i, true));
+  lPress = Array(LT).fill(false); lMoves = 0; lBusy = false;
+}
+function lToggle(i, silent) {
+  const r = Math.floor(i / LN), c = i % LN;
+  [[r, c], [r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([y, x]) => { if (y >= 0 && y < LN && x >= 0 && x < LN) lState[y * LN + x] = !lState[y * LN + x]; });
+}
+function lRender() {
+  $("lGrid").style.setProperty("--lw", (LN === 3 ? 28 : 22) + "%");
+  let h = ""; for (let r = 0; r < LN; r++) { h += '<div class="l-row">'; for (let c = 0; c < LN; c++) { const i = r * LN + c; h += `<button type="button" class="lb${lState[i] ? " on" : ""}" data-i="${i}" aria-label="Фонарик" style="animation-delay:-${(i % 7) * .4}s">${LANT}</button>`; } h += "</div>"; }
+  $("lGrid").innerHTML = h;
+  $("lGrid").querySelectorAll(".lb").forEach(b => b.addEventListener("click", () => lTap(+b.dataset.i)));
+  lStatus();
+  $("lRound").innerHTML = `ПОЛЕ ${lf + 1} ИЗ 3` + [0, 1, 2].map(i => `<i class="${i < lf ? "ok" : i === lf ? "on" : ""}"></i>`).join("");
+}
+function lSync() { $("lGrid").querySelectorAll(".lb").forEach(b => b.classList.toggle("on", lState[+b.dataset.i])); lStatus(); }
+function lStatus() { const n = lState.filter(Boolean).length; $("lStat").innerHTML = `<span>Горит: <b>${n} / ${LT}</b></span><span>Ходов: <b>${lMoves}</b></span>`; }
+function lSay(t, face) { const s = $("lSay"); s.textContent = t; s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop"); setFace($("lMo"), face || "smile"); }
+const L_LINES = ["Ага, вот так! Соседи тоже переключились.", "Хм, а теперь вон тот погас…", "Думай рядами — так проще.", "Красиво горят. Почти все.", "Я бы помог лапой, но они высоко."];
+function lTap(i) {
+  if (lBusy) return; A();
+  lToggle(i); lPress[i] = !lPress[i]; lMoves++; vib();
+  const b = $("lGrid").querySelector(`.lb[data-i="${i}"]`); b.classList.remove("tap"); void b.offsetWidth; b.classList.add("tap");
+  tone(0, lState[i] ? 660 : 440, .15, .06); b.classList.remove("hint");
+  lSync(); P.s4 = { f: lf, state: lState, press: lPress, moves: lMoves }; save();
+  const n = lState.filter(Boolean).length;
+  if (n === LT) { lBusy = true; lWin(); return; }
+  if (lMoves % 4 === 0) lSay(n >= LT - 2 ? "Совсем чуть-чуть! Осталось " + (LT - n) + "." : pick(L_LINES), n >= LT - 3 ? "proud" : "smile");
+}
+function lNeeded() { return L_SOLVE[lf].map(i => i).filter(i => !lPress[i]).concat(lPress.map((v, i) => v && !L_SOLVE[lf].includes(i) ? i : -1).filter(i => i >= 0)); }
+function lHintTick() {
+  clearInterval(lHintTimer);
+  const upd = () => { const left = Math.ceil((lHintAt - Date.now()) / 1000), b = $("lHint"); if (left > 0) { b.disabled = true; b.textContent = `🐾 Подсказка · ${left}`; } else { b.disabled = false; b.textContent = "🐾 Подсказка"; clearInterval(lHintTimer); } };
+  upd(); lHintTimer = setInterval(upd, 1000);
+}
+$("lHint").addEventListener("click", () => {
+  if (Date.now() < lHintAt || lBusy) return; vib();
+  const need = lNeeded(); if (!need.length) return;
+  const pickN = need.slice(0, 3);
+  pickN.forEach(i => $("lGrid").querySelector(`.lb[data-i="${i}"]`).classList.add("hint"));
+  const extra = pickN.some(i => lPress[i]);
+  lSay(pickN.length === 1 ? "Остался один! Тапни по подсвеченному." : `Тапни по подсвеченным — их ${pickN.length}.${extra ? " Один из них ты уже нажимала: нажми ещё раз, это отменит лишнее." : ""}`, "proud");
+  lHintAt = Date.now() + 15000; lHintTick();
+});
+$("lReset").addEventListener("click", () => { if (lBusy) return; vib(); lStart(lf); P.s4 = { f: lf }; save(); lRender(); lSay("Начинаем поле заново. Фонарики терпеливые."); });
+function lWin() {
+  [523, 659, 784, 1047, 1319].forEach((f, k) => tone(k * .09, f, .6, .08)); vib("heavy");
+  $("lGrid").parentElement.classList.add("win");
+  lSay(lf < 2 ? "Вся улица горит! Следующее поле — посложнее." : "ВСЕ ФОНАРИКИ ГОРЯТ! Это было красиво.", "proud");
+  setTimeout(() => {
+    $("lGrid").parentElement.classList.remove("win");
+    if (lf < 2) { lf++; lStart(lf); P.s4 = { f: lf }; save(); lRender(); lHintAt = Date.now() + 20000; lHintTick(); setTimeout(() => lSay(lf === 1 ? "Второе поле — 4 на 4. Чуть хитрее." : "Последнее! Тоже 4 на 4, но с подвохом. Я в тебя верю!"), 300); }
+    else lDoneCard();
+  }, 1800);
+}
+function lDoneCard() {
+  $("lDoneCard").innerHTML = `<small>ЭТАП 4 · ВСЕ ТРИ ПОЛЯ</small><h3>Улица сияет!</h3>
+    <div style="display:flex;justify-content:center;gap:6px">${[0, 1, 2, 3, 4].map(() => `<span class="lb on" style="width:40px;pointer-events:none">${LANT}</span>`).join("")}</div>
+    <p>Через 15 дней после китайского Нового года наступает Праздник фонарей: улицы украшают тысячами красных фонариков, а на них пишут загадки. Кто отгадал — получает маленький подарок. Ты сегодня отгадываешь весь вечер — значит, подарок точно будет.</p>
+    <button type="button" class="btn" id="lNext">Забрать букву</button>`;
+  $("lDone").hidden = false;
+  $("lNext").addEventListener("click", () => { vib(); const s = $("lDone"); s.classList.add("fade"); setTimeout(() => { s.hidden = true; s.classList.remove("fade"); }, 350); P.s4 = { f: 3 }; save(); setTimeout(() => giveLetter(3), 300); });
+}
+function openLights() {
+  const st = P.s4;
+  lf = st && st.f !== undefined ? Math.min(2, st.f) : 0;
+  if (st && st.state) { LN = L_FIELDS[lf].n; LT = LN * LN; lState = st.state.slice(); lPress = (st.press || Array(LT).fill(false)).slice(); lMoves = st.moves || 0; lBusy = false; } else lStart(lf);
+  $("lDone").hidden = true; show("s4"); lRender();
+  lHintAt = Date.now() + 20000; lHintTick();
+  setTimeout(() => lSay(lMoves ? "Продолжаем! Я запомнил, какие горят." : "Тап переключает фонарик и четырёх соседей — сверху, снизу, слева, справа. Зажги все!"), 380);
+}
+
+
+/* ================= этап 5: созвездия ================= */
+// каждое созвездие — звёзды и связи между ними; соединять можно в любом порядке, нужно провести все связи
+const CONST = [
+  { name: "Созвездие Кота", hint: "numbers",
+    st: [[70, 330], [80, 230], [120, 150], [112, 88], [150, 118], [190, 84], [198, 150], [232, 330], [30, 270]],
+    ed: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0], [0, 8]],
+    fake: [[260, 90], [290, 200], [40, 120]],
+    fig: '<path d="M70 330 C60 290 66 250 82 228 C95 190 108 165 122 150 L112 88 L150 118 L190 84 L198 150 C222 170 238 210 236 250 C240 290 236 315 232 330 Z M70 330 C40 330 20 300 30 270" /><circle cx="140" cy="140" r="4"/><circle cx="175" cy="140" r="4"/><path d="M150 160 q8 6 16 0 M128 162 l-26 -4 M128 167 l-26 4 M188 162 l26 -4 M188 167 l26 4"/>',
+    say: "Это же я! Созвездие Моисея. Самое красивое на небе, между прочим." },
+  { name: "Созвездие Ёлки", hint: "ghost",
+    st: [[170, 50], [118, 145], [145, 145], [92, 235], [128, 235], [66, 330], [274, 330], [212, 235], [248, 235], [195, 145], [222, 145]],
+    ed: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 0]],
+    fake: [[40, 90], [300, 100], [170, 200], [60, 200], [290, 260]],
+    fig: '<path d="M170 50 L118 145 L145 145 L92 235 L128 235 L66 330 L274 330 L212 235 L248 235 L195 145 L222 145 Z"/><rect x="158" y="330" width="24" height="26"/><circle cx="150" cy="200" r="5"/><circle cx="195" cy="270" r="5"/><circle cx="130" cy="290" r="5"/>',
+    say: "Ёлка! Даже на небе Новый год. А наверху — Полярная звезда, она всегда показывает на север." },
+  { name: "Малая Панда", hint: "thumb",
+    st: [[118, 142], [160, 122], [204, 142], [212, 192], [160, 216], [108, 192], [100, 98], [222, 98], [254, 230], [292, 272], [268, 318]],
+    ed: [[2, 3], [3, 4], [4, 5], [5, 0], [0, 6], [6, 1], [1, 7], [7, 2], [3, 8], [8, 9], [9, 10]],
+    fake: [[40, 60], [60, 260], [150, 300], [300, 60], [230, 290], [40, 330], [320, 170], [190, 330]],
+    fig: '<ellipse cx="160" cy="172" rx="58" ry="50"/><path d="M118 142 L100 98 L160 122 L222 98 L204 142"/><circle cx="140" cy="168" r="5"/><circle cx="180" cy="168" r="5"/><ellipse cx="160" cy="190" rx="7" ry="5"/><path d="M212 192 C238 212 254 230 272 248 C292 272 296 300 268 318"/>',
+    say: "Опять эта рыжая! Даже на небе! …Ладно, красиво получилось." },
+];
+let cc = 0, cDone = [], cSel = -1, cBusy = false, cHintAt = 0, cHintT = null, cMiss = 0;
+const ekey = (a, b) => a < b ? a + "-" + b : b + "-" + a;
+function cSay(t, face) { const s = $("cSay"); s.textContent = t; s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop"); setFace($("cMo"), face || "smile"); }
+function cRender() {
+  const C = CONST[cc]; let rnd = 7 + cc * 13; const r = () => (rnd = (rnd * 9301 + 49297) % 233280) / 233280;
+  let bg = ""; for (let i = 0; i < 110; i++) bg += `<circle cx="${(r() * 340).toFixed(0)}" cy="${(r() * 380).toFixed(0)}" r="${(.4 + r() * .9).toFixed(1)}" fill="#fff" opacity="${(.25 + r() * .55).toFixed(2)}"/>`;
+  const all = C.st.map((p, i) => ({ p, i, real: true })).concat(C.fake.map((p, j) => ({ p, i: 100 + j, real: false })));
+  const starSvg = ({ p: [x, y], i, real }) => `<g class="c-star${cDone.some(k => k.split("-").includes(String(i))) ? " used" : ""}" data-i="${i}">
+      <circle class="hit" cx="${x}" cy="${y}" r="20"/><circle class="halo" cx="${x}" cy="${y}" r="13" fill="#f3c76e" opacity=".16"/>
+      <circle class="ring" cx="${x}" cy="${y}" r="11" fill="none" stroke="#fff6dc" stroke-width="1.6"/>
+      <path class="core" d="M${x} ${y - 9} L${x + 1.3} ${y - 1.3} L${x + 9} ${y} L${x + 1.3} ${y + 1.3} L${x} ${y + 9} L${x - 1.3} ${y + 1.3} L${x - 9} ${y} L${x - 1.3} ${y - 1.3}Z" fill="#fff6dc"/>
+      ${C.hint === "numbers" && real ? `<text x="${x + 11}" y="${y - 10}" font-size="12" font-weight="700" fill="#f3c76e" font-family="Lora,serif">${i + 1}</text>` : ""}</g>`;
+  const thumb = C.hint === "thumb" ? `<div class="c-thumb"><svg viewBox="40 60 290 310" width="100%" height="62"><g fill="none" stroke="#f3c76e" stroke-width="5">${C.ed.map(([a, b]) => `<path d="M${C.st[a][0]} ${C.st[a][1]} L${C.st[b][0]} ${C.st[b][1]}"/>`).join("")}</g></svg><small>НА КАРТЕ</small></div>` : "";
+  $("cSky").innerHTML = `<svg class="sk" viewBox="0 0 340 380" aria-label="Звёздное небо">
+    <defs><filter id="cGl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <radialGradient id="cSkyG" cx="50%" cy="100%" r="100%"><stop offset="0" stop-color="#2a3a66"/><stop offset=".6" stop-color="#151a35"/><stop offset="1" stop-color="#0b0d1e"/></radialGradient></defs>
+    <rect width="340" height="380" fill="url(#cSkyG)"/>
+    <path d="M-30 300 C80 200 200 140 380 20" stroke="#b9c6ff" stroke-width="70" opacity=".07" fill="none" stroke-linecap="round"/>
+    <circle cx="280" cy="70" r="70" fill="#b48ad8" opacity=".07"/>${bg}
+    ${C.hint === "ghost" ? `<g class="c-ghost" fill="none" stroke="#b7e2c4" stroke-width="1.4" stroke-dasharray="3 5">${C.fig}</g>` : ""}
+    <g class="c-fig" id="cFig" fill="none" stroke="#f3e2b8" stroke-width="1.5">${C.fig}</g>
+    <g id="cLines">${cDone.map(k => { const [a, b] = k.split("-").map(Number); return `<path class="c-line" style="animation-duration:0s" d="M${C.st[a][0]} ${C.st[a][1]} L${C.st[b][0]} ${C.st[b][1]}"/>`; }).join("")}</g>
+    <g id="cFx"></g>${all.map(starSvg).join("")}
+    <text class="c-name" id="cName" x="170" y="368" text-anchor="middle" font-family="Marck Script, cursive" font-size="24" fill="#f3c76e">✦ ${C.name} ✦</text>
+  </svg>${thumb}`;
+  $("cSky").querySelectorAll(".c-star").forEach(g => g.addEventListener("click", () => cTap(+g.dataset.i)));
+  $("cRound").innerHTML = `СОЗВЕЗДИЕ ${cc + 1} ИЗ 3` + [0, 1, 2].map(i => `<i class="${i < cc ? "ok" : i === cc ? "on" : ""}"></i>`).join("");
+  cStatus();
+}
+function cStatus() { $("cStat").innerHTML = `Соединено: <b>${cDone.length} / ${CONST[cc].ed.length}</b>`; }
+function cSelect(i) { cSel = i; $("cSky").querySelectorAll(".c-star").forEach(g => g.classList.toggle("sel", +g.dataset.i === i)); }
+function cPos(i) { const C = CONST[cc]; return i >= 100 ? C.fake[i - 100] : C.st[i]; }
+function cTap(i) {
+  if (cBusy) return; A(); vib();
+  if (cSel < 0 || cSel === i) { cSelect(i); tone(0, 1400, .12, .04); return; } // повторный тап по той же звезде не сбрасывает выбор
+  const a = cSel, b = i, C = CONST[cc], k = ekey(a, b), [x1, y1] = cPos(a), [x2, y2] = cPos(b);
+  const ok = a < 100 && b < 100 && C.ed.some(([p, q]) => ekey(p, q) === k);
+  if (ok && !cDone.includes(k)) {
+    cDone.push(k); $("cLines").insertAdjacentHTML("beforeend", `<path class="c-line" d="M${x1} ${y1} L${x2} ${y2}"/>`);
+    [1047, 1319].forEach((f, n) => tone(n * .06, f + cDone.length * 20, .35, .05));
+    $("cSky").querySelectorAll(`.c-star[data-i="${a}"], .c-star[data-i="${b}"]`).forEach(g => g.classList.add("used"));
+    $("cFx").innerHTML = ""; cSelect(b); cStatus(); P.s5 = { c: cc, done: cDone }; save();
+    if (cDone.length === C.ed.length) { cWin(); return; }
+    if (cDone.length === 3 && cc === 0) cSay("Отлично! Продолжай от этой звезды к следующей.", "proud");
+  } else if (ok) { cSelect(b); }
+  else {
+    // не связаны — без красной линии: просто выбираем новую звезду как начало
+    tone(0, 1400, .12, .04);
+    if (b >= 100 && ++cMiss % 3 === 0) cSay("Эта звезда, кажется, не из нашего созвездия.", "plain");
+    cSelect(b);
+  }
+}
+function cHintTick() {
+  clearInterval(cHintT);
+  const upd = () => { const left = Math.ceil((cHintAt - Date.now()) / 1000), b = $("cHint"); if (left > 0) { b.disabled = true; b.textContent = `✦ Подсказка · ${left}`; } else { b.disabled = false; b.textContent = "✦ Подсказка"; clearInterval(cHintT); } };
+  upd(); cHintT = setInterval(upd, 1000);
+}
+$("cHint").addEventListener("click", () => {
+  if (Date.now() < cHintAt || cBusy) return; vib();
+  const C = CONST[cc], left = C.ed.filter(([p, q]) => !cDone.includes(ekey(p, q)));
+  if (!left.length) return;
+  // подсказываем связь, которая продолжает уже нарисованное
+  const near = left.find(([p, q]) => cDone.some(k => k.split("-").map(Number).some(v => v === p || v === q))) || left[0];
+  const [p, q] = near; $("cFx").innerHTML = `<path class="c-hint" d="M${C.st[p][0]} ${C.st[p][1]} L${C.st[q][0]} ${C.st[q][1]}"/>`;
+  cSay("Вот эту линию я подсветил зелёным. Тапни по её звёздам!", "proud");
+  cHintAt = Date.now() + 15000; cHintTick();
+});
+function cWin() {
+  cBusy = true; cSelect(-1);
+  $("cFig").classList.add("on"); $("cName").classList.add("on");
+  [523, 659, 784, 1047, 1319, 1568].forEach((f, k) => tone(k * .1, f, .7, .07)); vib("heavy");
+  cSay(CONST[cc].say, "proud");
+  setTimeout(() => {
+    if (cc < 2) { cc++; cDone = []; cMiss = 0; P.s5 = { c: cc, done: [] }; save(); cBusy = false; cRender(); cHintAt = Date.now() + 20000; cHintTick();
+      setTimeout(() => cSay(cc === 1 ? "Второе созвездие. Номеров больше нет — но я оставил тень фигуры. Обводи её!" : "Последнее! Здесь только маленькая карта в углу, а звёзд-обманок много. Ты справишься."), 300); }
+    else cDoneCard();
+  }, 3200);
+}
+function cDoneCard() {
+  $("cDoneCard").innerHTML = `<small>ЭТАП 5 · ВСЕ ТРИ СОЗВЕЗДИЯ</small><h3>Небо сложилось!</h3>
+    <p>У китайцев свои созвездия и свои легенды. Самая известная — про Пастуха и Ткачиху: две звезды по разные стороны Млечного пути. Раз в год, в седьмой день седьмой луны, сороки строят из крыльев мост, и они встречаются. Этот день в Китае — праздник всех, кто скучает друг по другу.</p>
+    <div class="c-mo"><div class="mo"><img src="assets/moisey_proud.png" alt="Моисей" class="face"><img src="assets/moisey_proud.png" alt="" class="eyes"></div><div class="say">Последняя буква — твоя. Мешочек полный!</div></div>
+    <button type="button" class="btn" id="cNext">Забрать последнюю букву</button>`;
+  $("cDone").hidden = false;
+  $("cNext").addEventListener("click", () => { vib(); const s = $("cDone"); s.classList.add("fade"); setTimeout(() => { s.hidden = true; s.classList.remove("fade"); }, 350); P.s5 = { c: 3 }; save(); setTimeout(() => giveLetter(4), 300); });
+}
+function openStars() {
+  const st = P.s5; cc = st && st.c !== undefined ? Math.min(2, st.c) : 0; cDone = (st && st.done) ? st.done.slice() : []; cSel = -1; cBusy = false; cMiss = 0;
+  $("cDone").hidden = true; show("s5"); cRender();
+  cHintAt = Date.now() + 20000; cHintTick();
+  setTimeout(() => cSay(cDone.length ? "Продолжаем! Линии на небе я сохранил." : "Тапни звезду, потом соседнюю — между ними протянется линия. Первое созвездие с номерами: от 1 до 9, а потом хвостик!"), 380);
+}
+
+
+/* ================= итог тропы ================= */
+const BOT_LINK = "";   // ссылка на бота, например https://t.me/имя_бота — вставить перед деплоем
+let finOn = false;
+function fireworks(ms) {
+  const c = $("fwk"), x = c.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr; x.scale(dpr, dpr);
+  const parts = [], COLS = ["#f3c76e", "#e0806e", "#b7e2c4", "#9fc3ff", "#fbf3ea", "#e7a6d8"], end = performance.now() + ms; let next = 0;
+  function burst() {
+    const bx = innerWidth * (.15 + Math.random() * .7), by = innerHeight * (.08 + Math.random() * .3), col = pick(COLS), n = 46;
+    for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2, v = 1.6 + Math.random() * 2.2; parts.push({ x: bx, y: by, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, col }); }
+    tone(0, 90 + Math.random() * 40, .5, .07, 40, "triangle"); tone(.05, 2400 + Math.random() * 800, .25, .015);
+  }
+  (function frame(t) {
+    if (t < end && t > next) { burst(); next = t + 420 + Math.random() * 500; }
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    for (let k = parts.length - 1; k >= 0; k--) { const q = parts[k]; q.x += q.vx; q.y += q.vy; q.vy += .035; q.vx *= .985; q.vy *= .985; q.life -= .012;
+      if (q.life <= 0) { parts.splice(k, 1); continue; } x.globalAlpha = q.life; x.fillStyle = q.col; x.beginPath(); x.arc(q.x, q.y, 2.2, 0, 7); x.fill(); }
+    x.globalAlpha = 1; if (t < end || parts.length) requestAnimationFrame(frame); else x.clearRect(0, 0, innerWidth, innerHeight);
+  })(performance.now());
+}
+function flyLetters() {
+  const sky = $("finSky"); sky.innerHTML = "";
+  const tiles = [...$("bag").children], order = P.bag.map((_, k) => k).sort(() => Math.random() - .5);
+  // перемешиваем, пока не перестанет совпадать с правильным порядком
+  while (order.join("") === "01234") order.sort(() => Math.random() - .5);
+  const W = innerWidth, H = innerHeight; sky.classList.add("on"); tiles.forEach(t => t.style.visibility = "hidden");
+  // буквы встают дугой посреди экрана, в случайном порядке
+  const slots = [0, 1, 2, 3, 4].map(n => [.5 + (n - 2) * .17, .2 + Math.abs(n - 2) * .035]);
+  order.forEach((k, n) => {
+    const t = tiles[k], r = t ? t.getBoundingClientRect() : { left: W / 2, top: 120, width: 0, height: 0 };
+    const d = document.createElement("div"); d.className = "fl-letter"; d.textContent = P.bag[k];
+    d.style.left = (r.left + r.width / 2) + "px"; d.style.top = (r.top + r.height / 2) + "px"; sky.appendChild(d);
+    setTimeout(() => { d.style.left = (slots[n][0] * W) + "px"; d.style.top = (slots[n][1] * H) + "px"; d.style.transform = `rotate(${(Math.random() * 16 - 8).toFixed(0)}deg)`;
+      tone(0, 880 + n * 110, .4, .05); }, 200 + n * 260);
+    setTimeout(() => d.classList.add("float"), 2000 + n * 260);
+  });
+}
+function finRows() {
+  const m = Math.max(1, Math.round(P.ms / 60000)), h = Math.floor(m / 60), mm = m % 60;
+  const time = h ? `${h} ч ${mm} мин` : `${m} мин`, e = P.eggs.length;
+  const rows = [
+    ["🧭", "В пути", time, m > 90 ? "Не торопилась — и правильно. Тропа любит неспешных." : "Быстро! Я едва успевал за тобой лапами."],
+    ["❄️", "Снежинок поймано", String(P.flakes), P.flakes >= 10 ? "Официальный снеголов. Удостоверение — мысленное." : P.flakes ? "Неплохо! Я ловлю их шапкой." : "Ни одной? Они падают на главной — попробуй!"],
+    ["🐾", "Секретов найдено", `${e} из ${EGGS.length}`, e >= EGGS.length ? "Все! Ты знаешь тропу лучше меня." : e >= 4 ? "Много! Но кое-что ещё прячется." : "Тропа хранит ещё пару тайн…"],
+  ];
+  $("finRows").innerHTML = rows.map((r, k) => `<div class="fin-row" style="animation-delay:${.15 + k * .25}s"><i>${r[0]}</i><span>${r[1]}<em>${r[3]}</em></span><b>${r[2]}</b></div>`).join("");
+}
+function finale(first) {
+  if (finOn || cur !== "home") return; finOn = true;
+  const path = $("path"); [...path.querySelectorAll(".tb")].forEach((b, k) => b.style.setProperty("--d", (k * .06 % .9).toFixed(2) + "s")); path.classList.add("fin");
+  [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, k) => tone(k * .14, f, .6, .06));
+  fireworks(first ? 6500 : 4000); flyLetters();
+  if (homeMo) setFace(homeMo, "proud");
+  setTimeout(() => homeSay(first ? "Ты прошла всю тропу! Смотри — буквы взлетели. Порядок они не скажут, это твоя часть загадки." : "Буквы снова в небе! Порядок по-прежнему за тобой.", 4200), 600);
+  setTimeout(() => {
+    finRows(); $("finApp").href = BOT_LINK || "#"; $("finApp").style.display = BOT_LINK ? "" : "none";
+    $("finSheet").hidden = false;
+  }, first ? 5600 : 3400);
+}
+function finClose() {
+  const s = $("finSheet"); s.classList.add("fade"); setTimeout(() => { s.hidden = true; s.classList.remove("fade"); }, 350);
+  $("path").classList.remove("fin"); finOn = false;
+  const tiles = [...$("bag").children], sky = $("finSky"); sky.classList.remove("on");
+  [...sky.children].forEach((d, k) => { const t = tiles[P.bag.indexOf(d.textContent)], r = t && t.getBoundingClientRect(); d.classList.remove("float");
+    setTimeout(() => { if (r) { d.style.left = (r.left + r.width / 2) + "px"; d.style.top = (r.top + r.height / 2) + "px"; d.style.transform = "none"; } }, k * 90); });
+  setTimeout(() => { sky.innerHTML = ""; tiles.forEach(t => t.style.visibility = ""); }, 1900);
+}
+$("finStay").addEventListener("click", () => { vib(); finClose(); homeSay("Гуляй сколько хочешь. А я пойду греться в приложение. Не задерживайся!", 3600); });
+$("finApp").addEventListener("click", () => { vib(); finClose(); });
+
+
+/* ================= первое знакомство: Моисей в снегу ================= */
+// комья снега на шапке и морде: [x%, y%, ширина px, поворот]
+const CLUMPS = [[50, -4, 22, 0], [14, 22, 18, -20], [70, 16, 17, 15], [86, 34, 12, 30], [36, 50, 13, -8], [58, 70, 16, 6]];
+let snowLeft = 0, greetT = null;
+const CLUMP_SVG = '<svg viewBox="0 0 30 18" width="100%"><path d="M2 15 C0 9 5 6 8 8 C9 3 15 1 18 5 C21 2 28 4 27 10 C30 12 29 17 25 17 L5 17 C3 17 2 16 2 15Z" fill="#fff"/><path d="M6 12 C9 10 12 12 15 10" stroke="#dfe8f5" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="21" cy="9" r="1.4" fill="#e9f1fb"/></svg>';
+function snowClumps() {
+  // на большом Моисее комья масштабируем от его ширины (62px — размер на тропе)
+  return CLUMPS.slice(CLUMPS.length - snowLeft).map(([x, y, w, r]) => `<span class="snowclump" style="left:${x}%;top:${y}%;width:${(w / 62 * 100).toFixed(1)}%;margin-left:${(-w / 124 * 100).toFixed(1)}%;transform:rotate(${r}deg)">${CLUMP_SVG}</span>`).join("");
+}
+// мягкий шум: шуршание снега, без «удара»
+function softNoise(dur, lo, hi, vol, attack) {
+  if (vAll <= 0) return; const ctx = A(); if (!ctx) return;
+  const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate), d = buf.getChannelData(0);
+  for (let k = 0; k < d.length; k++) d[k] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource(), h = ctx.createBiquadFilter(), l = ctx.createBiquadFilter(), g = ctx.createGain(), t = ctx.currentTime;
+  src.buffer = buf; h.type = "highpass"; h.frequency.value = lo; l.type = "lowpass"; l.frequency.value = hi;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol * vAll, t + attack); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  src.connect(h); h.connect(l); l.connect(g); g.connect(ctx.destination); src.start();
+}
+const gSay = (t) => { const b = $("gSay"); b.textContent = t; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); };
+const DUST_SAY = ["Ой-ой, холодно!", "Ещё за ухом…", "Шапку, шапку отряхни!", "Мур… щекотно.", "Почти всё! Нос ещё."];
+function dustOff() {
+  const m = $("gMo"), c = m.querySelector(".snowclump:not(.off)"); if (!c) return;
+  A(); vib(); clearTimeout(greetT); snowLeft--;
+  const r = c.getBoundingClientRect();
+  for (let k = 0; k < 12; k++) { const d = document.createElement("i"); d.className = "dust";
+    d.style.left = (r.left + r.width / 2) + "px"; d.style.top = (r.top + r.height / 2) + "px"; d.style.position = "fixed";
+    d.style.setProperty("--dx", (Math.random() * 90 - 45).toFixed(0) + "px"); d.style.setProperty("--dy", (Math.random() * 60 - 6).toFixed(0) + "px");
+    $("greet").appendChild(d); setTimeout(() => d.remove(), 750); }
+  c.classList.add("off"); setTimeout(() => c.remove(), 400);
+  softNoise(.32, 2500, 9000, .09, .06);                 // «шурх» — смахнули снег
+  tone(.06, 1760 + Math.random() * 400, .35, .018);      // и тихий звон снежинок
+  m.classList.remove("shiver"); void m.offsetWidth; m.classList.add("shiver");
+  if (snowLeft > 0) { gSay(DUST_SAY[CLUMPS.length - snowLeft - 1]); setFace(m, snowLeft % 2 ? "plain" : "smile"); greetT = setTimeout(() => gSay("Там ещё снег остался… Тапни по мне!"), 7000); }
+  else {
+    P.greeted = 1; save(); setFace(m, "proud"); [784, 988, 1175, 1568].forEach((f, k) => tone(k * .09, f, .4, .04));
+    gSay("Спасибо! Теперь я снова пушистый и красивый. Почти как до сугроба. Ну что, пойдём?");
+    setTimeout(() => { $("gGo").hidden = false; $("gGo").classList.add("pop"); }, 900);
+  }
+}
+$("gMo").addEventListener("click", dustOff);
+$("gGo").addEventListener("click", () => {
+  vib(); const g = $("greet"); g.classList.add("out"); setTimeout(() => { g.hidden = true; g.classList.remove("out"); }, 800);
+  setTimeout(() => homeSay("Это тропа из пяти загадок. За каждую — буква в мешочек. " + INTRO[0], 7000), 700);
+});
+function greetPrep() {
+  snowLeft = CLUMPS.length; const m = $("gMo");
+  m.querySelectorAll(".snowclump").forEach(c => c.remove()); m.insertAdjacentHTML("beforeend", snowClumps());
+  $("gGo").hidden = true; $("gSay").textContent = ""; $("greet").hidden = false;
+  if (!$("gSnow").children.length) { let h = ""; for (let k = 0; k < 40; k++) h += `<i style="left:${(Math.random() * 100).toFixed(1)}%;--s:${(2 + Math.random() * 4).toFixed(1)}px;--t:${(6 + Math.random() * 8).toFixed(1)}s;--d:${(-Math.random() * 12).toFixed(1)}s;--x:${(Math.random() * 60 - 30).toFixed(0)}px"></i>`; $("gSnow").innerHTML = h; }
+}
+function greet() {
+  greetPrep(); const m = $("gMo"); setFace(m, "plain");
+  m.classList.remove("arrive"); void m.offsetWidth; m.classList.add("arrive");
+  setTimeout(() => { softNoise(.5, 120, 900, .16, .03); vib(); }, 1000);   // мягко плюхнулся в сугроб
+  setTimeout(() => { m.classList.remove("arrive"); gSay("Фух… успел! Я бежал сюда прямо из бота, чтобы встретить тебя."); }, 1700);
+  setTimeout(() => gSay("Только по дороге споткнулся о сугроб… Теперь весь в снегу. Отряхнёшь меня? Тапай!"), 5400);
+  greetT = setTimeout(() => gSay("Брр… Тапни по мне, пожалуйста, — отряхни снег!"), 16000);
+}
+
+/* режим разработки (для Данила): 8 быстрых тапов по «Мешочек букв» */
+if (DEV) document.body.classList.add("dev");
+(function () {
+  let n = 0, t0 = 0;
+  document.querySelector(".bag-h b").addEventListener("click", () => {
+    const now = Date.now(); if (now - t0 > 3000) { n = 0; t0 = now; } n++;
+    if (n >= 8) { n = 0; DEV = !DEV; document.body.classList.toggle("dev", DEV); try { localStorage.setItem("sneg_dev", DEV ? "1" : "0"); } catch (e) {} homeSay(DEV ? "Режим разработки включён." : "Режим разработки выключен."); }
+  });
+})();
+
+/* ---------- кнопки не держат фокус, чтобы Enter с клавиатуры их не нажимал ---------- */
+document.addEventListener("mousedown", (e) => { if (e.target.closest("button")) e.preventDefault(); });
+/* ---------- кнопки «заново» (на время разработки) ---------- */
+document.querySelectorAll("[data-restart]").forEach(b => b.addEventListener("click", () => {
+  vib(); b.blur();
+  if (b.dataset.restart === "1") { P.s1 = { round: 0, guesses: [] }; save(); openWord(); }
+  if (b.dataset.restart === "2") { P.s2 = null; save(); openMemory(); }
+  if (b.dataset.restart === "3") { P.s3 = null; save(); openFlags(); }
+  if (b.dataset.restart === "4") { P.s4 = null; save(); openLights(); }
+  if (b.dataset.restart === "5") { P.s5 = null; save(); openStars(); }
+}));
+document.querySelectorAll("[data-skip]").forEach(b => b.addEventListener("click", () => {
+  vib(); b.blur(); const i = +b.dataset.skip - 1;
+  if (i === 0) { P.s1 = { round: 3, guesses: [] }; save(); }
+  if (i === 2) { P.s3 = { p: 2, got: [], typed: [], miss: 0 }; save(); }
+  if (i === 3) { P.s4 = { f: 3 }; save(); }
+  if (i === 4) { P.s5 = { c: 3 }; save(); }
+  if (P.done === i) giveLetter(i); else show("home");
+}));
+$("devAll").addEventListener("click", () => {
+  vib(); P.done = 0; P.bag = []; P.s1 = { round: 0, guesses: [] }; P.s2 = null; P.s3 = null; P.s4 = null; P.s5 = null; P.greeted = 0; P.ms = 0; P.flakes = 0; P.eggs = []; save();
+  snowLeft = CLUMPS.length; renderHome(); greet();
+});
+
 /* ---------- фото на весь экран по тапу ---------- */
 document.addEventListener("click", (e) => {
   const im = e.target.closest(".pics img"); if (!im) return;
@@ -497,8 +1818,21 @@ document.addEventListener("click", (e) => {
 // фото заранее, чтобы карточка открывалась сразу
 INFO.forEach(i => i.pics.forEach(p => { const im = new Image(); im.src = "assets/" + p + ".jpg"; }));
 
+// заставка: ждём главные картинки и шрифты (не дольше 6 секунд, не меньше секунды)
+(function loaderRun() {
+  const L = $("loader"), bar = $("ldBar"), t0 = Date.now(), imgs = ["assets/room.png", "assets/moisey_smile.png", "assets/moisey_proud.png", "assets/moisey.png", "assets/moisey_blink.png"];
+  let done = 0, fin = false; const total = imgs.length + 1;
+  const step = () => { done++; bar.style.width = Math.round(done / total * 100) + "%"; if (done >= total) finish(); };
+  imgs.forEach(src => { const i = new Image(); i.onload = i.onerror = step; i.src = src; });
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(step, step);
+  setTimeout(finish, 6000);
+  function finish() { if (fin) return; fin = true; setTimeout(() => { L.classList.add("out"); setTimeout(() => L.remove(), 800); }, Math.max(0, 1000 - (Date.now() - t0))); }
+})();
+const FIRST = !P.greeted && P.done === 0;
+if (FIRST) greetPrep();
 renderHome();
-setTimeout(() => homeSay(P.done === 0 ? "Это тропа из пяти загадок. За каждую — буква. Пошли?" : P.done >= 5 ? "Ты прошла всю тропу!" : "С возвращением! Тропа ждёт.", 3600), 700);
+if (FIRST) setTimeout(greet, 1500); else
+setTimeout(() => homeSay(P.done === 0 ? "Это тропа из пяти загадок. За каждую — буква в мешочек. " + INTRO[0] : P.done >= 5 ? "Ты прошла всю тропу!" : "С возвращением! Тропа ждёт.", 7000), 700);
 window.__sneg = { P, WORDS };
 })();
 </script>
