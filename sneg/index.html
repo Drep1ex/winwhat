@@ -317,6 +317,17 @@ body:not(.dev) .x.dev, body:not(.dev) #devAll { display: none !important; }
 .kb[hidden] { display: none; }
 #s3 .hud h2 { font-size: clamp(22px, 6.6vw, 30px); }
 #fKb .k.wide { font-size: 11px; }
+/* на невысоких экранах (телефон с панелями браузера) всё ужимаем, а если не влезло — прокрутка, чтобы Моисей ничего не закрывал */
+.c-sky { align-self: center; width: calc(100% - 20px); }
+#s3 .f-body { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+@media (max-height: 780px) {
+  #s3.screen.col:not([hidden]) { padding-top: calc(env(safe-area-inset-top) + 100px); padding-bottom: calc(env(safe-area-inset-bottom) + 22px); }
+  #s3 .plank { padding: 9px 10px; } #s3 .plank h4 { font-size: 18px; margin-bottom: 6px; }
+  #s3 .f-body { gap: 8px; } #s3 .f-target { gap: 5px; } #s3 .f-cell { gap: 3px; } #s3 .f-in { height: 28px; font-size: 15px; }
+  #s3 .f-log div { margin-bottom: 4px; } #s3 .f-torn { gap: 4px 8px; }
+  #s3 .w-mo { margin-top: 4px; } #s3 .w-mo .mo { width: 50px; height: 62px; } #s3 .w-mo .say { font-size: 12.5px; padding: 8px 11px; margin-bottom: 4px; }
+  #fKb .k { min-height: 40px; }
+}
 @media (max-height: 700px) { .f-leg-g svg { width: 22px; height: 15px; } .f-leg-g { gap: 4px 5px; } .f-leg-g div { font-size: 12.5px; } .f-in { height: 30px; } }
 /* ===== этап 4: фонарики ===== */
 #s4 .hud h2 { font-size: clamp(22px, 6.6vw, 30px); }
@@ -1517,11 +1528,29 @@ function lDoneCard() {
   $("lDone").hidden = false;
   $("lNext").addEventListener("click", () => { vib(); const s = $("lDone"); s.classList.add("fade"); setTimeout(() => { s.hidden = true; s.classList.remove("fade"); }, 350); P.s4 = { f: 3 }; save(); setTimeout(() => giveLetter(3), 300); });
 }
+/* поле не должно выталкивать Моисея за экран на невысоких телефонах:
+   меряем с «длинной» репликой (3 строки) и, если не влезает, сужаем карточку — она ужмётся пропорционально */
+function fitCard(secId, card, sayId) {
+  const sec = $(secId); if (!card || sec.hidden) return;
+  card.style.maxWidth = ""; card.style.marginLeft = card.style.marginRight = "";
+  const say = $(sayId), keep = say.textContent;
+  say.textContent = "Тапни звезду, потом соседнюю — между ними протянется линия. Первое созвездие с номерами: от 1 до 9, а потом хвостик! Ещё чуть-чуть.";
+  // низ Моисея должен остаться над нижним краем экрана (с запасом под снежный сугроб)
+  const mo = sec.querySelector(".w-mo"), limit = sec.getBoundingClientRect().bottom - 18;
+  for (let k = 0; k < 4; k++) {
+    const over = mo.getBoundingClientRect().bottom - limit; if (over <= 0) break;
+    const r = card.getBoundingClientRect(), w = r.width * Math.max(.5, (r.height - over - 4) / r.height);
+    card.style.maxWidth = w + "px"; card.style.marginLeft = card.style.marginRight = "auto";
+  }
+  say.textContent = keep;
+}
+function fitPlay() { requestAnimationFrame(() => { fitCard("s4", document.querySelector("#s4 .l-card"), "lSay"); fitCard("s5", $("cSky"), "cSay"); }); }
+addEventListener("resize", fitPlay);
 function openLights() {
   const st = P.s4;
   lf = st && st.f !== undefined ? Math.min(2, st.f) : 0;
   if (st && st.state) { LN = L_FIELDS[lf].n; LT = LN * LN; lState = st.state.slice(); lPress = (st.press || Array(LT).fill(false)).slice(); lMoves = st.moves || 0; lBusy = false; } else lStart(lf);
-  $("lDone").hidden = true; show("s4"); lRender();
+  $("lDone").hidden = true; show("s4"); lRender(); fitPlay(); setTimeout(fitPlay, 400);
   lHintAt = Date.now() + 20000; lHintTick();
   setTimeout(() => lSay(lMoves ? "Продолжаем! Я запомнил, какие горят." : "Тап переключает фонарик и четырёх соседей — сверху, снизу, слева, справа. Зажги все!"), 380);
 }
@@ -1637,7 +1666,7 @@ function cDoneCard() {
 }
 function openStars() {
   const st = P.s5; cc = st && st.c !== undefined ? Math.min(2, st.c) : 0; cDone = (st && st.done) ? st.done.slice() : []; cSel = -1; cBusy = false; cMiss = 0;
-  $("cDone").hidden = true; show("s5"); cRender();
+  $("cDone").hidden = true; show("s5"); cRender(); fitPlay(); setTimeout(fitPlay, 400);
   cHintAt = Date.now() + 20000; cHintTick();
   setTimeout(() => cSay(cDone.length ? "Продолжаем! Линии на небе я сохранил." : "Тапни звезду, потом соседнюю — между ними протянется линия. Первое созвездие с номерами: от 1 до 9, а потом хвостик!"), 380);
 }
